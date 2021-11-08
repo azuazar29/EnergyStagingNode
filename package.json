@@ -4,12 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve && node ./server/app.js",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+   
   }, 
   "author": "",
   "license": "ISC",  
