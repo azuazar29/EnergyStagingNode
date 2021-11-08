@@ -7,7 +7,7 @@
     user :'genadmin',
     password :'Genad@123',
     server:'genserv.database.windows.net',
-    database:'dbgen',   
+    database:'DB_Staging',   
     options:{
 
         trustServerCertificate: true,
