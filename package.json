@@ -1,32 +1,11 @@
 {
-  "name": "energy-node-application",
-  "version": "0.0.0",
-  "description": "",
-  "main": "app.js",
-  "scripts": {
-   
-  }, 
-  "author": "",
-  "license": "ISC",  
-  "dependencies": {
-    "bcrypt": "^5.0.1",
-    "body-parser": "^1.19.0",
-    "csvtojson": "^2.0.10",
-    "express": "^4.17.1",
-    "express-validator": "^6.6.0",
-    "generate-password": "^1.6.1",
-    "jsonwebtoken": "^8.5.1",
-    "moment": "^2.29.1",
-    "mssql": "^7.2.1",
-    "multer": "^1.4.3",
-    "mysql": "^2.18.1",
-    "nodemailer": "^6.7.0",
-    "nodemon": "^2.0.14",
-    "request": "^2.88.2",
-    "request-promise": "^4.2.6",
-    "sequelize": "^6.6.5",
-    "sqlite3": "^5.0.2",
-    "tedious": "^12.0.0",
-    "uuid": "^8.3.2"
-  }
+    "name": "app-service-hello-world",
+    "description": "Simple Hello World Node.js sample for Azure App Service",
+    "version": "0.0.1",
+    "private": true,
+    "license": "MIT",
+    "author": "Microsoft",
+    "scripts": {
+        "start": "node index.js"
+    }
 }
