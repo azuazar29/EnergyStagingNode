@@ -1,0 +1,5 @@
+{
+  "editor.formatOnSave": true,
+  "appService.defaultWebAppToDeploy": "/subscriptions/477bde80-ae28-437f-9e04-b2094d04dfcf/resourceGroups/Web_GEN_RG/providers/Microsoft.Web/sites/EnergyDevNodeApplication",
+  "appService.deploySubpath": "."
+}
