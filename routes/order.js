@@ -765,13 +765,6 @@ router.get("/GetProductDetails", function (req, res) {
               
                 element.CreatedOn = moment(new Date(element.CreatedOn)).format('L')
 
-                if(element.ProductInventory == 'IS'){
-                    element.ProductInventory = 'In-Stock'
-                }
-
-                if(element.ProductInventory == 'OS'){
-                    element.ProductInventory = 'Out Of Stock'
-                }
 
 
 
