@@ -1,7 +1,7 @@
 let path = {
 
-    ProductImagePath : "D:\\Azar_personal\\ImageRepo\\",
-    EfficiencyProfilePath : "D:\\Azar_personal\\EffProfileRepo\\"
+    ProductImagePath : "C:\\Users\\genuser01\\Documents\\ImageRepo\\",
+    EfficiencyProfilePath : "C:\\Users\\genuser01\\Documents\\EffProfileRepo\\"
 
 }
 
