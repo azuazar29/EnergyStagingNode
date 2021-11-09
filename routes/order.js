@@ -837,6 +837,7 @@ router.get("/getOrderChart", function (req, res) {
                 let dispatched = []
                 let pending = []
                 let Processing = []
+                let OM = []
                 result.forEach(res => {
                     if (res.OrderStatus == "CA") {
                         cancel.push(res)
@@ -857,15 +858,20 @@ router.get("/getOrderChart", function (req, res) {
                         Processing.push(res)
 
                     }
+                    if (res.OrderStatus == "OM") {
+                        OM.push(res)
+
+                    }
                 })
                 let OrderStatus = {
-                    Total: result.length,
+                  
                     Pending: (100 * pending.length / result.length).toFixed(2),
-                    cancel: (100 * cancel.length / result.length).toFixed(2),
+                    Cancelled: (100 * cancel.length / result.length).toFixed(2),
                     Processing: (100 * Processing.length / result.length).toFixed(2),
-                    dispatched: (100 * dispatched.length / result.length).toFixed(2),
-                    complete: (100 * complete.length / result.length).toFixed(2),
-                    install: (100 * install.length / result.length).toFixed(2),
+                    Dispatched: (100 * dispatched.length / result.length).toFixed(2),
+                    Completed: (100 * complete.length / result.length).toFixed(2),
+                    Installing: (100 * install.length / result.length).toFixed(2),
+                    ["O&M Assigned"]: (100 * install.length / result.length).toFixed(2),
 
                 }
 
@@ -970,10 +976,10 @@ router.get("/getCustomerChart", function (req, res) {
                 })
                 let CustomerStatus = {
                     Total: result.length,
-                    Activesuscriber: (100 * ActiveS.length / result.length).toFixed(2),
-                    OneTime: (100 * OneT.length / result.length).toFixed(2),
-                    Lead: (100 * Lead.length / result.length).toFixed(2),
-                    SuscriptionWithdrawn: (100 * SusW.length / result.length).toFixed(2),
+                    ["Active Subscriber"]: (100 * ActiveS.length / result.length).toFixed(2),
+                    ["One-Time"]: (100 * OneT.length / result.length).toFixed(2),
+                    Leads: (100 * Lead.length / result.length).toFixed(2),
+                    ["Suscription Withdrawn"]: (100 * SusW.length / result.length).toFixed(2),
                 }
                 let query2 = `Select * from dbo.Customer_New where CreatedOn between '${previousdate}'  and  '${moment(new Date(req.query.Startdate)).subtract(1, 'day').toISOString()}'`
                 //console.log("Query is",query2)
