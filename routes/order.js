@@ -10,6 +10,8 @@ const e = require('express');
 var filePath = require('../config/filePath')
 const multer = require('multer');
 var fs = require('fs');
+const json2csv = require('json2csv').parse;
+
 
 var storage = multer.diskStorage({
     destination: async function (req, file, callback) {
@@ -378,6 +380,86 @@ router.get("/GetOrdersList", function (req, res) {
     })
 
 })
+router.get("/ExportOrdersList", function (req, res) {
+
+    let query = `Select * from dbo.OrderList`
+    if (req.query.Startdate && req.query.Enddate) {
+        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+    }
+    if (req.query.Startdate && !req.query.Enddate) {
+        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
+    }
+    if (req.query.OrderType) {
+        //console.log("comming 1")
+        if (req.query.Startdate) {
+            query = `${query} and OrderType ='${req.query.OrderType}' `
+        }
+        else {
+            //console.log("comming 2")
+            query = `${query} where OrderType ='${req.query.OrderType}' `
+        }
+
+    }
+    if (req.query.OrderStatus) {
+        if (req.query.Startdate || req.query.OrderType) {
+            query = `${query} and OrderStatus ='${req.query.OrderStatus}' `
+        }
+        else {
+            query = `${query} where OrderStatus ='${req.query.OrderStatus}' `
+        }
+    }
+    //console.log(query)
+
+    request.query(query, function (err, set) {
+        if (err) {
+            //console.log("err", err)
+            res.status(400)
+            res.json({
+                success: false,
+                message: err.originalError.info.message
+            })
+
+        } else {
+
+            let result = set.recordset
+
+            result.forEach(element=>{
+
+                if(element.OrderStatus == 'OM'){
+                    element.OrderStatus = "Assigned to O&M"                    
+                }else if(element.OrderStatus == 'CO'){
+                    element.OrderStatus = "Completed"                    
+                }else if(element.OrderStatus == 'CA'){
+                    element.OrderStatus = "Cancelled"                    
+                }else if(element.OrderStatus == 'PE'){
+                    element.OrderStatus = "Pending"                    
+                }else if(element.OrderStatus == 'IN'){
+                    element.OrderStatus = "Installation"                    
+                }else if(element.OrderStatus == 'DI'){
+                    element.OrderStatus = "Dispatched"                    
+                }
+
+                if(element.LastModifiedDate == null){
+                    element.LastModifiedDate = "NA"
+                }
+
+               
+                    element.OrderDate = moment(new Date()).format('L')
+                
+
+            })
+
+            const csvString = json2csv(result);
+            res.setHeader('Content-disposition', 'attachment; filename=Orders-report.csv');
+            res.set('Content-Type', 'text/csv');
+            res.status(200).send(csvString);
+
+           
+
+        }
+    })
+
+})
 router.get("/GetOrdersOverviewTopCount", function (req, res) {
 
     let query = `Select * from dbo.OrderList`
@@ -506,6 +588,87 @@ router.get("/GetCustomerList", function (req, res) {
                     message: "Successfully got form GetOrdersList",
                     result: result
                 })
+            
+
+
+
+        }
+    })
+
+})
+router.get("/ExportCustomerList", function (req, res) {
+
+    let query = `Select * from dbo.Customer_New`
+    if (req.query.Startdate && req.query.Enddate) {
+        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+    }
+    if (req.query.Startdate && !req.query.Enddate) {
+        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
+    }
+    if (req.query.CustomerType) {
+        //console.log("comming 1")
+        if (req.query.Startdate) {
+            query = `${query} and CustomerType ='${req.query.CustomerType}' `
+        }
+        else {
+            //console.log("comming 2")
+            query = `${query} where CustomerType ='${req.query.CustomerType}' `
+        }
+
+    }
+    if (req.query.PurchaseType) {
+        if (req.query.Startdate || req.query.CustomerType) {
+            query = `${query} and PurchaseType ='${req.query.PurchaseType}' `
+        }
+        else {
+            query = `${query} where PurchaseType ='${req.query.PurchaseType}' `
+        }
+    }
+
+    console.log(query)
+
+    request.query(query, function (err, set) {
+        if (err) {
+            //console.log("err", err)
+            res.status(400)
+            res.json({
+                success: false,
+                message: err.originalError.info.message
+            })
+
+        } else {
+
+            let result = set.recordset
+
+            result.forEach(element=>{
+
+                if(element.CustomerType == 'AS'){
+                    element.CustomerType = "Active Subscriber"                    
+                }else if(element.CustomerType == 'OT'){
+                    element.CustomerType = "One Time User"                    
+                }else if(element.CustomerType == 'SW'){
+                    element.CustomerType = "Subscription Withdrawn"                    
+                }else if(element.CustomerType == 'L'){
+                    element.CustomerType = "Lead"                    
+                }
+
+                if(element.LastModifiedDate){
+                    element.LastModifiedDate = "NA"
+                }
+
+               
+                    element.CreatedOn = moment(new Date()).format('L')
+                    element.LastService = moment(new Date()).format('L')
+                
+
+            })
+
+                const csvString = json2csv(result);
+                res.setHeader('Content-disposition', 'attachment; filename=Customer-report.csv');
+                res.set('Content-Type', 'text/csv');
+                res.status(200).send(csvString);
+            
+               
             
 
 
@@ -777,6 +940,76 @@ router.get("/GetProductDetails", function (req, res) {
                 message: "Successfully got form GetProductList",
                 result: result
             })
+
+        }
+    })
+
+})
+router.get("/ExportProductDetails", function (req, res) {
+
+    let query = `Select * from dbo.ProductDetails`
+    if (req.query.Startdate && req.query.Enddate) {
+        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+    }
+    if (req.query.Startdate && !req.query.Enddate) {
+        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
+    }
+    if (req.query.ProductName) {
+        // //console.log("comming 1")
+        if (req.query.Startdate) {
+            query = `${query} and ProductName ='${req.query.ProductName}' `
+        }
+        else {
+            // //console.log("comming 2")
+            query = `${query} where ProductName ='${req.query.ProductName}' `
+        }
+
+    }
+    if (req.query.ProductCategory) {
+        if (req.query.Startdate || req.query.ProductName) {
+            query = `${query} and ProductCategory ='${req.query.ProductCategory}' `
+        }
+        else {
+            query = `${query} where ProductCategory ='${req.query.ProductCategory}' `
+        }
+    }
+    if (req.query.ProductInventory) {
+        if (req.query.Startdate || req.query.ProductName || req.query.ProductCategory) {
+            query = `${query} and ProductInventory ='${req.query.ProductInventory}' `
+        }
+        else {
+            query = `${query} where ProductInventory ='${req.query.ProductInventory}' `
+        }
+    }
+
+    //console.log(query)
+
+    request.query(query, function (err, set) {
+        if (err) {
+            //console.log("err", err)
+            res.status(400)
+            res.json({
+                success: false,
+                message: err.originalError.info.message
+            })
+
+        } else {
+
+            let result = set.recordset
+              result.forEach(element => {
+              
+                element.CreatedOn = moment(new Date(element.CreatedOn)).format('L')
+
+
+
+
+            });
+
+            const csvString = json2csv(result);
+            res.setHeader('Content-disposition', 'attachment; filename=Product-report.csv');
+            res.set('Content-Type', 'text/csv');
+            res.status(200).send(csvString);
+           
 
         }
     })
