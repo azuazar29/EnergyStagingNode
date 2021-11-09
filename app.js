@@ -34,9 +34,9 @@ app.use('/api',orders)
 app.set('rootDir', __dirname);
 app.use("/public", express.static(__dirname + '/public/'));
 
+const port = process.env.PORT || 1337;
 
-
-var server = app.listen(49320, function () {
+var server = app.listen(port, function () {
   console.log("app running on port.", server.address().port);
 });
 module.exports = app;
