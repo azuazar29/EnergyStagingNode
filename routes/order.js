@@ -226,7 +226,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                                                                             previousSalescount=previousSalescount+Number(e.OrderTotal)
                                                                         });
                                                                         res.status(200)
-                                                                        // //console.log(customerList,perviousCustomerListrs)
+                                                                     console.log('salescount, previous sales count',salescount,previousSalescount)
 
                                                                         res.json({
                                                                             success: true,
@@ -242,7 +242,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                                                                             customerList: customerList,
                                                                             perviousCustomerList: PlusorNot(customerList,perviousCustomerList)+Number((customerList-perviousCustomerList)*100/customerList).toFixed(2)+"%",
                                                                             salesDetails: "$"+salescount,
-                                                                            previousSalesDetails: PlusorNot(salescount,previousSalescount)+Number((salescount-previousSalescount)*100/salescount).toFixed(2)+"%"
+                                                                            previousSalesDetails:checkisnan(PlusorNot(salescount,previousSalescount)+Number((salescount-previousSalescount)*100/salescount).toFixed(2)) +"%"
 
 
                                                                         })
@@ -299,6 +299,16 @@ function PlusorNot(x,y) {
         return "-" 
     }
 }
+function checkisnan(num){
+
+    if(isNaN(parseFloat(num))){
+        return 0
+    }else{
+        return num
+    }
+
+}
+
 router.get("/GetOrdersList", function (req, res) {
 
     let query = `Select * from dbo.OrderList`
