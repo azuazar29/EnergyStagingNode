@@ -1218,7 +1218,7 @@ router.get("/getCustomerChart", function (req, res) {
                     }
                 })
                 let CustomerStatus = {
-                    Total: result.length,
+                   
                     ["Active Subscriber"]: (100 * ActiveS.length / result.length).toFixed(2),
                     ["One-Time"]: (100 * OneT.length / result.length).toFixed(2),
                     Leads: (100 * Lead.length / result.length).toFixed(2),
