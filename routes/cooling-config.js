@@ -49,14 +49,16 @@ router.post('/configuration/:id',
 
           req.body.rooms = set.recordsets[0]
 
-          //console(req.body.rooms.length)
+          //console.log(req.body.rooms.length)
 
           if(set.recordsets[0].length){
             CoolingConfiguration(req, res, next).then(response => {
               res.status(200)
               let energy = []
               let price = []
-                ////console("req.body.perPage",req.body.perPage)
+              //console.log("response",response)
+
+            
                 response.EnergyWise.forEach((element,index)=>{
                   if(index+1 <= Number(req.body.perPage)){
                     energy.push(element)
@@ -163,7 +165,7 @@ router.get('/getFCUDetails/:id', function(req, res, next) {
 
   request.query(`select * From ProductDescription where manufacturer = '${req.params.id.toString().trim()}'`,function(err,recordset){
     res.status(200)
-    console.log('err',err)
+    //console.log('err',err)
     res.json({
       success:true,
       message:"Product Details",

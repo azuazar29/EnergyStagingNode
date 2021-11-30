@@ -723,9 +723,117 @@ router.get("/GetProductDetails", function (req, res) {
     })
 
 })
+router.get("/GetProductSaleDetails", function (req, res) {
+    let query = `select CondensorList.Quantity, OrderList.ProductId, OrderList.OrderTotal, CondensorList.productName 
+    from OrderList 
+    inner join CondensorList 
+    on OrderList.ProductId = CondensorList.CondenserId and OrderList.OrderStatus='CO' and OrderList.orderDate between '${req.query.Startdate}' and '${req.query.Enddate}'`
+
+    let queryFCU = `select  OrderList.ProductId, OrderList.OrderTotal, FCUList.FCUName, FCUList.Price 
+    from OrderList 
+    inner join FCUList 
+    on OrderList.ProductId = FCUList.CondenserId and OrderList.OrderStatus='CO' and OrderList.orderDate between '${req.query.Startdate}' and '${req.query.Enddate}'`
+    
+    request.query(query, function (err, set) {
+        if (err) {
+            //console.log("err", err)
+            res.status(400)
+            res.json({
+                success: false,
+                message: err.originalError.info.message
+            })
+
+        } else {
+
+            let result = set.recordsets[0]
+            let result2 =groupBy(result,"ProductId")
+            let array=[]
+            let tempArray = []
+            Object.keys(result2).forEach(function (i) {
+                let obj={"ProductName":result2[i][0].productName,"ProductId":result2[i][0].ProductId,"ProductSalesPercentage":Number(100*result2[i].length/result.length),"ProductQuantity":result2[i][0].Quantity}
+                let amt=0
+                if(result2[i].length>1){
+                    
+                    result2[i].forEach(element => {
+                        amt=amt+Number(element.OrderTotal)
+                    });
+                    obj={"ProductName":result2[i][0].productName,"ProductId":result2[i][0].ProductId,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":amt,"ProductQuantity":result2[i][0].Quantity,"SaleCount":result2[i].length}
+                }
+                else{
+                    obj={"ProductName":result2[i][0].productName,"ProductId":result2[i][0].ProductId,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":result2[i][0].OrderTotal,"ProductQuantity":result2[i][0].Quantity,"SaleCount":result2[i].length} 
+                }
+                
+                array.push(obj)
+                array.sort(dynamicSort("SaleCount"))
+
+                tempArray =  array.sort(dynamicSort("SaleCount"))
+
+              });
+              let PopularProductsCondensor = tempArray
+            // res.status(200)
+            // res.json({
+            //     success: true,
+            //     message: "Successfully got form GetProductList",         
+               
+            //     result:tempArray
+            // })
+            request.query(queryFCU, function (err, set) {
+                if (err) {
+                    //console.log("err", err)
+                    res.status(400)
+                    res.json({
+                        success: false,
+                        message: err.originalError.info.message
+                    })
+        
+                } else {
+        
+                    let result = set.recordsets[0]
+                    let result2 =groupBy(result,"FCUName")
+                    let array=[]
+                    let tempArray = []
+                    Object.keys(result2).forEach(function (i) {
+                        let obj={"ProductName":result2[i][0].FCUName,"ProductSalesPercentage":Number(100*result2[i].length/result.length)}
+                        let amt=0
+                        if(result2[i].length>1){
+                            
+                            result2[i].forEach(element => {
+                                amt=amt+Number(element.Price)
+                            });
+                            obj={"ProductName":result2[i][0].FCUName,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":amt}
+                        }
+                        else{
+                            obj={"ProductName":result2[i][0].FCUName,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":result2[i][0].Price} 
+                        }
+                        
+                        array.push(obj)
+                        array.sort(dynamicSort("ProductSalesPercentage"))
+        
+                        tempArray =  array.sort(dynamicSort("ProductSalesPercentage"))
+        
+                      });
+                      let PopularProductsFCU = tempArray
+                    res.status(200)
+                    res.json({
+                        success: true,
+                        message: "Successfully got form GetProductList",         
+                       
+                        result:{
+                            PopularProductsFCUList:PopularProductsFCU,
+                            PopularProductsCondensorList:PopularProductsCondensor
+                        
+                        }
+                    })
+        
+                }
+            })
+
+        }
+    })
+})
 router.get("/BrandSegment", function (req, res) {
     let query = `SELECT ProductName, COUNT(id)  AS count
-    FROM ProductDetails
+    FROM CondensorList
     GROUP BY ProductName`
     request.query(query, function (err, set) {
         if (err) {

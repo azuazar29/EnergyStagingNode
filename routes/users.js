@@ -6,52 +6,40 @@ const room_perm_for_each_config = require('../config/room_perm_for_each_config')
 const step5 = require('../config/step5');
 
 var sql = require("../database");
-let installed_rooms=[]
-let installed_rooms1=[]
+
 var request = new sql.Request();
 let rocc = []
-let sys1 = []
-let sys2 = []
-let sys3 = []
-var RoomPermutations = []
-let sys4 = []
-var req_len=0
-var fg=[]
-var fg1=[]
-
-let efficiency_profile = [
-
-]
+let condenser = []
+let productList = []
+let fcu = []
+let efficiency_profile = []
 var totrooms1 = 0;
 const localvar = {};
-
 let rooms = [];
 var load_rating_factor = 1.15;
 var sum_of_all_true_loads = 0;
 let dbobj = [];
 let db1obj = {};
-var b1 = 0; var li1count = 0;
-var li1 = []; var li2 = []; var li3 = [];
 let each_room_cooling_load = [];
 let each_room_load = [];
 var user_current_rating = 8
-let min_true_load
-let max_true_load
 let fs=[]
 
 
-function step1(area, idealRoomTemparature, ceilingHeightFeet) {
+function step1(area, idealRoomTemparature, ceilingHeightMeter) {
 
   var basic_cooling_load = 0;
   var room_height_to_ceiling = 0;
 
+
+
   // //////////////////////console("dbobj",dbobj)
   dbobj.forEach(function (element) {
-    if (Number(ceilingHeightFeet) <= 3) {
+    if (Number(ceilingHeightMeter) <= 3) {
       room_height_to_ceiling = "1"
-    } else if (Number(ceilingHeightFeet) >= 11) {
+    } else if (Number(ceilingHeightMeter) >= 11) {
       room_height_to_ceiling = "1.3"
-    } else if (Number(ceilingHeightFeet) === Number(element.ceiling_value)) {
+    } else if (Number(ceilingHeightMeter) === Number(element.ceiling_value)) {
       room_height_to_ceiling = element.ceil_factor;
     }
   });
@@ -79,134 +67,10 @@ function step3(sum_of_all_true_loads) {
   var system_cooling_limit = 8510;
   localvar.min_true_load = min_load_factor * sum_of_all_true_loads;
   localvar.max_true_load = max_load_factor * sum_of_all_true_loads;
-  localvar.compressor_needed = Math.round(sum_of_all_true_loads / system_cooling_limit)
+  localvar.compressor_needed = Math.ceil(sum_of_all_true_loads / system_cooling_limit)
   
 }
 
-
-function qwe4(arr,res) {
-  var li3 = []; var alltrueload = [];
-
-  for (var i = 0; i < arr.length; i++) {
-    alltrueload.push(each_room_load[arr[i] - 1])
-  }
-  var cool = 0
-  for (var j = 0; j < alltrueload.length; j++) {
-    cool += alltrueload[j]
-  }
-  li3 = []
-
-  
-  for (var i = 0; i < sys4.length; i++) {
-    if (sys4[i].cooling_capacity >= cool) {
-      if (sys4[i].cooling_capacity <= res.locals.min_true_load && sys4[i].cooling_capacity <= res.locals.max_true_load) {
-        if (sys4[i].current_rating <= user_current_rating) {
-          li3.push(sys4[i]);
-        }
-      }
-    }
-
-  }
-  return li3;
-}
-function qwe3(arr,res) {
-  var li3 = []; var alltrueload = [];
-
-  for (var i = 0; i < arr.length; i++) {
-    alltrueload.push(each_room_load[arr[i] - 1])
-  }
-  var cool = 0
-  for (var j = 0; j < alltrueload.length; j++) {
-    cool += alltrueload[j]
-  }
-
-  li3 = []
-  
- 
-  for (var i = 0; i < sys3.length; i++) {
-    if (sys3[i].cooling_capacity >= cool) {
-      if (sys3[i].cooling_capacity <= res.locals.min_true_load && sys3[i].cooling_capacity <= res.locals.max_true_load) {
-        if (sys3[i].current_rating <= user_current_rating) {
-          li3.push(sys3[i]);
-        }
-      }
-    }
-
-  }
-  return li3;
-}
-
-function qwe2(arr,res) {
-  var li3 = []; var alltrueload = [];
-
-  for (var i = 0; i < arr.length; i++) {
-    alltrueload.push(each_room_load[arr[i] - 1])
-  }
-  var cool = 0
-  for (var j = 0; j < alltrueload.length; j++) {
-    cool += alltrueload[j]
-  }
-
-  li3 = []
-  
- 
-  for (var i = 0; i < sys2.length; i++) {
-    if (sys2[i].cooling_capacity >= cool) {
-      if (sys2[i].cooling_capacity <= res.locals.min_true_load && sys2[i].cooling_capacity <= res.locals.max_true_load) {
-        if (sys2[i].current_rating <= user_current_rating) {
-          li3.push(sys2[i]);
-        }
-      }
-    }
-
-  }
-  return li3;
-}
-
-function qwe1(arr,res) {
-  var lisys11 = []; var alltrueload = [];
-  for (var i = 0; i < arr.length; i++) {
-    alltrueload.push(each_room_load[arr[i] - 1])
-  }
-  var cool = 0
-  for (var j = 0; j < alltrueload.length; j++) {
-    cool += alltrueload[j]
-  }
-
-  lisys11 = []
-  //////console("cool",cool)
-  for (var i = 0; i < sys1.length; i++) {
-    if (sys1[i].cooling_capacity >= cool) {
-
-      // //////console(sys1[i].cooling_capacity,res.locals.min_true_load,res.locals.max_true_load)
-
-
-      if (sys1[i].cooling_capacity <= res.locals.min_true_load && sys1[i].cooling_capacity <= res.locals.max_true_load) {
-        
-        if (sys1[i].current_rating <= user_current_rating) {
-          lisys11.push(sys1[i]);
-        }
-      }
-    }
-
-  }
-  return lisys11;
-}
-
-function dynamicSort(property) {
-  var sortOrder = 1;
-  if (property[0] === "-") {
-    sortOrder = -1;
-    property = property.substr(1);
-  }
-  return function (a, b) {
-    /* next line works with strings and numbers, 
-     * and you may want to customize it to your needs
-     */
-    var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
-    return result * sortOrder;
-  }
-}
 let input2=[]
 if(fs.length>=2){
    input2 = fs.reduce((r, e) => (r.push(...e), r), [])  
@@ -217,8 +81,10 @@ else{
 
 module.exports = {
 
-  CoolingConfiguration(req, res, next) {
+  CoolingConfiguration(req, response, next) {
     return new Promise((resolve, reject) => {
+      productList = []
+      select_product_list = []
       sys1 = []
       sys2 = []
       sys3 = []
@@ -228,10 +94,21 @@ module.exports = {
       each_room_cooling_load = []
       sum_of_all_true_loads = 0
       each_room_load = []
-      
+      condenser = []
 
-      let query1 = `Select * from System11`
-      let query2 = `Select * from System22`
+      rocc = []
+      condenser = []
+      productList = []
+      fcu = []
+      efficiency_profile = [] 
+      rooms = [];
+      dbobj = [];
+      db1obj = {};
+      each_room_cooling_load = [];
+      each_room_load = [];
+      fs=[]
+      let query1 = `Select * from CondensorList`
+      let query2 = `Select * from FCUList`
       let query3 = `Select * from System33`
       let query4 = `Select * from System44`
       let query5 = `Select * from idealRoomTemparature_coolings`
@@ -239,13 +116,9 @@ module.exports = {
       let query7 = `Select * from UserOccupancyPattern Where ConfigID = '${req.params.id}'`
       let query8 = `Select * from efficiency_profile`
       request.query(query1, function (err, set) {
-        sys1 = set.recordsets[0]
+        condenser = set.recordsets[0]
         request.query(query2, function (err, set) {
-          sys2 = set.recordsets[0]
-          request.query(query3, function (err, set) {
-            sys3 = set.recordsets[0]
-            request.query(query4, function (err, set) {
-              sys4 = set.recordsets[0]
+          fcu = set.recordsets[0]            
               request.query(query5, function (err, set) {
                 db1obj = set.recordsets[0]
                 request.query(query6, function (err, set) {
@@ -253,16 +126,24 @@ module.exports = {
                   request.query(query7, function (err, set) {
                     rocc = set.recordsets[0]
                     request.query(query8, function (err, set) {
+                      
                       efficiency_profile = set.recordsets[0]
                       req.body.rooms.forEach(element => {
-                        each_room_cooling_load.push(step1(element.roomSize, element.idealRoomTemparature, element.ceilingHeightFeet));
-                        res.locals.each_room_cooling_load = each_room_cooling_load;
+                        let height                        
+                        if(element.ceilingHeightFeet != "0"){
+                          height = element.ceilingHeightFeet
+                        }
+                        if(element.ceilingHeightMeter != "0"){
+                          height = element.ceilingHeightMeter
+                        }
+                        each_room_cooling_load.push(step1(element.roomSize, element.idealRoomTemparature, height));
+                        response.locals.each_room_cooling_load = each_room_cooling_load;
                       });
 
 
                       req.body.rooms.forEach((element, i) => {
                         each_room_load.push(step2(element.roomSize, each_room_cooling_load[i]));
-                        res.locals.each_room_load = each_room_load;
+                        response.locals.each_room_load = each_room_load;
                       });
 
                       sum_of_all_true_loads=0;
@@ -277,15 +158,15 @@ module.exports = {
 
                       const { min_true_load, max_true_load, compressor_needed } = localvar;
                       
+                      var totrooms1 = req.body.rooms.length
 
-
-                      res.locals.sum_of_all_true_loads = sum_of_all_true_loads;
-                      res.locals.min_true_load = min_true_load;
-                      res.locals.max_true_load = max_true_load;
-                      res.locals.totrooms1 = totrooms1;
-                      res.locals.compressor_needed = compressor_needed;
+                      response.locals.sum_of_all_true_loads = sum_of_all_true_loads;
+                      response.locals.min_true_load = min_true_load;
+                      response.locals.max_true_load = max_true_load;
+                      response.locals.totrooms1 = totrooms1;
+                      response.locals.compressor_needed = compressor_needed;
                       
-                      //console.log('res.local',res.locals)
+                      console.log('res.local',response.locals)
 
                       var arr = [];
                       for (var g = 0; g < totrooms1; g++) {
@@ -294,58 +175,20 @@ module.exports = {
 
 
 
-                      var totnoofcomp = compressor_needed        //compressor_needed
+                      // var totnoofcomp = compressor_needed        //compressor_needed
 
                       var output = []
-
+                      var RoomPermutations = []
+                      console.log('totalroom',totrooms1)
                       output = compressor_config.combineElements(totrooms1);
-                      //console.log(output)
-                      //console.log("-----------------------------")
-                      //console.log("Compressors Configurations")
-                      //console.log("-----------------------------")
-                      //console.log(output)
-                      for(var i=0;i<output.length;i++){
-                        flag=true
-                        if(output[i].length==totnoofcomp){
-                          for(var j=0;j<output[i].length;j++){
-                              if(output[i][j]>4){flag=false}
-                          }
-                        if(flag==true){
-                          //console.log(output[i])
-                          fg.push(output[i])
-                          req_len++
-                        }
-                        }
-                      }
-                      //console.log("-----------------------------")
-                      //console.log("Room Permutations")
-                      //console.log("-----------------------------")
                      
+                      RoomPermutations = room_permutations.permute(arr);
+
+                      console.log("output.lrngth",output.length)
                       
-                      for(var i=1;i<=2;i++){
-                        RoomPermutations.push(room_permutations.random(totrooms1))  
-                      }
+                      var room_perm_for_each_config1 = room_perm_for_each_config.start(compressor_needed, output, RoomPermutations);
+                      console.log("room_perm_for_each_config1",room_perm_for_each_config1.length)
 
-                      //console.log(RoomPermutations)
-
-
- 
-                      if(req_len>3 && rooms.length>8){
-                          fg1.push(fg[0])
-                          fg1.push(fg[1])
-                      }
-                      else{
-                        fg1.push(fg)
-                        console.log("fg1",fg1)
-                        if(fg1.length){
-                          fg1 = fg1.reduce((r, e) => (r.push(...e), r), [])
-
-                        }
-                      }
-
-                      var room_perm_for_each_config1 = room_perm_for_each_config.start(totnoofcomp, fg1, RoomPermutations);
-
-                      //console.log("permutaion",room_perm_for_each_config1)
                       var roomid = []
                       var compressorno = []
                       var configno = []
@@ -360,9 +203,9 @@ module.exports = {
                         }
                       }
 
-                      res.locals.roomid = roomid
-                      res.locals.compressorno = compressorno
-                      res.locals.configno = configno
+                      response.locals.roomid = roomid
+                      response.locals.compressorno = compressorno
+                      response.locals.configno = configno
 
 
                       var p1=[]
@@ -371,151 +214,161 @@ module.exports = {
                       var output1 = []
                       output1 = room_perm_for_each_config1
 
-
-                      var a = [], b = []
-
-                      var ccc = 0;
-                      var selected_product_list = []
-                      var selected_product_list1 = []
-                      for (var i = 0; i < output1.length; i++) {
-                        ccc = 0
-                        p1=[]
-                        installed_rooms1=[]
-
-                        for (var j = 0; j < output1[i].length; j++) {
-                          a = output1[i]
-
-                          if (a[j].length == 4) {
-                         
-                            if (qwe4(a[j],res).length){                           
-                              p1.push(qwe4(a[j],res))
-                              installed_rooms1.push(a[j])
-
-                              // selected_product_list.push(qwe4(a[j], res));
-                            }
-                          }
-                          if (a[j].length == 3) {                           
-                            if (qwe3(a[j],res).length){
-                              installed_rooms1.push(a[j])
-                              p1.push(qwe3(a[j],res))
-                            }
-                          }
-                          if (a[j].length == 2) {                         
-                            if (qwe2(a[j],res).length){   
-                              installed_rooms1.push(a[j])
-                              p1.push(qwe2(a[j],res))                              
-                            }
-                          }
-                          if (a[j].length == 1) {                          
-                            if (qwe1(a[j],res).length){  
-                              installed_rooms1.push(a[j])
-                              p1.push(qwe1(a[j],res))                              
-                            }
-                          }
-                        
-                        }
-                       
-                        products.push(p1.reduce((a, b) => a.reduce((r, v) => r.concat(b.map(w => [].concat(v, w))), [])));
-
-                        if(products[i].length==0){
-                          // ////console("empty") 
-                         }
-                         else{
-                          installed_rooms.push(Array(products[i].length).fill(installed_rooms1)) 
-                        // ////console(products[i])
-                         fs.push(products[i])
-                         }
-                      }
+                      console.log("room_perm_for_each_config1")
 
 
-                      var sum = 0
-                      for (var i = 0; i < each_room_load.length; i++) {
-                        sum += each_room_load[i]
-                      }
-                      products = products.reduce((r, e) => (r.push(...e), r), [])
+    for (var i = 0; i < room_perm_for_each_config1.length; i++) {
+      // display_to_rooms.push(room_perm_for_each_config1[i])
+      for (var j = 0; j < room_perm_for_each_config1[i].length; j++) {
+        // //console.log(room_perm_for_each_config1[i][j])
+        var tot = 0, sum = 0, fcuarrays = []
+        for (var k = 0; k < room_perm_for_each_config1[i][j].length; k++) {
+          sum += each_room_load[room_perm_for_each_config1[i][j][k] - 1]
+          fcuarrays.push(each_room_load[room_perm_for_each_config1[i][j][k] - 1])
+          tot += 1
+        }
+        var status = 'system' + tot
+        var listt = []
+        for (var l = 0; l < condenser.length; l++) {
+          var num = condenser[l].CurrentRating.replace(/\D/g, '')
+          if (condenser[l].Tags === status &&
+            num >= user_current_rating &&
+            sum_of_all_true_loads >= min_true_load && sum_of_all_true_loads <=max_true_load&&
+            condenser[l].CoolingCapacity >= sum &&
+            condenser[l].FCUCapacity >= sum) {
+            var allfcunames = [], allfcus = []
 
-                      ////console("producst",products.length)
+            for (var i1 = 0; i1 < fcu.length; i1++) {
 
-                      energy  = step5.start1(products,rooms.length,rocc,each_room_load,efficiency_profile,sum,installed_rooms,req.body.rooms,0,res)
+              if (condenser[l].CondenserId.toString() === fcu[i1].CondenserId.toString()) {
+                allfcunames.push(fcu[i1])
+                allfcus.push(fcu[i1].FCU)
+              }
+            }
+            flag1 = 1
+            var count = 0
+            for (var i2 = 0; i2 < fcuarrays.length; i2++) {
+              if (fcuarrays[i2] <= allfcus[i2]) {
+                count = count + 1
+              }
 
+            }
+            if (count === fcuarrays.length) {
+
+             
+
+              listt.push(
+                `{"rooms":"${room_perm_for_each_config1[i][j]}","condensername":"${condenser[l].ProductName}","condenserid":${JSON.stringify(condenser[l])},"fcusname":${JSON.stringify(allfcunames)},"fcus":"${allfcus}","coolingcapacity":"${condenser[l].CoolingCapacity}","price":"${condenser[l].Price}","currentrating":"${condenser[l].CurrentRating}"}`
+              )
+            }
+            else {
+
+           
+            }
+            allfcunames = []
+            allfcus = []
+
+          }
+        }
+        productList.push(listt)
+      }
+    }
+
+    console.log("product lenth",productList.length)
+    
+    //grouping products with based on it's rooms
+    var temporary = chunk(productList)
+    function chunk(arr) {
+      var i, j, tempor = [], chunk = compressor_needed;
+      for (i = 0, j = arr.length; i < j; i += chunk) {
+        tempor.push(arr.slice(i, i + chunk));
+      }
+      return tempor
+    }
+
+    //removing unwanted products EX:like [1,3] will have no prod but [2,4] will have products
+    var li = [], rtt = []
+    for (var i = 0; i < temporary.length; i++) {
+      var flag = 0
+      for (var j = 0; j < temporary[i].length; j++) {
+        if (temporary[i][j].length === 0) { flag = 1 }
+      }
+      if (flag === 0) { li.push(temporary[i]) }
+    }
+    // //console.log(li)
+
+
+    //evening the all products as same amount
+    var val = []
+    var curr = 0
+    const allEqual = arr => arr.every(v => v === arr[0])
+    function call(val, i1) {
+      if (!allEqual(val)) {
+        curr = val.indexOf(Math.min(...val))
+        for (var k = 0; k < (Math.max(...val) - Math.min(...val)); k++) {
+          li[i1][curr].push(li[i1][curr][Math.min(...val) - 1])
+        }
+      }
+      // //console.log(val)
+
+      val = []
+      for (var j = 0; j < li[i].length; j++) {
+        val.push(li[i][j].length)
+      }
+      if (!allEqual(val)) {
+        call(val, i1)
+      }
+    }
+
+    for (var i = 0; i < li.length; i++) {
+      val = []
+    
+      if (val.length != 1) {
+        call(val, i)
+      }
+    }
+
+
+
+    //combining the product datas based on index
+    var res = []
+    for (var i = 0; i < li.length; i++) {
+      res.push(li[i].reduce((a, b) => a.map((v, i) => v + "$" + b[i])))
+
+    }
+
+    //splitting a string based on $
+    var temp = []
+    for (var i = 0; i < res.length; i++) {
+      for (var j = 0; j < res[i].length; j++) {
+        temp.push(res[i][j].split("$"))
+      }
+    }
+
+    //list view
+    console.log(temp.length)
+
+
+    //converting list to meaningful obj
+    let r = [], select_product_list = []
+    for (var i = 0; i < temp.length; i++) {
+      r = []
+      for (var j = 0; j < temp[i].length; j++) {
+        r.push(JSON.parse(temp[i][j]))
+      }
+      select_product_list.push(r)
+    }
+    // //console.log("selected list",select_product_list)
+
+
+    var sum = 0
+    for (var i = 0; i < each_room_load.length; i++) {
+      sum += each_room_load[i]
+    }
+    let responseFinal = step5.start1(select_product_list, rooms.length, rocc, each_room_load, efficiency_profile, sum,req.body.rooms)
+
+    resolve({EnergyWise:responseFinal.energyWise,PriceWise:responseFinal.priceWise})
                       
-
-                      resolve({ EnergyWise: energy.sort(dynamicSort("display_yearr_electricity_cost")), PriceWise: energy.sort(dynamicSort("display_price")) })
-                     //////console("energy",energy)
-
-                      // let temp = selected_product_list
-                      // temp.forEach(element => {
-
-                      //   temp = temp.concat(element)
-
-                      // })
-
-
-                      // var obj = {};
-
-                      // for (var i = 0, len = temp.length; i < len; i++)
-                      //   obj[temp[i]['product_id']] = temp[i];
-
-                      // temp = [];
-                      // for (var key in obj)
-                      //   temp.push(obj[key]);
-
-                      // temp.sort(dynamicSort("price"));
-
-                      // let PriceWise = temp
-                      // products = products.reduce((r, e) => (r.push(...e), r), [])
-                      ////////////////console("p1",products.length)
-
-                      // resolve(products)
-                      // let energy  = step5.start1(products,rooms.length,rocc,each_room_load,efficiency_profile,sum,req.body.rooms)
-
-                      // //////////////////console("installed rooms",installed_rooms)
-                      // if(req.params.productId){
-                      //   energy  = step5.start1(selected_product_list,rooms.length,rocc,each_room_load,efficiency_profile,sum,installed_rooms,req.body.rooms,1)
-
-                      //   resolve(energy)
-
-                      // }else{
-                      // energy  = step5.start1(selected_product_list,rooms.length,rocc,each_room_load,efficiency_profile,sum,installed_rooms,req.body.rooms,0)
-                      // var obj1 = {};
-
-                      // for (var i = 0, len = energy.length; i < len; i++)
-                      //   obj1[energy[i]['product_id']] = energy[i];
-
-                      // energy = new Array();
-                      // for (var key in obj1)
-                      //   energy.push(obj1[key]);
-
-                      // energy.sort(dynamicSort("yearly_operating_power"));
-
-                      // energy[0].forEach(element=>{
-
-                      //   Object.keys(element).forEach(result=>{
-
-                      //     if(typeof element[result] != "object")
-                      //     element[result] =  element[result].toString()
-
-                      //   })
-
-                      // })
-
-                      // PriceWise.forEach(element=>{
-
-                      //   Object.keys(element).forEach(result=>{
-
-                      //     if(typeof element[result] != "object")
-                      //     element[result] =  element[result].toString()
-
-                      //   })
-
-                      // })
-
-                      //  PriceWise.splice(PriceWise.length-1,1)
-                     
-
-                      // resolve({ EnergyWise: energy[0], PriceWise: PriceWise })
-
-                      // }
                       
                       
                       rocc = []
@@ -543,6 +396,7 @@ module.exports = {
                       each_room_cooling_load = []
                       sum_of_all_true_loads = 0
                       each_room_load = []
+                      select_product_list = []
                       selected_product_list = []
                       selected_product_list1 = []
                       installed_rooms = []
@@ -551,14 +405,13 @@ module.exports = {
                       fg1 = []
 
                       
-                      // //////////////////////console("selected_product_list",selected_product_list)
 
                     })
                   })
                 })
               })
-            })
-          })
+            
+         
         })
       })
 

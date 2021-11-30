@@ -135,7 +135,7 @@ router.post('/setproductId',  middleware.authenticate, (req, res) => {
 })
 
 router.put('/setProductDetails/:ID', [check("add_On").exists(),
-check("quantity").exists(),
+
 check("installion_Charges").exists(),
 check("maintenance_Charges").exists(),
 check("subcription_Type").exists(),
@@ -150,9 +150,9 @@ check("total").exists()
   try {
     validationResult(req).throw()
     let query = `UPDATE Cart Set
-  add_On = '${JSON.stringify(req.body.add_On)}',quantity ='${req.body.quantity}',installion_Charges ='${req.body.installion_Charges}',
+  add_On = '${JSON.stringify(req.body.add_On)}',quantity ='1',installion_Charges ='${req.body.installion_Charges}',
   maintenance_Charges='${req.body.maintenance_Charges}',
-  subcription_Type= '${req.body.subcription_Type}',updated_On='${new Date().toISOString()}',
+  subcription_Type= '${req.body.subcription_Type?req.body.subcription_Type:"OT"}',updated_On='${new Date().toISOString()}',
     base_MonthlyRent ='${req.body.base_MonthlyRent}',gst ='${req.body.gst}',
     total_MonthlyRent='${req.body.total_MonthlyRent}',down_Payment='${req.body.down_Payment}',
     delivery= '${req.body.delivery}',total='${req.body.total}',user_Id='${req.decoded.id}'
@@ -173,6 +173,39 @@ check("total").exists()
         res.json({
           success: true,
           message: "SuccessFully Added"
+        })
+      }
+    })
+  } catch (e) {
+    res.status(400)
+    res.json({
+      success: false,
+      message: e
+    })
+  }
+})
+
+router.post('/confirmOrder/:ID', [check("paymentID").exists()
+], middleware.authenticate, (req, res, err) => {
+  try {
+    validationResult(req).throw()
+    let query = `UPDATE Cart Set paymentID = '${req.body.paymentID}' Where id=${req.params.ID}`
+
+    request.query(query, function (err, set) {
+      if (err) {
+
+        console.log("err", err)
+        res.status(400)
+        res.json({
+          success: false,
+          message: err.originalError.info.message
+        })
+
+      } else {
+        res.status(200)
+        res.json({
+          success: true,
+          message: "order has been placed successfully"
         })
       }
     })

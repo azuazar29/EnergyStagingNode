@@ -1,6 +1,8 @@
 var a1=[];
 var ty=[];
 function start(totnoofcomp,output,RoomPermutations){
+   a1=[];
+   ty=[];
 // console.log(output)
 console.log("---------------------------------")
 console.log("Used compressor Configuration")
@@ -23,6 +25,7 @@ return ty
 
 var outer=[],inner=[],z=0,count=0,inner1=[],outer1=[]
 function separate(array,compconfig){
+  outer=[],inner=[],z=0,count=0,inner1=[],outer1=[]
   inner1=[]
   for(var i=0;i<array.length;i++){
     inner1.push(permutee(array[i],compconfig))
@@ -57,6 +60,7 @@ count=0;
 var outer11=[],inner11=[],asal=[]
 function all(){ 
   // console.log(...a1)
+  outer11=[],inner11=[],asal=[]
 for(var i=0;i<a1.length;i++){
 	
   outer11=[]
