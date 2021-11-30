@@ -1994,17 +1994,17 @@ router.get("/GetProductSaleDetails", function (req, res) {
                     let array=[], arrayBrand = []
                     let tempArray = [], tempArrayBrand = []
                     Object.keys(result2).forEach(function (i) {
-                        let obj={"ProductName":result2[i][0].ProductName,"ProductSalesPercentage":Number(100*result2[i].length/result.length)}
+                        let obj={"ProductName":result2[i][0].FCUName,"ProductSalesPercentage":Number(100*result2[i].length/result.length)}
                         let amt=0
                         if(result2[i].length>1){
                             
                             result2[i].forEach(element => {
                                 amt=amt+Number(element.Price)
                             });
-                            obj={"ProductName":result2[i][0].ProductName,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":amt}
+                            obj={"ProductName":result2[i][0].FCUName,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":amt}
                         }
                         else{
-                            obj={"ProductName":result2[i][0].ProductName,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":result2[i][0].Price} 
+                            obj={"ProductName":result2[i][0].FCUName,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":result2[i][0].Price} 
                         }
                         
                         array.push(obj)
