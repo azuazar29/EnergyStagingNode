@@ -83,6 +83,7 @@ router.post('/signup',
                 })
 
               } else {
+                createCustomer(req)
                 res.status(200)
                 res.json({
                   success: true,
@@ -105,6 +106,47 @@ router.post('/signup',
 
 
   })
+  function createCustomer(req) {
+    return new Promise((resolve, reject) => {
+  
+      let query = `INSERT INTO [dbo].[Customer_New]
+             ([FirstName]
+             ,[LastName]
+             ,[Email]
+             ,[Phone]
+             ,[PlanInfo]
+             ,[CreatedOn]
+             ,[UpdatedOn]
+             ,[paymentAmount]
+             ,[LastService]
+             ,[ServiceLocation]
+             ,[PurchaseType]
+             ,[CustomerType]          
+             ,[paymentDate]
+             ,[paymentDueDate]
+             ,[isPaymentDone])
+       VALUES
+      
+             ('${req.body.firstName}','${req.body.lastName}','${req.body.email}','${req.body.phoneNumber}','NA','${new Date().toISOString()}','${new Date().toISOString()}','NA',null, '${req.body.location}','N','L',null,null,'NA')`
+  
+  
+              console.log("query",query)
+      request.query(query, function (err, response) {
+  
+        if (!err) {
+          resolve(true)
+        } else {
+          console.log("err", err)
+          resolve(false)
+        }
+  
+      })
+  
+  
+  
+  
+    })
+  }
 
 router.post('/login',
   [check("email").exists()]

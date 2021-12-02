@@ -14,8 +14,8 @@ var fs = require('fs')
 const json2csv = require('json2csv').parse;
 
 var storage = multer.diskStorage({
-    destination: async function (req, file, callback) {
-        console.log("req",file)
+    destination: async function (req, files, callback) {
+        console.log("req",files)
         var data = JSON.parse(req.body.data)
         var filepath = "public/images/" + data.Manufacturer.replace(/ /g, '') + "_" + data.ModelNo.replace(/ /g, '')
         // console.log("filepath",filePath)
@@ -35,7 +35,7 @@ var storageEff = multer.diskStorage({
       
         var data = JSON.parse(req.body.data)
         console.log(data)
-        var filepath = filePath.EfficiencyProfilePathLocal + data.ProductName.replace(/ /g, '') + "-" + data.ModelNo.replace(/ /g, '')
+        var filepath = "public/Eff/" + data.ProductName.replace(/ /g, '') + "-" + data.ModelNo.replace(/ /g, '')
         await createFolder(filepath)
         callback(null, filepath);
     },
@@ -57,6 +57,7 @@ function createFolder(filepath) {
                     resolve()
                 }else{
                     fs.mkdir(filepath, (err) => {
+                        console.log(err,"err")
                         if (err) {
                            
                             resolve();
@@ -822,6 +823,7 @@ router.post("/AddProductDetails",upload,
 
             let data = JSON.parse(req.body.data)
             let cPath = ''
+            console.log("files",req.files.length)
             if(req.files.length){
                 
                 req.files.forEach(element=>{
