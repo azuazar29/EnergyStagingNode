@@ -15,24 +15,24 @@ const json2csv = require('json2csv').parse;
 
 var storage = multer.diskStorage({
     destination: async function (req, files, callback) {
-        console.log("req",files)
+        console.log("req", files)
         var data = JSON.parse(req.body.data)
         var filepath = "public/images/" + data.Manufacturer.replace(/ /g, '') + "_" + data.ModelNo.replace(/ /g, '')
         // console.log("filepath",filePath)
         await createFolder(filepath)
-        
+
         callback(null, filepath);
     },
     filename: function (req, file, callback) {
-        console.log("name",file);
-        callback(null, file.fieldname+file.originalname.substr(file.originalname.indexOf('.')))
+        console.log("name", file);
+        callback(null, file.fieldname + file.originalname.substr(file.originalname.indexOf('.')))
     }
 });
 
 
 var storageEff = multer.diskStorage({
     destination: async function (req, file, callback) {
-      
+
         var data = JSON.parse(req.body.data)
         console.log(data)
         var filepath = "public/Eff/" + data.ProductName.replace(/ /g, '') + "-" + data.ModelNo.replace(/ /g, '')
@@ -51,22 +51,22 @@ function createFolder(filepath) {
         // var filepath = pdfpath + folderName
         fs.access(filepath, async function (err) {
             if (err && err.code === 'ENOENT') {
-                console.log("filepath",filepath)
-                if (fs.existsSync(filepath)){
+                console.log("filepath", filepath)
+                if (fs.existsSync(filepath)) {
                     console.log("it came here")
                     resolve()
-                }else{
+                } else {
                     fs.mkdir(filepath, (err) => {
-                        console.log(err,"err")
+                        console.log(err, "err")
                         if (err) {
-                           
+
                             resolve();
                         }
-                        
+
                         resolve()
                     }); //Create dir in case not found
                 }
-               
+
             } else {
                 resolve();
             }
@@ -82,7 +82,7 @@ router.get("/GetDashboardDetails", function (req, res) {
 
     let query = `Select * from dbo.OrderList`
     if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
     if (req.query.Startdate && !req.query.Enddate) {
         query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -105,7 +105,11 @@ router.get("/GetDashboardDetails", function (req, res) {
             let pendingOrder = []
             let OrderModification = []
             let Installation = []
+            let totalOrderAmount = 0
             result.forEach(response => {
+
+                totalOrderAmount = totalOrderAmount + Number(response.OrderTotal)
+
                 if (response.OrderStatus == "PE") {
                     pendingOrder.push(response)
                 }
@@ -118,7 +122,7 @@ router.get("/GetDashboardDetails", function (req, res) {
             });
             let tempOrder = pendingOrder
 
-              tempOrder.forEach(element=>{
+            tempOrder.forEach(element => {
 
                 element.OrderDate = moment(element.OrderDate).format("DD MMM, hh:mm")
 
@@ -151,7 +155,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                         let query3 = `Select * from EnergyConsumption`
 
                         if (req.query.Startdate && req.query.Enddate) {
-                            query3 = `${query3} where created_On between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+                            query3 = `${query3} where created_On between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
                         }
                         if (req.query.Startdate && !req.query.Enddate) {
                             query3 = `${query3} where created_On between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -181,7 +185,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                                         let query5 = `Select * from dbo.Customer_New`
 
                                         if (req.query.Startdate && req.query.Enddate) {
-                                            query5 = `${query5} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+                                            query5 = `${query5} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
                                         }
                                         if (req.query.Startdate && !req.query.Enddate) {
                                             query5 = `${query5} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -212,7 +216,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                                                         let query5 = `Select * from OrderList`
 
                                                         if (req.query.Startdate && req.query.Enddate) {
-                                                            query5 = `${query5} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}' and OrderStatus = 'CO'`
+                                                            query5 = `${query5} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}' and OrderStatus = 'CO'`
                                                         }
                                                         if (req.query.Startdate && !req.query.Enddate) {
                                                             query5 = `${query5} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}' and OrderStatus = 'CO'`
@@ -246,23 +250,25 @@ router.get("/GetDashboardDetails", function (req, res) {
                                                                             previousSalescount = previousSalescount + Number(e.OrderTotal)
                                                                         });
                                                                         res.status(200)
-                                                                     console.log('salescount, previous sales count',salescount,previousSalescount)
+                                                                        console.log('previousresult', salescount,previousSalescount )
+
+                                                                        
 
                                                                         res.json({
                                                                             success: true,
                                                                             message: "Successfully got form GetOrdersList",
                                                                             totalorder: result.length,
-                                                                            pendingOrder: tempOrder.slice(0, 5),
+                                                                            pendingOrder: tempOrder.slice(0, 4),
                                                                             Installation: Installation.length,
                                                                             OrderModification: OrderModification.length,
-                                                                            previousorderresult: PlusorNot(result.length, previousresult) + Number((result.length - previousresult) * 100 / result.length).toFixed(2) + "%",
+                                                                            previousorderresult: getString(PlusorNot(result.length , previousresult) + (result.length >0?  Number((result.length - previousresult) * 100 / result.length).toFixed(2):0) + "%"),
 
                                                                             energyconsumption: energyconsumption.length,
-                                                                            previousEnegryConsumption: PlusorNot(energyconsumption.length, previousEnegryConsumption.length) + Number((energyconsumption.length - previousEnegryConsumption.length) * 100 / energyconsumption.length).toFixed(2) + "%",
+                                                                            previousEnegryConsumption: getString(PlusorNot(energyconsumption.length , previousEnegryConsumption.length)+(energyconsumption.length>0? Number((energyconsumption.length - previousEnegryConsumption.length) * 100 / energyconsumption.length).toFixed(2) :0 )+ "%"),
                                                                             customerList: customerList,
-                                                                            perviousCustomerList: PlusorNot(customerList, perviousCustomerList) + Number((customerList - perviousCustomerList) * 100 / customerList).toFixed(2) + "%",
-                                                                            salesDetails: "$" + salescount,
-                                                                            previousSalesDetails: PlusorNot(salescount, previousSalescount) + Number((salescount - previousSalescount) * 100 / salescount).toFixed(2) + "%"
+                                                                            perviousCustomerList: getString(PlusorNot(customerList , perviousCustomerList) +(customerList>0? Number((customerList - perviousCustomerList) * 100 / customerList).toFixed(2) :0)+ "%"),
+                                                                            salesDetails: totalOrderAmount,
+                                                                            previousSalesDetails: getString(PlusorNot(salescount , previousSalescount)+(salescount>0?Number((salescount - previousSalescount) * 100 / salescount).toFixed(2):0) + "%")
 
 
                                                                         })
@@ -311,6 +317,16 @@ router.get("/GetDashboardDetails", function (req, res) {
     })
 
 })
+function getString(val){
+
+    if(val.toString() == "-0%" || val.toString() == "+0%"){
+        return "0%"
+    }else{
+        return val.toString().replace("--","-")
+    }
+
+
+}
 function PlusorNot(x, y) {
     if (x > y) {
         return "+"
@@ -319,11 +335,11 @@ function PlusorNot(x, y) {
         return "-"
     }
 }
-function checkisnan(num){
+function checkisnan(num) {
 
-    if(isNaN(parseFloat(num))){
+    if (isNaN(parseFloat(num))) {
         return 0
-    }else{
+    } else {
         return num
     }
 
@@ -333,7 +349,7 @@ router.get("/GetOrdersList", function (req, res) {
 
     let query = `Select * from dbo.OrderList`
     if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
     if (req.query.Startdate && !req.query.Enddate) {
         query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -358,6 +374,8 @@ router.get("/GetOrdersList", function (req, res) {
         }
     }
     console.log(query)
+    query = query + ' ' + 'ORDER BY OrderDate DESC;'
+
 
     request.query(query, function (err, set) {
         if (err) {
@@ -372,35 +390,35 @@ router.get("/GetOrdersList", function (req, res) {
 
             let result = set.recordset
 
-            result.forEach(element=>{
+            result.forEach(element => {
 
-                if(element.OrderStatus == 'OM'){
-                    element.OrderStatus = "Assigned to O&M"                    
-                }else if(element.OrderStatus == 'CO'){
-                    element.OrderStatus = "Completed"                    
-                }else if(element.OrderStatus == 'CA'){
-                    element.OrderStatus = "Cancelled"                    
-                }else if(element.OrderStatus == 'PE'){
-                    element.OrderStatus = "Pending"                    
-                }else if(element.OrderStatus == 'IN'){
-                    element.OrderStatus = "Installation"                    
-                }else if(element.OrderStatus == 'DI'){
-                    element.OrderStatus = "Dispatched"                    
+                if (element.OrderStatus == 'OM') {
+                    element.OrderStatus = "Assigned to O&M"
+                } else if (element.OrderStatus == 'CO') {
+                    element.OrderStatus = "Completed"
+                } else if (element.OrderStatus == 'CA') {
+                    element.OrderStatus = "Cancelled"
+                } else if (element.OrderStatus == 'PE') {
+                    element.OrderStatus = "Pending"
+                } else if (element.OrderStatus == 'IN') {
+                    element.OrderStatus = "Installation"
+                } else if (element.OrderStatus == 'DI') {
+                    element.OrderStatus = "Dispatched"
                 }
 
-                if(element.OrderType == 'O'){
-                    element.OrderType = "One time"                    
-                }else if(element.OrderType == 'S'){
-                    element.OrderType = "Subscription"                    
+                if (element.OrderType == 'O') {
+                    element.OrderType = "One time"
+                } else if (element.OrderType == 'S') {
+                    element.OrderType = "Subscription"
                 }
 
-                if(element.LastModifiedDate == null){
+                if (element.LastModifiedDate == null) {
                     element.LastModifiedDate = "NA"
                 }
 
-               
-                    element.OrderDate = moment(element.OrderDate).format("DD MMM YYYY")
-                
+
+                element.OrderDate = moment(element.OrderDate).format("DD MMM YYYY")
+
 
             })
 
@@ -420,7 +438,7 @@ router.get("/ExportOrdersList", function (req, res) {
 
     let query = `Select * from dbo.OrderList`
     if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
     if (req.query.Startdate && !req.query.Enddate) {
         query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -459,29 +477,29 @@ router.get("/ExportOrdersList", function (req, res) {
 
             let result = set.recordset
 
-            result.forEach(element=>{
+            result.forEach(element => {
 
-                if(element.OrderStatus == 'OM'){
-                    element.OrderStatus = "Assigned to O&M"                    
-                }else if(element.OrderStatus == 'CO'){
-                    element.OrderStatus = "Completed"                    
-                }else if(element.OrderStatus == 'CA'){
-                    element.OrderStatus = "Cancelled"                    
-                }else if(element.OrderStatus == 'PE'){
-                    element.OrderStatus = "Pending"                    
-                }else if(element.OrderStatus == 'IN'){
-                    element.OrderStatus = "Installation"                    
-                }else if(element.OrderStatus == 'DI'){
-                    element.OrderStatus = "Dispatched"                    
+                if (element.OrderStatus == 'OM') {
+                    element.OrderStatus = "Assigned to O&M"
+                } else if (element.OrderStatus == 'CO') {
+                    element.OrderStatus = "Completed"
+                } else if (element.OrderStatus == 'CA') {
+                    element.OrderStatus = "Cancelled"
+                } else if (element.OrderStatus == 'PE') {
+                    element.OrderStatus = "Pending"
+                } else if (element.OrderStatus == 'IN') {
+                    element.OrderStatus = "Installation"
+                } else if (element.OrderStatus == 'DI') {
+                    element.OrderStatus = "Dispatched"
                 }
 
-                if(element.LastModifiedDate == null){
+                if (element.LastModifiedDate == null) {
                     element.LastModifiedDate = "NA"
                 }
 
-               
-                    element.OrderDate = moment(new Date()).format("DD MMM YYYY")
-                
+
+                element.OrderDate = moment(new Date()).format("DD MMM YYYY")
+
 
             })
 
@@ -490,7 +508,7 @@ router.get("/ExportOrdersList", function (req, res) {
             res.set('Content-Type', 'text/csv');
             res.status(200).send(csvString);
 
-           
+
 
         }
     })
@@ -500,7 +518,7 @@ router.get("/GetOrdersOverviewTopCount", function (req, res) {
 
     let query = `Select * from dbo.OrderList`
     if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+        query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
     if (req.query.Startdate && !req.query.Enddate) {
         query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -521,8 +539,13 @@ router.get("/GetOrdersOverviewTopCount", function (req, res) {
             let pending_Status = []
             let Cancelled_Status = []
             let Assingnedto_OandM_Status = []
+            let todayOrder = 0
 
             result.forEach(res => {
+
+                if(moment(new Date(res.OrderDate)).format("MM/DD/YYYY") == moment(new Date()).format("MM/DD/YYYY")){
+                    todayOrder = todayOrder + 1
+                }
                 if (res.OrderStatus == "PE") {
 
                     pending_Status.push(res)
@@ -540,7 +563,7 @@ router.get("/GetOrdersOverviewTopCount", function (req, res) {
             res.json({
                 success: true,
                 message: "Successfully got form GetOrdersOverviewTopCount",
-                Total: result.length,
+                Total: todayOrder,
                 pending_Status: pending_Status.length,
                 Assingnedto_OandM_Status: Assingnedto_OandM_Status.length,
                 Cancelled_Status: Cancelled_Status.length
@@ -555,7 +578,7 @@ router.get("/GetCustomerList", function (req, res) {
 
     let query = `Select * from dbo.Customer_New`
     if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
     if (req.query.Startdate && !req.query.Enddate) {
         query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -581,6 +604,8 @@ router.get("/GetCustomerList", function (req, res) {
     }
 
     console.log(query)
+    query = query + ' ' + 'ORDER BY createdOn DESC;'
+
 
     request.query(query, function (err, set) {
         if (err) {
@@ -594,40 +619,41 @@ router.get("/GetCustomerList", function (req, res) {
         } else {
 
             let result = set.recordset
-            result.forEach(element=>{
+            result.forEach(element => {
 
-                if(element.CustomerType == 'AS'){
-                    element.CustomerType = "Active Subscriber"                    
-                }else if(element.CustomerType == 'OT'){
-                    element.CustomerType = "One Time User"                    
-                }else if(element.CustomerType == 'SW'){
-                    element.CustomerType = "Subscription Withdrawn"                    
-                }else if(element.CustomerType == 'L'){
-                    element.CustomerType = "Lead"                    
+                if (element.CustomerType == 'AS') {
+                    element.CustomerType = "Active"
+                } else if (element.CustomerType == 'OT') {
+                    element.CustomerType = "One Time User"
+                } else if (element.CustomerType == 'SW') {
+                    element.CustomerType = "Subscription Withdrawn"
+                } else if (element.CustomerType == 'L') {
+                    element.CustomerType = "Lead"
                 }
 
-                if(element.LastModifiedDate){
+                if (element.LastModifiedDate) {
                     element.LastModifiedDate = "NA"
                 }
 
-              
 
-                    element.CreatedOn = moment(element.CreatedOn).format("DD MMM YYYY")
-                    element.LastService = moment(element.LastService).format("DD MMM YYYY")
-                    element.paymentDueDate = moment(element.paymentDueDate).format("DD MMM YYYY")
-                    element.paymentDate = moment(element.paymentDate).format("DD MMM YYYY")
 
-                    if(element.CustomerType == 'SO'){
-                        element.CustomerType = "Subscription Overdue"     
-                        element.paymentDate = "NA"
-    
-                    }
-                    if(element.CustomerType == 'Lead'){                           
-                        element.paymentDate = "NA"
-                        element.paymentDueDate = "NA"
-                        element.paymentAmount ="NA"
-    
-                    }
+
+                element.CreatedOn = moment(element.CreatedOn).format("DD MMM YYYY")
+                element.LastService = moment(element.LastService).format("DD MMM YYYY")
+                element.paymentDueDate = moment(element.paymentDueDate).format("DD MMM YYYY")
+                element.paymentDate = moment(element.paymentDate).format("DD MMM YYYY")
+
+                if (element.CustomerType == 'SO') {
+                    element.CustomerType = "Subscription Overdue"
+                    element.paymentDate = "NA"
+
+                }
+                if (element.CustomerType == 'Lead') {
+                    element.paymentDate = "NA"
+                    element.paymentDueDate = "NA"
+                    element.paymentAmount = "NA"
+
+                }
 
 
             })
@@ -650,7 +676,7 @@ router.get("/ExportCustomerList", function (req, res) {
 
     let query = `Select * from dbo.Customer_New`
     if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
     if (req.query.Startdate && !req.query.Enddate) {
         query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -690,36 +716,36 @@ router.get("/ExportCustomerList", function (req, res) {
 
             let result = set.recordset
 
-            result.forEach(element=>{
+            result.forEach(element => {
 
-                if(element.CustomerType == 'AS'){
-                    element.CustomerType = "Active Subscriber"                    
-                }else if(element.CustomerType == 'OT'){
-                    element.CustomerType = "One Time User"                    
-                }else if(element.CustomerType == 'SW'){
-                    element.CustomerType = "Subscription Withdrawn"                    
-                }else if(element.CustomerType == 'L'){
-                    element.CustomerType = "Lead"                    
+                if (element.CustomerType == 'AS') {
+                    element.CustomerType = "Active"
+                } else if (element.CustomerType == 'OT') {
+                    element.CustomerType = "One Time User"
+                } else if (element.CustomerType == 'SW') {
+                    element.CustomerType = "Subscription Withdrawn"
+                } else if (element.CustomerType == 'L') {
+                    element.CustomerType = "Lead"
                 }
 
-                if(element.LastModifiedDate){
+                if (element.LastModifiedDate) {
                     element.LastModifiedDate = "NA"
                 }
 
-               
-                    element.CreatedOn = moment(new Date()).format("DD MMM YYYY")
-                    element.LastService = moment(new Date()).format("DD MMM YYYY")
-                
+
+                element.CreatedOn = moment(new Date()).format("DD MMM YYYY")
+                element.LastService = moment(new Date()).format("DD MMM YYYY")
+
 
             })
 
-                const csvString = json2csv(result);
-                res.setHeader('Content-disposition', 'attachment; filename=Customer-report.csv');
-                res.set('Content-Type', 'text/csv');
-                res.status(200).send(csvString);
-            
-               
-            
+            const csvString = json2csv(result);
+            res.setHeader('Content-disposition', 'attachment; filename=Customer-report.csv');
+            res.set('Content-Type', 'text/csv');
+            res.status(200).send(csvString);
+
+
+
 
 
 
@@ -731,7 +757,7 @@ router.get("/GetCustomerOverviewTopCount", function (req, res) {
 
     let query = `Select * from dbo.Customer_New`
     if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
     if (req.query.Startdate && !req.query.Enddate) {
         query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -754,7 +780,7 @@ router.get("/GetCustomerOverviewTopCount", function (req, res) {
             let lead = []
             let SubcriptionWithdrawn = []
             result.forEach(res => {
-                if (res.PurchaseType == "S") {
+                if (res.CustomerType == "AS") {
 
                     Subcribers.push(res)
                 } if (res.CustomerType) {
@@ -817,23 +843,23 @@ router.get('/ProductCategory', function (req, res) {
 
 })
 
-router.post("/AddProductDetails",upload,
-   function (req, res) {
+router.post("/AddProductDetails", upload,
+    function (req, res) {
         try {
 
             let data = JSON.parse(req.body.data)
             let cPath = ''
-            console.log("files",req.files.length)
-            if(req.files.length){
-                
-                req.files.forEach(element=>{
-                    if(element.fieldname == data.ProductName){
-                        cPath = element.destination+'/'+element.filename
+            console.log("files", req.files.length)
+            if (req.files.length) {
+
+                req.files.forEach(element => {
+                    if (element.fieldname == data.ProductName) {
+                        cPath = element.destination + '/' + element.filename
                     }
                 })
             }
 
-                let query = `INSERT INTO CondensorList
+            let query = `INSERT INTO CondensorList
                 ([ProductName]
                 ,[ProductCategory]
                 ,[Description]
@@ -855,89 +881,89 @@ router.post("/AddProductDetails",upload,
                 ,[ModelNo])
           VALUES
                 (
-                '${data.ProductName?data.ProductName:""}',
-                '${data.ProductCategory?data.ProductCategory:""}',
+                '${data.ProductName ? data.ProductName : ""}',
+                '${data.ProductCategory ? data.ProductCategory : ""}',
                 '${data.Description ? req.body.Description : ""}',
-                '${data.Quantity?data.Quantity:''}',
-                '${data.Price?data.Price:''}',
-                '${data.ProductCode?data.ProductCode:''}',
-                '${data.Brand?data.Brand:''}',
-                '${data.ProductTax?data.ProductTax:''}',
-                '${data.CoolingCapacity?data.CoolingCapacity:''}',
-                '${data.PowerConsumption?data.PowerConsumption:''}',
-                '${data.CurrentRating?data.CurrentRating:''}',
-                '${data.FCUCapacity?data.FCUCapacity:''}',
-                '${data.EfficiencyProfile?JSON.stringify(data.EfficiencyProfile):''}',
-                '${data.ProductCategoryId?data.ProductCategoryId:''}',
+                '${data.Quantity ? data.Quantity : '1'}',
+                '${data.Price ? data.Price : ''}',
+                '${data.ProductCode ? data.ProductCode : ''}',
+                '${data.Manufacturer ? data.Manufacturer : ''}',
+                '${data.ProductTax ? data.ProductTax : ''}',
+                '${data.CoolingCapacity ? data.CoolingCapacity : ''}',
+                '${data.PowerConsumption ? data.PowerConsumption : ''}',
+                '${data.CurrentRating ? data.CurrentRating : ''}',
+                '${data.FCUCapacity ? data.FCUCapacity : ''}',
+                '${data.EfficiencyProfile ? JSON.stringify(data.EfficiencyProfile) : ''}',
+                '${data.ProductCategoryId ? data.ProductCategoryId : ''}',
                 '1',
                 '${new Date().toISOString()}', 
                 '${data.Tags}',
                 '${cPath}',
                 '${data.ModelNo}'
                 ) SELECT SCOPE_IDENTITY() as id`
-                    // console.log(query)
-                    request.query(query, function (err, set) {
-                        if (err) {
-        
-                            // console.log("err", err)
-                            res.status(400)
+            // console.log(query)
+            request.query(query, function (err, set) {
+                if (err) {
+
+                    // console.log("err", err)
+                    res.status(400)
+                    res.json({
+                        success: false,
+                        message: err.originalError.info.message
+                    })
+
+                } else {
+
+
+
+                    if (err) {
+                        return res.send("Error uploading file.");
+                    } else {
+                        let FcuDetails = data.FCUdetails
+                        let promise = []
+                        FcuDetails.forEach(element => {
+
+                            promise.push(addProducts(element, req, set.recordset[0].id))
+
+                        });
+                        Promise.all(promise).then(responsePromise => {
+                            res.status(200)
+                            res.json({
+                                success: true,
+                                message: "Product Added successfully"
+                            })
+                        }).catch(err => {
+                            console.log("err", err)
                             res.json({
                                 success: false,
-                                message: err.originalError.info.message
+                                message: "Error in adding product",
+
                             })
-        
-                        } else {
-        
-                          
-        
-                                if (err) {
-                                    return res.send("Error uploading file.");
-                                } else {
-                                    let FcuDetails = data.FCUdetails
-                                    let promise = []
-                                    FcuDetails.forEach(element => {
+                        })
+                    }
+                }
+            })
+        } catch (err) {
 
-                                        promise.push(addProducts(element,req,set.recordset[0].id))
-                                             
-                                    });        
-                                    Promise.all(promise).then(responsePromise => {
-                                        res.status(200)
-                                        res.json({
-                                            success: true,
-                                            message: "Product Added successfully"
-                                        })
-                                    }).catch(err => {
-                                        console.log("err",err)
-                                        res.json({
-                                            success: false,
-                                            message: "Error in adding product",
-        
-                                        })
-                                    })
-                                }
-                        }
-                    })       
-        }catch(err){
+            console.log("body", err)
 
-            console.log("body",err)
-            
         }
 
-})
+    })
 
-function addProducts(element,req,ID){
-    return new Promise((resolve,reject)=>{
+function addProducts(element, req, ID) {
+    return new Promise((resolve, reject) => {
 
         let imagePath = ''
-            if(req.files.length){
-                
-                req.files.forEach(elementImage=>{
-                    if(elementImage.fieldname == element.FCUName){
-                        imagePath = elementImage.destination+'/'+elementImage.filename
-                    }
-                })
-            }
-            let query2 = `INSERT INTO [dbo].[FCU_New]
+        if (req.files.length) {
+
+            req.files.forEach(elementImage => {
+                if (elementImage.fieldname == element.FCUName) {
+                    imagePath = elementImage.destination + '/' + elementImage.filename
+                }
+            })
+        }
+        let query2 = `INSERT INTO [dbo].[FCU_New]
                             ([FCUCode]
                             ,[FCUName]
                             ,[Type]
@@ -955,39 +981,39 @@ function addProducts(element,req,ID){
                             [CondenserId])
                         VALUES
                             (
-                            '${element.FCUCode?element.FCUCode:''}',
-                            '${element.FCUName?element.FCUName:''}', 
-                            '${element.Type?element.Type:''}', 
-                            '${element.Model?element.Model:''}', 
-                            '${element.Color?element.Color:''}', 
-                            '${element.Capacity?element.Capacity:''}', 
-                            '${element.IdealTemperature?element.IdealTemperature:''}', 
-                            '${element.PowerConsumption?element.PowerConsumption:''}', 
-                            '${element.CompressorType?element.CompressorType:''}', 
-                            '${element.CondensorCoil?element.CondensorCoil:''}', 
-                            '${element.IndoorDimention?element.IndoorDimention:''}', 
-                            '${element.OutdoorDimention?element.OutdoorDimention:''}', 
-                            '${element.Rating?element.Rating:''}',
-                            '${imagePath?imagePath:''}',
+                            '${element.FCUCode ? element.FCUCode : ''}',
+                            '${element.FCUName ? element.FCUName : ''}', 
+                            '${element.Type ? element.Type : ''}', 
+                            '${element.Model ? element.Model : ''}', 
+                            '${element.Color ? element.Color : ''}', 
+                            '${element.Capacity ? element.Capacity : ''}', 
+                            '${element.IdealTemperature ? element.IdealTemperature : ''}', 
+                            '${element.PowerConsumption ? element.PowerConsumption : ''}', 
+                            '${element.CompressorType ? element.CompressorType : ''}', 
+                            '${element.CondensorCoil ? element.CondensorCoil : ''}', 
+                            '${element.IndoorDimention ? element.IndoorDimention : ''}', 
+                            '${element.OutdoorDimention ? element.OutdoorDimention : ''}', 
+                            '${element.Rating ? element.Rating : ''}',
+                            '${imagePath ? imagePath : ''}',
                             '${ID}') SELECT SCOPE_IDENTITY() as id`
-                            console.log("query",query2)
-                        request.query(query2, function (err, set) {
-                            if (err) {
-                                console.log("error",err)
-                                resolve(false)
-                            } else {
-                                
-                                resolve(true)
-                            }
-                        })   
+        console.log("query", query2)
+        request.query(query2, function (err, set) {
+            if (err) {
+                console.log("error", err)
+                resolve(false)
+            } else {
+
+                resolve(true)
+            }
+        })
 
     })
 }
-           
-        
-       
 
-  
+
+
+
+
 router.post('/uploadEfficiencyProfile', function (req, res) {
 
     //console.log("req.body.data",req.body)
@@ -1024,12 +1050,12 @@ router.post('/uploadEfficiencyProfile', function (req, res) {
 router.get("/GetProductDetails", function (req, res) {
 
     let query = `Select * from dbo.CondensorList`
-    if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
-    }
-    if (req.query.Startdate && !req.query.Enddate) {
-        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
-    }
+    // if (req.query.Startdate && req.query.Enddate) {
+    //     query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).add('1', 'day').subtract(10, 'minute').toISOString()}'`
+    // }
+    // if (req.query.Startdate && !req.query.Enddate) {
+    //     query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
+    // }
     if (req.query.ProductName) {
         // //console.log("comming 1")
         if (req.query.Startdate) {
@@ -1060,6 +1086,8 @@ router.get("/GetProductDetails", function (req, res) {
 
     //console.log(query)
 
+    query = query + ' ' + 'ORDER BY createdOn DESC;'
+
     request.query(query, function (err, set) {
         if (err) {
             //console.log("err", err)
@@ -1073,22 +1101,22 @@ router.get("/GetProductDetails", function (req, res) {
 
             let result = set.recordset
             let ProductInventory = 'In Stock'
-              result.forEach(element => {
+            result.forEach(element => {
 
-                if(element.Quantity >1){
+                if (element.Quantity > 1) {
                     ProductInventory = 'In Stock'
-                }else if(element.Quantity == 1){
+                } else if (element.Quantity == 1) {
                     ProductInventory = 'Limited'
-                }else{
+                } else {
                     ProductInventory = 'Out Of Stock'
                 }
                 element.ProductInventory = ProductInventory
 
 
-                if(element.CreatedOn)              
-                element.CreatedOn = moment(new Date(element.CreatedOn)).format("DD MMM YYYY")
+                if (element.createdOn)
+                    element.CreatedOn = moment(new Date(element.createdOn)).format("DD MMM YYYY")
                 else
-                element.CreatedOn = moment(new Date("2021-11-10")).format("DD MMM YYYY")
+                    element.createdOn = 'NULL'
 
 
 
@@ -1112,7 +1140,7 @@ router.get("/ExportProductDetails", function (req, res) {
 
     let query = `Select * from dbo.ProductDetails`
     if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date(req.query.Enddate).toISOString()}'`
+        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
     if (req.query.Startdate && !req.query.Enddate) {
         query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
@@ -1159,8 +1187,8 @@ router.get("/ExportProductDetails", function (req, res) {
         } else {
 
             let result = set.recordset
-              result.forEach(element => {
-              
+            result.forEach(element => {
+
                 element.CreatedOn = moment(new Date(element.CreatedOn)).format("DD MMM YYYY")
 
 
@@ -1172,7 +1200,7 @@ router.get("/ExportProductDetails", function (req, res) {
             res.setHeader('Content-disposition', 'attachment; filename=Product-report.csv');
             res.set('Content-Type', 'text/csv');
             res.status(200).send(csvString);
-           
+
 
         }
     })
@@ -1184,12 +1212,16 @@ router.get("/getOrderChart", function (req, res) {
     if (!Enddate) {
         Enddate = new Date()
     }
-    let query = `Select * from dbo.OrderList where OrderDate between '${new Date(Startdate).toISOString()}'  and  '${new Date(Enddate).toISOString()}'`
+    let query = `Select * from dbo.OrderList where OrderDate between '${new Date(Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     if (Startdate) {
         let i = moment(Startdate).format("YYYY-MM-DD")
         let array = []
         do {
-            let obj = { Day: moment(i).format('DD/M'), SubCount: 0, OneCount: 0 }
+            let day = moment(i).format('DD/M')
+            if(day == moment(new Date()).format('DD/M')){
+                day = 'Today'
+            }
+            let obj = { Day: day, SubCount: 0, OneCount: 0 }
             array.push(obj)
             //console.log("i", i)
             i = moment(i).add(1, "days").format("YYYY-MM-DD")
@@ -1260,7 +1292,7 @@ router.get("/getOrderChart", function (req, res) {
                     }
                 })
                 let OrderStatus = {
-                  
+
                     Pending: (100 * pending.length / result.length).toFixed(2),
                     Cancelled: (100 * cancel.length / result.length).toFixed(2),
                     Processing: (100 * Processing.length / result.length).toFixed(2),
@@ -1288,13 +1320,17 @@ router.get("/getCustomerChart", function (req, res) {
     if (!Enddate) {
         Enddate = new Date()
     }
-    let query = `Select * from dbo.Customer_New where CreatedOn between '${new Date(Startdate).toISOString()}'  and  '${new Date(Enddate).toISOString()}'`
+    let query = `Select * from dbo.Customer_New where CreatedOn between '${new Date(Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     if (Startdate) {
         let i = moment(Startdate).format("YYYY-MM-DD")
         let array = []
 
         do {
-            let obj = { Day: moment(i).format("DD/M"), Count: 0 }
+            let day = moment(i).format('DD/M')
+            if(day == moment(new Date()).format('DD/M')){
+                day = 'Today'
+            }
+            let obj = { Day: day, Count: 0 }
             array.push(obj)
             //console.log("i", i)
             i = moment(i).add(1, "days").format("YYYY-MM-DD")
@@ -1371,11 +1407,11 @@ router.get("/getCustomerChart", function (req, res) {
                     }
                 })
                 let CustomerStatus = {
-                   
+
                     ["Active Subscriber"]: (100 * ActiveS.length / result.length).toFixed(2),
                     ["One-Time"]: (100 * OneT.length / result.length).toFixed(2),
                     Leads: (100 * Lead.length / result.length).toFixed(2),
-                    ["Suscription Withdrawn"]: (100 * SusW.length / result.length).toFixed(2),
+                    ["Subscription Withdrawn"]: (100 * SusW.length / result.length).toFixed(2),
                 }
                 let query2 = `Select * from dbo.Customer_New where CreatedOn between '${previousdate}'  and  '${moment(new Date(req.query.Startdate)).subtract(1, 'day').toISOString()}'`
                 console.log("Query is", query2)
@@ -1494,7 +1530,7 @@ router.get("/getDashBoardChart", function (req, res) {
     if (!Enddate) {
         Enddate = new Date()
     }
-    let query = `Select * from OrderList where OrderDate between '${new Date(Startdate).toISOString()}'  and  '${new Date(Enddate).toISOString()}' and OrderStatus = 'CO'`
+    let query = `Select * from OrderList where OrderDate between '${new Date(Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}' and OrderStatus = 'CO'`
 
 
     if (Startdate) {
@@ -1503,7 +1539,11 @@ router.get("/getDashBoardChart", function (req, res) {
 
 
         do {
-            let obj = { Day: moment(i).format("DD/M"), Count: 0 }
+            let day = moment(i).format('DD/M')
+            if(day == moment(new Date()).format('DD/M')){
+                day = 'Today'
+            }
+            let obj = { Day: day, Count: 0 }
             array.push(obj)
 
             console.log("i", i)
@@ -1554,7 +1594,11 @@ router.get("/getDashBoardChart", function (req, res) {
                 let j = moment(new Date(Startdate)).subtract(previous_datecount, 'days').format("YYYY-MM-DD")
                 let date1 = moment(new Date(req.query.Startdate)).subtract(1, 'day').toISOString()
                 do {
-                    let obj = { Day: moment(j).format("DD/M"), Count: 0 }
+                    let day = moment(i).format('DD/M')
+                    if(day == moment(new Date()).format('DD/M')){
+                        day = 'Today'
+                    }
+                    let obj = { Day: day, Count: 0 }
                     array2.push(obj)
 
                     j = moment(j).add(1, "days").format("YYYY-MM-DD")
@@ -1590,7 +1634,7 @@ router.get("/getDashBoardChart", function (req, res) {
                             });
 
                         })
-                        let query3 = `Select * from EnergyConsumption where created_On between  '${new Date(Startdate).toISOString()}' and '${new Date(Enddate).toISOString()}'`
+                        let query3 = `Select * from EnergyConsumption where created_On between  '${new Date(Startdate).toISOString()}' and '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
                         console.log("query 3", query3)
                         request.query(query3, function (err, set) {
                             if (err) {
@@ -1608,7 +1652,11 @@ router.get("/getDashBoardChart", function (req, res) {
                                 let array3 = []
 
                                 do {
-                                    let obj = { Day: moment(E1).format("DD/M"), Energy: 0 }
+                                    let day = moment(E1).format('DD/M')
+                                    if(day == moment(new Date()).format('DD/M')){
+                                        day = 'Today'
+                                    }
+                                    let obj = { Day:day, Energy: 0 }
                                     array3.push(obj)
 
 
@@ -1649,7 +1697,11 @@ router.get("/getDashBoardChart", function (req, res) {
                                         let array4 = []
                                         let date1 = moment(new Date(req.query.Startdate)).subtract(1, 'day').toISOString()
                                         do {
-                                            let obj = { Day: moment(E2).format("DD/M"), Energy: 0 }
+                                            let day = moment(E2).format('DD/M')
+                                            if(day == moment(new Date()).format('DD/M')){
+                                                day = 'Today'
+                                            }
+                                            let obj = { Day: day, Energy: 0 }
                                             array4.push(obj)
 
 
@@ -1697,9 +1749,9 @@ router.get("/getDashBoardChart", function (req, res) {
 })
 router.get("/TopProductdetails", function (req, res) {
     let query = `select CondensorList.Quantity, OrderList.ProductId, OrderList.OrderTotal, CondensorList.productName from OrderList inner join CondensorList on OrderList.ProductId = CondensorList.Id and OrderList.OrderStatus='CO' and 
-   OrderList.OrderDate between  '${new Date(req.query.Startdate).toISOString()}' and '${new Date(req.query.Enddate).toISOString()}'`
+   OrderList.OrderDate between  '${new Date(req.query.Startdate).toISOString()}' and '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
 
-   console.log("query topprodcust",query)
+    console.log("query topprodcust", query)
     request.query(query, function (err, set) {
         if (err) {
             //console.log("err", err)
@@ -1758,7 +1810,7 @@ router.get("/GetMapdetails", function (req, res) {
     ON Customer_New.Id = EnergyConsumption.user_ID 
      `
     if (Startdate) {
-        query = `${query}and created_on between '${new Date(Startdate).toISOString()}' and '${new Date(Enddate).toISOString()}'`
+        query = `${query}and created_on between '${new Date(Startdate).toISOString()}' and '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
     // console.log("query",query)
     request.query(query, function (err, set) {
@@ -1801,7 +1853,7 @@ router.get("/GetMapdetails", function (req, res) {
                ON Customer_New.Id = OrderList.userID and OrderStatus='CO'
                 `
             if (Startdate) {
-                query1 = `${query1}and OrderDate between '${new Date(Startdate).toISOString()}' and '${new Date(Enddate).toISOString()}'`
+                query1 = `${query1}and OrderDate between '${new Date(Startdate).toISOString()}' and '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
             }
             request.query(query1, function (err, set) {
                 if (err) {
@@ -1848,7 +1900,7 @@ router.get("/GetMapdetails", function (req, res) {
                ON Customer_New.Id = OrderList.userID and OrderStatus='OM'
                 `
                     if (Startdate) {
-                        query2 = `${query2}and OrderDate between '${new Date(Startdate).toISOString()}' and '${new Date(Enddate).toISOString()}'`
+                        query2 = `${query2}and OrderDate between '${new Date(Startdate).toISOString()}' and '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
                     }
                     request.query(query2, function (err, set) {
                         if (err) {
@@ -1904,15 +1956,15 @@ router.get("/GetProductSaleDetails", function (req, res) {
     let query = `select CondensorList.Quantity, OrderList.ProductId, OrderList.OrderTotal, CondensorList.productName, CondensorList.Brand 
     from OrderList 
     inner join CondensorList 
-    on OrderList.ProductId = CondensorList.CondenserId and OrderList.OrderStatus='CO' and OrderList.OrderDate between '${req.query.Startdate}' and '${req.query.Enddate}'`
+    on OrderList.ProductId = CondensorList.CondenserId and OrderList.OrderStatus='CO'`
 
     let queryFCU = `select  OrderList.ProductId, OrderList.OrderTotal, FCUList.FCUName, FCUList.Price, CondensorList.Brand
     from OrderList 
     inner join FCUList 
-    on OrderList.ProductId = FCUList.CondenserId and OrderList.OrderStatus='CO' and OrderList.OrderDate between '${req.query.Startdate}' and '${req.query.Enddate}'
+    on OrderList.ProductId = FCUList.CondenserId and OrderList.OrderStatus='CO'
     inner join CondensorList on CondensorList.id = FCUList.CondenserId`
-    
-    
+
+
     request.query(query, function (err, set) {
         if (err) {
             //console.log("err", err)
@@ -1925,58 +1977,58 @@ router.get("/GetProductSaleDetails", function (req, res) {
         } else {
 
             let result = set.recordsets[0]
-            let result2 =groupBy(result,"ProductId")
-            let result3 = groupBy(result,"Brand")
-            let array=[], arrayBrand =[]
+            let result2 = groupBy(result, "ProductId")
+            let result3 = groupBy(result, "Brand")
+            let array = [], arrayBrand = []
             let tempArray = [], tempArrayBrand = []
             Object.keys(result2).forEach(function (i) {
-                let obj={"ProductName":result2[i][0].productName,"ProductId":result2[i][0].ProductId,"ProductSalesPercentage":Number(100*result2[i].length/result.length),"ProductQuantity":result2[i][0].Quantity}
-                let amt=0
-                if(result2[i].length>1){
-                    
+                let obj = { "ProductName": result2[i][0].productName, "ProductId": result2[i][0].ProductId, "ProductSalesPercentage": Number(100 * result2[i].length / result.length), "ProductQuantity": result2[i][0].Quantity }
+                let amt = 0
+                if (result2[i].length > 1) {
+
                     result2[i].forEach(element => {
-                        amt=amt+Number(element.OrderTotal)
+                        amt = amt + Number(element.OrderTotal)
                     });
-                    obj={"ProductName":result2[i][0].productName,"ProductId":result2[i][0].ProductId,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":amt,"ProductQuantity":result2[i][0].Quantity,"SaleCount":result2[i].length}
+                    obj = { "ProductName": result2[i][0].productName, "ProductId": result2[i][0].ProductId, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": amt, "ProductQuantity": result2[i][0].Quantity, "SaleCount": result2[i].length }
                 }
-                else{
-                    obj={"ProductName":result2[i][0].productName,"ProductId":result2[i][0].ProductId,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":result2[i][0].OrderTotal,"ProductQuantity":result2[i][0].Quantity,"SaleCount":result2[i].length} 
+                else {
+                    obj = { "ProductName": result2[i][0].productName, "ProductId": result2[i][0].ProductId, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": result2[i][0].OrderTotal, "ProductQuantity": result2[i][0].Quantity, "SaleCount": result2[i].length }
                 }
-                
+
                 array.push(obj)
                 array.sort(dynamicSort("SaleCount"))
 
-                tempArray =  array.sort(dynamicSort("SaleCount"))
+                tempArray = array.sort(dynamicSort("SaleCount"))
 
-              });
-              Object.keys(result3).forEach(function (i) {
-                let obj={"ProductName":result3[i][0].Brand,"ProductId":result3[i][0].ProductId,"ProductSalesPercentage":Number(100*result3[i].length/result.length),"ProductQuantity":result3[i][0].Quantity}
-                let amt=0
-                if(result3[i].length>1){
-                    
+            });
+            Object.keys(result3).forEach(function (i) {
+                let obj = { "ProductName": result3[i][0].Brand, "ProductId": result3[i][0].ProductId, "ProductSalesPercentage": Number(100 * result3[i].length / result.length), "ProductQuantity": result3[i][0].Quantity }
+                let amt = 0
+                if (result3[i].length > 1) {
+
                     result3[i].forEach(element => {
-                        amt=amt+Number(element.OrderTotal)
+                        amt = amt + Number(element.OrderTotal)
                     });
-                    obj={"ProductName":result3[i][0].Brand,"ProductId":result3[i][0].ProductId,"ProductSalesPercentage":Number(100*result3[i].length/result.length).toFixed(2),"Sales":amt,"ProductQuantity":result3[i][0].Quantity,"SaleCount":result3[i].length}
+                    obj = { "ProductName": result3[i][0].Brand, "ProductId": result3[i][0].ProductId, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": amt, "ProductQuantity": result3[i][0].Quantity, "SaleCount": result3[i].length }
                 }
-                else{
-                    obj={"ProductName":result3[i][0].Brand,"ProductId":result3[i][0].ProductId,"ProductSalesPercentage":Number(100*result3[i].length/result.length).toFixed(2),"Sales":result3[i][0].OrderTotal,"ProductQuantity":result3[i][0].Quantity,"SaleCount":result3[i].length} 
+                else {
+                    obj = { "ProductName": result3[i][0].Brand, "ProductId": result3[i][0].ProductId, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": result3[i][0].OrderTotal, "ProductQuantity": result3[i][0].Quantity, "SaleCount": result3[i].length }
                 }
-                
+
                 arrayBrand.push(obj)
-                
+
                 arrayBrand.sort(dynamicSort("SaleCount"))
 
-                tempArrayBrand =  arrayBrand.sort(dynamicSort("SaleCount"))
+                tempArrayBrand = arrayBrand.sort(dynamicSort("SaleCount"))
 
-              });
-              let PopularProductsCondensor = tempArray
-              let BrandSegmentCondensor = tempArrayBrand
+            });
+            let PopularProductsCondensor = tempArray
+            let BrandSegmentCondensor = tempArrayBrand
             // res.status(200)
             // res.json({
             //     success: true,
             //     message: "Successfully got form GetProductList",         
-               
+
             //     result:tempArray
             // })
             request.query(queryFCU, function (err, set) {
@@ -1987,71 +2039,71 @@ router.get("/GetProductSaleDetails", function (req, res) {
                         success: false,
                         message: err.originalError.info.message
                     })
-        
+
                 } else {
-        
+
                     let result = set.recordsets[0]
-                    let result2 =groupBy(result,"FCUName")
-                    let result3 =groupBy(result,"Brand")
-                    let array=[], arrayBrand = []
+                    let result2 = groupBy(result, "FCUName")
+                    let result3 = groupBy(result, "Brand")
+                    let array = [], arrayBrand = []
                     let tempArray = [], tempArrayBrand = []
                     Object.keys(result2).forEach(function (i) {
-                        let obj={"ProductName":result2[i][0].FCUName,"ProductSalesPercentage":Number(100*result2[i].length/result.length)}
-                        let amt=0
-                        if(result2[i].length>1){
-                            
+                        let obj = { "ProductName": result2[i][0].FCUName, "ProductSalesPercentage": Number(100 * result2[i].length / result.length) }
+                        let amt = 0
+                        if (result2[i].length > 1) {
+
                             result2[i].forEach(element => {
-                                amt=amt+Number(element.Price)
+                                amt = amt + Number(element.Price)
                             });
-                            obj={"ProductName":result2[i][0].FCUName,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":amt}
+                            obj = { "ProductName": result2[i][0].FCUName, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": amt }
                         }
-                        else{
-                            obj={"ProductName":result2[i][0].FCUName,"ProductSalesPercentage":Number(100*result2[i].length/result.length).toFixed(2),"Sales":result2[i][0].Price} 
+                        else {
+                            obj = { "ProductName": result2[i][0].FCUName, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": result2[i][0].Price }
                         }
-                        
+
                         array.push(obj)
                         array.sort(dynamicSort("ProductSalesPercentage"))
-        
-                        tempArray =  array.sort(dynamicSort("ProductSalesPercentage"))
-        
+
+                        tempArray = array.sort(dynamicSort("ProductSalesPercentage"))
+
                     });
                     Object.keys(result3).forEach(function (i) {
-                        let obj={"ProductName":result3[i][0].Brand,"ProductSalesPercentage":Number(100*result3[i].length/result.length)}
-                        let amt=0
-                        if(result3[i].length>1){
-                            
+                        let obj = { "ProductName": result3[i][0].Brand, "ProductSalesPercentage": Number(100 * result3[i].length / result.length) }
+                        let amt = 0
+                        if (result3[i].length > 1) {
+
                             result3[i].forEach(element => {
-                                amt=amt+Number(element.Price)
+                                amt = amt + Number(element.Price)
                             });
-                            obj={"ProductName":result3[i][0].Brand,"ProductSalesPercentage":Number(100*result3[i].length/result.length).toFixed(2),"Sales":Number(amt).toFixed(2)}
+                            obj = { "ProductName": result3[i][0].Brand, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": Number(amt).toFixed(2) }
                         }
-                        else{
-                            obj={"ProductName":result3[i][0].Brand,"ProductSalesPercentage":Number(100*result3[i].length/result.length).toFixed(2),"Sales":Number(result3[i][0].Price).toFixed(2)} 
+                        else {
+                            obj = { "ProductName": result3[i][0].Brand, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": Number(result3[i][0].Price).toFixed(2) }
                         }
-                        
+
                         arrayBrand.push(obj)
                         arrayBrand.sort(dynamicSort("ProductSalesPercentage"))
-        
-                        tempArrayBrand =  arrayBrand.sort(dynamicSort("ProductSalesPercentage"))
-        
-                      });
 
-                      let PopularProductsFCU = tempArray
-                      let BrandSegmentFCU = tempArrayBrand
+                        tempArrayBrand = arrayBrand.sort(dynamicSort("ProductSalesPercentage"))
+
+                    });
+
+                    let PopularProductsFCU = tempArray
+                    let BrandSegmentFCU = tempArrayBrand
                     res.status(200)
                     res.json({
                         success: true,
-                        message: "Successfully got form GetProductList",         
-                       
-                        result:{
-                            PopularProductsFCUList:PopularProductsFCU,
-                            PopularProductsCondensorList:PopularProductsCondensor,
-                            BrandSegmentationCondensor:BrandSegmentCondensor,
-                            BrandSegmentationFCU:BrandSegmentFCU
-                        
+                        message: "Successfully got form GetProductList",
+
+                        result: {
+                            PopularProductsFCUList: PopularProductsFCU,
+                            PopularProductsCondensorList: PopularProductsCondensor,
+                            BrandSegmentationCondensor: BrandSegmentCondensor,
+                            BrandSegmentationFCU: BrandSegmentFCU
+
                         }
                     })
-        
+
                 }
             })
 
