@@ -1896,7 +1896,7 @@ router.get("/GetMapdetails", function (req, res) {
                                 obj.long = loc[1].trim()
                             }else{
                                 obj.lat = ""
-                                obj.long = ""
+                                obj.long = "" 
                             } 
                            
                             obj.OrderDate = ele.OrderDate
