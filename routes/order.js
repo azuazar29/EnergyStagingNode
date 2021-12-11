@@ -1841,8 +1841,15 @@ router.get("/GetMapdetails", function (req, res) {
                     let location = ele.ServiceLocation
                     obj.value = Number(energy1).toFixed(2)
                     var loc = location.split(",")
-                    obj.lat = loc[0]
-                    obj.long = loc[1].trim()
+                    console.log("loc",loc)
+                    if(loc.length>1){
+                        obj.lat = loc[0]
+                        obj.long = loc[1].trim()
+                    }else{
+                        obj.lat = ""
+                        obj.long = ""
+                    }
+                  
                     obj.CreatedOn = ele.created_On
                 })
                 //   console.log(obj)
@@ -1884,8 +1891,14 @@ router.get("/GetMapdetails", function (req, res) {
                             let location = ele.ServiceLocation
                             obj.value = "$" + Number(OrderTotal).toFixed(2)
                             var loc = location.split(",")
-                            obj.lat = loc[0]
-                            obj.long = loc[1].trim()
+                            if(loc.length>1){
+                                obj.lat = loc[0]
+                                obj.long = loc[1].trim()
+                            }else{
+                                obj.lat = ""
+                                obj.long = ""
+                            }
+                           
                             obj.OrderDate = ele.OrderDate
 
 
