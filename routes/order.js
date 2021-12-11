@@ -606,6 +606,7 @@ router.get("/GetCustomerList", function (req, res) {
     console.log(query)
     query = query + ' ' + 'ORDER BY createdOn DESC;'
 
+    console.log("query",query)
 
     request.query(query, function (err, set) {
         if (err) {
@@ -1207,8 +1208,8 @@ router.get("/ExportProductDetails", function (req, res) {
 
 })
 router.get("/getOrderChart", function (req, res) {
-    let Startdate = req.query.Startdate
-    let Enddate = req.query.Enddate
+    let Startdate = new Date(req.query.Startdate)
+    let Enddate = new Date(req.query.Enddate)
     if (!Enddate) {
         Enddate = new Date()
     }
@@ -1315,14 +1316,14 @@ router.get("/getOrderChart", function (req, res) {
     }
 })
 router.get("/getCustomerChart", function (req, res) {
-    let Startdate = req.query.Startdate
-    let Enddate = req.query.Enddate
+    let Startdate = new Date(req.query.Startdate)
+    let Enddate = new Date(req.query.Enddate)
     if (!Enddate) {
         Enddate = new Date()
     }
     let query = `Select * from dbo.Customer_New where CreatedOn between '${new Date(Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     if (Startdate) {
-        let i = moment(Startdate).format("YYYY-MM-DD")
+        let i = moment(new Date(Startdate)).format("YYYY-MM-DD")
         let array = []
 
         do {
@@ -1525,8 +1526,8 @@ router.get("/productBrandSegment", function (req, res) {
     })
 })
 router.get("/getDashBoardChart", function (req, res) {
-    let Startdate = req.query.Startdate
-    let Enddate = req.query.Enddate
+    let Startdate = new Date(req.query.Startdate)
+    let Enddate = new Date(req.query.Enddate)
     if (!Enddate) {
         Enddate = new Date()
     }
@@ -1797,9 +1798,9 @@ router.get("/TopProductdetails", function (req, res) {
     })
 })
 router.get("/GetMapdetails", function (req, res) {
-    let Startdate = req.query.Startdate
+    let Startdate = new Date(req.query.Startdate)
 
-    let Enddate = req.query.Enddate
+    let Enddate = new Date(req.query.Enddate)
     if (!Enddate) {
         Enddate = new Date()
     }

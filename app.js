@@ -36,7 +36,7 @@ app.use("/public", express.static(__dirname + '/public/'));
 
 const port = process.env.PORT || 1337;
 
-var server = app.listen(port, function () {
+var server = app.listen(3005, function () {
   console.log("app running on port.", server.address().port);
 });
 module.exports = app;
