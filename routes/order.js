@@ -1293,13 +1293,13 @@ router.get("/getOrderChart", function (req, res) {
                 })
                 let OrderStatus = {
 
-                    Pending: (100 * pending.length / result.length).toFixed(2),
-                    Cancelled: (100 * cancel.length / result.length).toFixed(2),
-                    Processing: (100 * Processing.length / result.length).toFixed(2),
-                    Dispatched: (100 * dispatched.length / result.length).toFixed(2),
-                    Completed: (100 * complete.length / result.length).toFixed(2),
-                    Installing: (100 * install.length / result.length).toFixed(2),
-                    ["O&M Assigned"]: (100 * install.length / result.length).toFixed(2),
+                    Pending: !isNaN((100 * pending.length / result.length).toFixed(2))?(100 * pending.length / result.length).toFixed(2):0,
+                    ["O&M Assigned"]: !isNaN((100 * install.length / result.length).toFixed(2))?(100 * install.length / result.length).toFixed(2):0,
+                    Dispatched: !isNaN((100 * dispatched.length / result.length).toFixed(2))?(100 * dispatched.length / result.length).toFixed(2):0,
+                    Installing: !isNaN((100 * install.length / result.length).toFixed(2))?(100 * install.length / result.length).toFixed(2):0,
+                    Completed: !isNaN((100 * complete.length / result.length).toFixed(2))?(100 * complete.length / result.length).toFixed(2):0,
+
+                    Cancelled: !isNaN((100 * cancel.length / result.length).toFixed(2))?(100 * cancel.length / result.length).toFixed(2):0,
 
                 }
 
@@ -1408,10 +1408,10 @@ router.get("/getCustomerChart", function (req, res) {
                 })
                 let CustomerStatus = {
 
-                    ["Active Subscriber"]: (100 * ActiveS.length / result.length).toFixed(2),
-                    ["One-Time"]: (100 * OneT.length / result.length).toFixed(2),
-                    Leads: (100 * Lead.length / result.length).toFixed(2),
-                    ["Subscription Withdrawn"]: (100 * SusW.length / result.length).toFixed(2),
+                    ["Active Subscriber"]: !isNaN((100 * ActiveS.length / result.length).toFixed(2))?(100 * ActiveS.length / result.length).toFixed(2):0,
+                    ["One-Time"]: !isNaN((100 * OneT.length / result.length).toFixed(2))?(100 * OneT.length / result.length).toFixed(2):0,
+                    Leads: !isNaN((100 * Lead.length / result.length).toFixed(2))?(100 * Lead.length / result.length).toFixed(2):0,
+                    ["Subscription Withdrawn"]: !isNaN((100 * SusW.length / result.length).toFixed(2))?(100 * SusW.length / result.length).toFixed(2):0,
                 }
                 let query2 = `Select * from dbo.Customer_New where CreatedOn between '${previousdate}'  and  '${moment(new Date(req.query.Startdate)).subtract(1, 'day').toISOString()}'`
                 console.log("Query is", query2)
