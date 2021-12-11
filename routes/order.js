@@ -2124,6 +2124,6 @@ var groupBy = function (xs, key) {
         (rv[x[key]] = rv[x[key]] || []).push(x);
         return rv;
     }, {});
-};
+}; 
 
 module.exports = router; 
