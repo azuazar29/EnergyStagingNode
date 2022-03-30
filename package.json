@@ -1,13 +1,21 @@
 {
-  "name": "energy-node-staging",
+  "name": "dams-services",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajeshkannanrajagopal/DAMS-SERVICES.git"
   },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rajeshkannanrajagopal/DAMS-SERVICES/issues"
+  },
+  "homepage": "https://github.com/rajeshkannanrajagopal/DAMS-SERVICES#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",

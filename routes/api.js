@@ -26,7 +26,9 @@ router.post('/signup',
   [check("firstName").exists(),
   check("email").exists(),
   check("isSocialLogin").exists(),
-  check("isActive").exists()],
+  check("isActive").exists(),
+  check("phoneNumber").isLength({ min: 10, max: 10 }),
+  check("phoneNumber").isNumeric()],
   async function (req, res) {
 
     try {
@@ -70,7 +72,7 @@ router.post('/signup',
             let checkcon = `INSERT INTO Users VALUES ('${req.body.firstName}', 
   '${req.body.lastName ? req.body.lastName : ''}', '${req.body.email}', '${password}', 
   '${req.body.isSocialLogin}', '${req.body.isActive}', '${new Date().toISOString()}', '${new Date().toISOString()}', 
-  '${req.body.location ? req.body.location : ''}', '${req.body.phoneNumber ? req.body.phoneNumber : ''}')`
+  '${req.body.location ? req.body.location : ''}', '${req.body.phoneNumber ? req.body.phoneNumber : ''}') SELECT SCOPE_IDENTITY() as id`
 
             request.query(checkcon, function (err, set) {
               if (err) {
@@ -83,7 +85,7 @@ router.post('/signup',
                 })
 
               } else {
-                createCustomer(req)
+                createCustomer(req, set.recordset[0].id)
                 res.status(200)
                 res.json({
                   success: true,
@@ -106,10 +108,10 @@ router.post('/signup',
 
 
   })
-  function createCustomer(req) {
-    return new Promise((resolve, reject) => {
-  
-      let query = `INSERT INTO [dbo].[Customer_New]
+function createCustomer(req, id) {
+  return new Promise((resolve, reject) => {
+
+    let query = `INSERT INTO [dbo].[Customer_New]
              ([FirstName]
              ,[LastName]
              ,[Email]
@@ -124,29 +126,30 @@ router.post('/signup',
              ,[CustomerType]          
              ,[paymentDate]
              ,[paymentDueDate]
-             ,[isPaymentDone])
+             ,[isPaymentDone]
+             ,[isFromWeb],[userID])
        VALUES
       
-             ('${req.body.firstName}','${req.body.lastName}','${req.body.email}','${req.body.phoneNumber}','NA','${new Date().toISOString()}','${new Date().toISOString()}','NA',null, '${req.body.location}','N','L',null,null,'NA')`
-  
-  
-              console.log("query",query)
-      request.query(query, function (err, response) {
-  
-        if (!err) {
-          resolve(true)
-        } else {
-          console.log("err", err)
-          resolve(false)
-        }
-  
-      })
-  
-  
-  
-  
+             ('${req.body.firstName}','${req.body.lastName}','${req.body.email}','${req.body.phoneNumber}','NA','${new Date().toISOString()}','${new Date().toISOString()}','NA',null, '${req.body.location}','N','L',null,null,'NA','${req.body.isFromWeb ? req.body.isFromWeb : 0}','${id}')`
+
+
+    console.log("query", query)
+    request.query(query, function (err, response) {
+
+      if (!err) {
+        resolve(true)
+      } else {
+        console.log("err", err)
+        resolve(false)
+      }
+
     })
-  }
+
+
+
+
+  })
+}
 
 router.post('/login',
   [check("email").exists()]
@@ -554,38 +557,38 @@ function randomIntFromInterval(min, max) { // min and max included
 }
 function getRandom(length) {
 
-  return Math.floor(Math.pow(10, length-1) + Math.random() * 9 * Math.pow(10, length-1));
-  
-  }
+  return Math.floor(Math.pow(10, length - 1) + Math.random() * 9 * Math.pow(10, length - 1));
+
+}
 
 router.post("/insert", async function (req, res) {
 
   let customers = require('../config/names')
   let AC = require('../config/names')
   let tempData = []
-  for(let i =0;i<16;i++){
-    let ACNAme =  AC.ACName[(randomIntFromInterval(0,30))]
-    let split = customers.fakeName[18+i]
+  for (let i = 0; i < 16; i++) {
+    let ACNAme = AC.ACName[(randomIntFromInterval(0, 30))]
+    let split = customers.fakeName[18 + i]
     let temp = {
-      "OrderNo": "OD"+getRandom(12),
+      "OrderNo": "OD" + getRandom(12),
       "OrderType": "O",
-      "OrderDate": moment(new Date("2021-08-10")).add(1*i,'days').toISOString(),
+      "OrderDate": moment(new Date("2021-08-10")).add(1 * i, 'days').toISOString(),
       "LastModifiedDate": "",
       "AssignedOnDate": "",
       "AssignedTo": "O&M",
       "OrderStatus": "PE",
-      "OrderTotal": randomIntFromInterval(2000,5000),
-      "Customer": split,     
-      "UserId": 18+i,
-      "ProductId": randomIntFromInterval(0,100)
-  }
- 
-  await insertOrders(temp)
+      "OrderTotal": randomIntFromInterval(2000, 5000),
+      "Customer": split,
+      "UserId": 18 + i,
+      "ProductId": randomIntFromInterval(0, 100)
+    }
+
+    await insertOrders(temp)
   }
 
- 
 
-res.json({result:"success"})
+
+  res.json({ result: "success" })
 
   // customers.customers.forEach(async customer=>{
 
@@ -594,21 +597,21 @@ res.json({result:"success"})
   // })
 
   // res.send("success")
-		
-  
+
+
 
   // res.send(customers.length.toString())
 
-  
+
 
 })
 
-function insertProduct(Product){
+function insertProduct(Product) {
 
-  return new Promise((resolve,reject)=>{
+  return new Promise((resolve, reject) => {
 
-    
-  let query = `Insert into ProductDetails values( 
+
+    let query = `Insert into ProductDetails values( 
     '${Product.ProductName}',
 '${Product.ProductCategory}',
 '${Product.Description}',
@@ -632,30 +635,30 @@ ${Product.ProductCategoryId},
 '${Product.ModelNo}'
    )`
 
-  console.log("query",query)
-  request.query(query, function (err, set) {
-    if (err) {
+    console.log("query", query)
+    request.query(query, function (err, set) {
+      if (err) {
 
-      console.log("err", err)
-     resolve(false)
+        console.log("err", err)
+        resolve(false)
 
-    } else {
-     
-      resolve(true)
+      } else {
 
-    }
-  })
+        resolve(true)
+
+      }
+    })
 
   })
 
 }
 
-function insertOrders(order){
+function insertOrders(order) {
 
-  return new Promise((resolve,reject)=>{
+  return new Promise((resolve, reject) => {
 
-    
-  let query = `Insert into OrderList values( 
+
+    let query = `Insert into OrderList values( 
     '${order.OrderNo}',
     '${order.OrderType}',
     '${order.OrderDate}',
@@ -669,30 +672,30 @@ function insertOrders(order){
     '${order.ProductId}'    
    )`
 
-  console.log("query",query)
-  request.query(query, function (err, set) {
-    if (err) {
+    console.log("query", query)
+    request.query(query, function (err, set) {
+      if (err) {
 
-      console.log("err", err)
-     resolve(false)
+        console.log("err", err)
+        resolve(false)
 
-    } else {
-     
-      resolve(true)
+      } else {
 
-    }
-  })
+        resolve(true)
+
+      }
+    })
 
   })
 
 }
 
-function insertCustomer(customer){
+function insertCustomer(customer) {
 
-  return new Promise((resolve,reject)=>{
+  return new Promise((resolve, reject) => {
 
-    
-  let query = `Insert into Customer_New values( '${customer.FirstName}',
+
+    let query = `Insert into Customer_New values( '${customer.FirstName}',
   '${customer.LastName}',
   '${customer.Email}',
   '${customer.Phone}',
@@ -704,19 +707,19 @@ function insertCustomer(customer){
   '${customer.PurchaseType}',
   '${customer.CustomerType}' )`
 
-  console.log("query",query)
-  request.query(query, function (err, set) {
-    if (err) {
+    console.log("query", query)
+    request.query(query, function (err, set) {
+      if (err) {
 
-      console.log("err", err)
-     resolve(false)
+        console.log("err", err)
+        resolve(false)
 
-    } else {
-     
-      resolve(true)
+      } else {
 
-    }
-  })
+        resolve(true)
+
+      }
+    })
 
   })
 
@@ -833,7 +836,7 @@ router.post("/forgot-password",
 
 
   })
-  
+
 
 
 

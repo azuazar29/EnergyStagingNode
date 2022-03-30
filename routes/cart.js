@@ -79,10 +79,10 @@ router.get('/cartDetails', middleware.authenticate, (req, res) => {
                       installationCharges: "24",
                       maintenanceCharges: "20",
                       gst: "7",
-                      delivery:"1200",
-                      downPayment:"10000",
-                      totalsaving:"5000"
-    
+                      delivery: "1200",
+                      downPayment: "10000",
+                      totalsaving: "5000"
+
                     }
                     resultArray.push({ Charges: charges })
                     res.status(200)
@@ -108,8 +108,8 @@ router.get('/cartDetails', middleware.authenticate, (req, res) => {
     console.log(err)
   }
 })
-router.post('/setproductId',  middleware.authenticate, (req, res) => {
-  
+router.post('/setproductId', middleware.authenticate, (req, res) => {
+
   let query = `INSERT INTO Cart
   (product_Id,created_On) VALUES ('${JSON.stringify(req.body.product)}','${new Date().toISOString()}') SELECT SCOPE_IDENTITY() as id`
 
@@ -152,7 +152,7 @@ check("total").exists()
     let query = `UPDATE Cart Set
   add_On = '${JSON.stringify(req.body.add_On)}',quantity ='1',installion_Charges ='${req.body.installion_Charges}',
   maintenance_Charges='${req.body.maintenance_Charges}',
-  subcription_Type= '${req.body.subcription_Type?req.body.subcription_Type:"OT"}',updated_On='${new Date().toISOString()}',
+  subcription_Type= '${req.body.subcription_Type ? req.body.subcription_Type : "OT"}',updated_On='${new Date().toISOString()}',
     base_MonthlyRent ='${req.body.base_MonthlyRent}',gst ='${req.body.gst}',
     total_MonthlyRent='${req.body.total_MonthlyRent}',down_Payment='${req.body.down_Payment}',
     delivery= '${req.body.delivery}',total='${req.body.total}',user_Id='${req.decoded.id}'
@@ -202,11 +202,92 @@ router.post('/confirmOrder/:ID', [check("paymentID").exists()
         })
 
       } else {
-        res.status(200)
-        res.json({
-          success: true,
-          message: "order has been placed successfully"
+
+        let cartQuery = `Select * from Cart 
+        inner join Users
+        on Cart.user_id = Users.Id
+        and Cart.id = ${req.params.ID}`
+
+        request.query(cartQuery, function (err, CartDetails) {
+
+          let cart = CartDetails.recordset[0]
+          console.log("cart", cart)
+
+          let products = JSON.parse(cart.product_Id)
+
+
+          let query = `
+          INSERT INTO [dbo].[OrderList]
+                     ([OrderNo]
+                     ,[OrderType]
+                     ,[OrderDate]
+                     ,[LastModifiedDate]
+                     ,[AssignedOnDate]
+                     ,[AssignedTo]
+                     ,[OrderStatus]
+                     ,[OrderTotal]
+                     ,[Customer]
+                     ,[UserId]
+                     ,[ProductId])
+               VALUES
+                     (
+                       '${"OD" + getRandom(12)}'
+                     ,'${cart.subcription_Type == "OT" ? "O" : "S"}'
+                     ,'${new Date().toISOString()}'
+                     ,null
+                     ,null
+                     ,null
+                     ,'PE'
+                     ,'${cart.total}'
+                     ,'${cart.FirstName} ${cart.LastName}'
+                     ,'${cart.user_Id}'
+                     ,'${products.condenserIDs ? products.condenserIDs[0] : "101"}'
+                     )`
+
+          console.log("query", query)
+
+          request.query(query, function (err, responseOrder) {
+
+            if (!err) {
+              request.query(`update Customer_New set CustomerType = '${cart.subcription_Type == "OT" ? "OT" : "AS"}' where userID = '${cart.user_Id}'`, function (err, responseOrd) {
+
+
+                if (!err) {
+                  res.status(200)
+                  res.json({
+                    success: true,
+                    message: "order has been placed successfully",
+                    result: cart
+                  })
+                } else {
+                  res.status(500)
+                  res.json({
+                    success: true,
+                    message: err,
+
+                  })
+                }
+              })
+
+            } else {
+              res.status(200)
+              res.json({
+                success: false,
+                message: "cannot place order",
+                err: err,
+                result: cart
+              })
+            }
+
+          })
+
         })
+
+
+
+
+
+
       }
     })
   } catch (e) {
@@ -240,7 +321,7 @@ router.get('/getProductDetails/:ID', middleware.authenticate, (req, res, err) =>
         res.json({
           success: true,
           message: "Cart Details",
-          result:set.recordsets[0]
+          result: set.recordsets[0]
         })
       }
     })
@@ -348,7 +429,7 @@ router.post('/deliveryAddress',
     }
 
 
-})
+  })
 
 router.get('/deliveryAddress/:id',
   middleware.authenticate, function (req, res) {
@@ -379,7 +460,13 @@ router.get('/deliveryAddress/:id',
 
 
 
-})
+  })
+
+function getRandom(length) {
+
+  return Math.floor(Math.pow(10, length - 1) + Math.random() * 9 * Math.pow(10, length - 1));
+
+}
 
 
 

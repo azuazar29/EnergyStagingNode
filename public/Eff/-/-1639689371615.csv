@@ -1,0 +1,51 @@
+"FirstName","LastName","Email","Phone","PlanInfo","CreatedOn","UpdatedOn","LastService","ServiceLocation","PurchaseType","CustomerType","Id"
+"Jaylon","Richmond","JaylonRichmond@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",1
+"Lilia","Potts","LiliaPotts@testmail.com","+1 301-861-7214","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",2
+"Chad","Blackburn","ChadBlackburn@testmail.com","+1 320-740-1256","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",3
+"Gianni","Hunter","GianniHunter@testmail.com","+1 208-921-3742","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",4
+"Braydon","Deleon","BraydonDeleon@testmail.com","+1 313-526-3509","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",5
+"Liberty","Austin","LibertyAustin@testmail.com","+1 518-314-4109","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",6
+"Abraham","Landry","AbrahamLandry@testmail.com","+1 505-933-6664","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",8
+"Travis","Ryan","TravisRyan@testmail.com","+1 408-490-4699","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",9
+"Sabrina","Booth","SabrinaBooth@testmail.com","+1 582-333-7305","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",11
+"Larissa","Freeman","LarissaFreeman@testmail.com","+1 582-201-1859","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",14
+"Karli","Lynch","KarliLynch@testmail.com","+1 505-644-5580","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",15
+"Charlotte","Trevino","CharlotteTrevino@testmail.com","+1 202-459-3258","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",16
+"Andres","Christian","AndresChristian@testmail.com","+1 207-857-0512","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",18
+"Rey","Evans","ReyEvans@testmail.com","+1 582-333-7422","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",19
+"Jacob","Day","JacobDay@testmail.com","+1 312-349-7368","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",20
+"Precious","Contreras","PreciousContreras@testmail.com","+1 214-813-8935","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",23
+"Skye","Mayo","SkyeMayo@testmail.com","+1 219-416-2395","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",24
+"Cindy","Calhoun","CindyCalhoun@testmail.com","+1 502-831-4832","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",26
+"Sheldon","Petersen","SheldonPetersen@testmail.com","+1 505-656-6355","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",28
+"Maximo","Lowe","MaximoLowe@testmail.com","+1 217-341-4391","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",29
+"Mitchell","Dillon","MitchellDillon@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",32
+"Bryan","Buck","BryanBuck@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",33
+"Myla","Day","MylaDay@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",34
+"Terrell","Allison","TerrellAllison@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",37
+"Karlee","Wu","KarleeWu@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",38
+"Mary","Hammond","MaryHammond@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",39
+"Rodney","Pearson","RodneyPearson@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",42
+"Amelia","Boyer","AmeliaBoyer@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",43
+"Gavin","Dixon","GavinDixon@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",44
+"Darren","Cervantes","DarrenCervantes@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","N","Lead",46
+"Tamara","Hanson","TamaraHanson@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","N","Lead",48
+"Averie","Parrish","AverieParrish@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","N","Lead",50
+"Jane","Maldonado","JaneMaldonado@testmail.com","+1 582-300-9144","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",7
+"Bailee","Park","BaileePark@testmail.com","+1 207-424-4015","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",13
+"Collin","Serrano","CollinSerrano@testmail.com","+1 308-420-1693","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",17
+"Brady","Lam","BradyLam@testmail.com","+1 313-464-8364","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",22
+"Dustin","Branch","DustinBranch@testmail.com","+1 209-717-4925","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",27
+"Luciana","Cordova","LucianaCordova@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",31
+"Garrett","Benitez","GarrettBenitez@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",36
+"Ean","Patel","EanPatel@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",40
+"Tony","Dillon","TonyDillon@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","N","Lead",45
+"Raven","Davenport","RavenDavenport@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","N","Lead",49
+"Kaylynn","Petty","KaylynnPetty@testmail.com","+1 229-835-6548","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",10
+"Marcel","Shaffer","MarcelShaffer@testmail.com","+1 582-200-3516","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",25
+"Coleman","Munoz","ColemanMunoz@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",35
+"Brynn","Short","BrynnShort@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","N","Lead",47
+"Liberty","Roberts","LibertyRoberts@testmail.com","+1 505-702-5256","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Active Subscriber",12
+"Dominic","Choi","DominicChoi@testmail.com","+1 224-825-2322","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",21
+"Alexis","Glenn","AlexisGlenn@testmail.com","+1 205-775-6537","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","O","One Time User",30
+"Kennedy","Zimmerman","KennedyZimmerman@testmail.com","+1 582-333-1857","prime","11/09/2021","1900-11-06T00:00:00.000Z","11/09/2021","Choa Chu Kang New Town","S","Subscription Withdrawn",41

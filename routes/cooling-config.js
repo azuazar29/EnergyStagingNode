@@ -21,14 +21,14 @@ const { response } = require('express');
 // }
 
 // Cooling config algorithm
-
+// middleware.authenticate,
 router.post('/configuration/:id',
-  middleware.authenticate, function (req, res, next) {
+  function (req, res, next) {
 
     try {
       validationResult(req).throw()
 
-      if(!req.body.perPage){
+      if (!req.body.perPage) {
         req.body.perPage = 3
       }
 
@@ -51,39 +51,40 @@ router.post('/configuration/:id',
 
           //console.log(req.body.rooms.length)
 
-          if(set.recordsets[0].length){
+          if (set.recordsets[0].length) {
             CoolingConfiguration(req, res, next).then(response => {
               res.status(200)
               let energy = []
               let price = []
               //console.log("response",response)
 
-            
-                response.EnergyWise.forEach((element,index)=>{
-                  if(index+1 <= Number(req.body.perPage)){
-                    energy.push(element)
-                  }
-                })
 
-                response.PriceWise.forEach((element,index)=>{
-                  if(index+1 <= Number(req.body.perPage)){
-                       price.push(element)
-                  }
-                })
-              
+              response.EnergyWise.forEach((element, index) => {
+                if (index + 1 <= Number(req.body.perPage)) {
+                  energy.push(element)
+                }
+              })
+
+              response.PriceWise.forEach((element, index) => {
+                if (index + 1 <= Number(req.body.perPage)) {
+                  price.push(element)
+                }
+              })
+
               res.json({
                 success: true,
                 message: "Cooling Configuration Details",
-                result: {EnergyWise:energy,PriceWise:price}
+                result: { EnergyWise: energy, PriceWise: price },
+                totalProducts: response.EnergyWise.length
               })
             })
-          }else{
+          } else {
             res.status(404)
-              res.json({
-                success: false,
-                message: "Cooling Configuration not found"
-                
-              })
+            res.json({
+              success: false,
+              message: "Cooling Configuration not found"
+
+            })
           }
         }
       })
@@ -97,7 +98,7 @@ router.post('/configuration/:id',
 
     }
 
-})
+  })
 
 router.post('/configuration/:id/:productId',
   middleware.authenticate, function (req, res, next) {
@@ -105,7 +106,7 @@ router.post('/configuration/:id/:productId',
     try {
       validationResult(req).throw()
 
-      if(!req.body.perPage){
+      if (!req.body.perPage) {
         req.body.perPage = 3
       }
 
@@ -128,24 +129,24 @@ router.post('/configuration/:id/:productId',
 
           //////console(req.body.rooms)
 
-          if(set.recordsets[0].length){
+          if (set.recordsets[0].length) {
             CoolingConfiguration(req, res, next).then(response => {
               res.status(200)
-             
-              
+
+
               res.json({
                 success: true,
                 message: "Cooling Configuration Details",
                 result: response
               })
             })
-          }else{
+          } else {
             res.status(404)
-              res.json({
-                success: false,
-                message: "Cooling Configuration not found"
-                
-              })
+            res.json({
+              success: false,
+              message: "Cooling Configuration not found"
+
+            })
           }
         }
       })
@@ -159,17 +160,17 @@ router.post('/configuration/:id/:productId',
 
     }
 
-})
+  })
 
-router.get('/getFCUDetails/:id', function(req, res, next) {
+router.get('/getFCUDetails/:id', function (req, res, next) {
 
-  request.query(`select * From ProductDescription where manufacturer = '${req.params.id.toString().trim()}'`,function(err,recordset){
+  request.query(`select * From ProductDescription where manufacturer = '${req.params.id.toString().trim()}'`, function (err, recordset) {
     res.status(200)
     //console.log('err',err)
     res.json({
-      success:true,
-      message:"Product Details",
-      result:recordset.recordset[0]
+      success: true,
+      message: "Product Details",
+      result: recordset.recordset[0]
     })
   })
 })
@@ -214,7 +215,7 @@ router.put('/SaveandExit/:id',
     }
 
   })
-  
+
 router.post('/getsystem', function (req, res, next) {
 
 

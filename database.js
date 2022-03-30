@@ -1,28 +1,28 @@
 
 // const { Sequelize } = require('sequelize');
-  var sql = require("mssql");
+var sql = require("mssql");
 
-   // config for your database
-   const config = {
-    user :'genadmin',
-    password :'Genad@123',
-    server:'genserv.database.windows.net',
-    database:'DB_Staging',   
-    options:{
+// config for your database
+const config = {
+  user: 'genadmin',
+  password: 'Genad@123',
+  server: 'genserv.database.windows.net',
+  database: 'genergydemodb',
+  options: {
 
-        trustServerCertificate: true,
-        encrypt:true
-    },
-    port : 1433
+    trustServerCertificate: true,
+    encrypt: true
+  },
+  port: 1433
+}
+sql.connect(config, function (err) {
+  if (err) {
+    console.log("connection error", err);
+  } else {
+    console.log("database connected");
   }
-      sql.connect(config, function (err) { 
-        if (err) {
-          console.log("connection error",err);
-        }else{
-          console.log("database connected");
-        }
-    
-    }); 
+
+});
 
 module.exports = sql;
 
@@ -36,7 +36,6 @@ module.exports = sql;
 // }).catch(err=>{
 //   console.error('Unable to connect to the database:', err);
 // })
-  
 
 
-  
+

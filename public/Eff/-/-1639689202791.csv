@@ -1,0 +1,46 @@
+"OrderNo","OrderType","OrderDate","LastModifiedDate","AssignedOnDate","AssignedTo","OrderStatus","OrderTotal","Customer","UserId","ProductId","Id"
+"OD912661319973","S","11/09/2021","NA","2021-08-13 00:00:00.000","O&M","Assigned to O&M","2635","Jaylon Richmond","1","57",1
+"OD620001637980","S","11/09/2021","NA","2021-08-14 00:00:00.000","O&M","Assigned to O&M","4317","Lilia Potts","2","10",2
+"OD837289881585","S","11/09/2021","NA","2021-08-15 00:00:00.000","O&M","Assigned to O&M","2772","Chad Blackburn","3","17",3
+"OD963310215227","S","11/09/2021","NA","2021-08-16 00:00:00.000","O&M","Assigned to O&M","4198","Gianni Hunter","4","71",4
+"OD755926088751","S","11/09/2021","NA","2021-08-17 00:00:00.000","O&M","Assigned to O&M","3233","Liberty Austin","5","90",5
+"OD328976714873","S","11/09/2021","NA","2021-08-18 00:00:00.000","O&M","Assigned to O&M","2413","Braydon Deleon","6","81",6
+"OD598557801257","S","11/09/2021","NA","2021-08-19 00:00:00.000","O&M","Assigned to O&M","3028","Jane Maldonado","7","16",7
+"OD898062017348","S","11/09/2021","NA","2021-08-20 00:00:00.000","OM","Completed","2036","Abraham Landry","8","37",8
+"OD686664993423","S","11/09/2021","NA","","NA","Completed","4001","Kaylynn Petty","9","0",9
+"OD300116118430","S","11/09/2021","NA","","NA","Completed","3266","Larissa Freeman","10","92",10
+"OD639748661037","S","11/09/2021","NA","","NA","Completed","3432","Travis Ryan","11","41",11
+"OD960215730603","S","11/09/2021","NA","","NA","Completed","4471","Bailee Park","12","85",12
+"OD168377709576","S","11/09/2021","NA","","NA","Completed","4164","Liberty Roberts","13","89",13
+"OD159552076777","S","11/09/2021","NA","","NA","Completed","3276","Sabrina Booth","14","85",14
+"OD539504828665","S","11/09/2021","NA","","NA","Completed","2356","Karli Lynch","15","79",15
+"OD429173241063","S","11/09/2021","NA","","NA","Completed","2688","Charlotte Trevino","16","35",16
+"OD800122524281","S","11/09/2021","NA","","NA","Completed","4728","Collin Serrano","17","44",17
+"OD167294589892","S","11/09/2021","NA","","NA","Completed","2399","Rey Evans","18","24",18
+"OD598620675598","S","11/09/2021","NA","","NA","Completed","2620","Andres Christian","19","35",19
+"OD917252574490","S","11/09/2021","NA","","NA","Completed","4909","Jacob Day","20","52",20
+"OD292186775085","S","11/09/2021","NA","","NA","Cancelled","4538","Dominic Choi","21","43",21
+"OD467771472042","S","11/09/2021","NA","","NA","Cancelled","3542","Brady Lam","22","70",22
+"OD891300083006","S","11/09/2021","NA","","NA","Cancelled","3123","Precious Contreras","23","0",23
+"OD389278300201","S","11/09/2021","NA","","NA","Cancelled","3573","Skye Mayo","24","65",24
+"OD736211672596","S","11/09/2021","NA","","NA","Cancelled","4484","Marcel Shaffer","25","70",25
+"OD187135759769","S","11/09/2021","NA","","NA","Cancelled","4580","Cindy Calhoun","26","42",26
+"OD600952699619","S","11/09/2021","NA","","NA","Cancelled","2463","Dustin Branch","27","22",27
+"OD145756144814","S","11/09/2021","NA","","NA","Cancelled","3885","Sheldon Petersen","28","72",28
+"OD309256587899","S","11/09/2021","NA","","NA","Cancelled","3350","Maximo Lowe","29","61",29
+"OD377499430443","O","11/09/2021","NA","","NA","Cancelled","2138","Andres Christian","18","36",30
+"OD977271307673","O","11/09/2021","NA","","NA","Dispatched","2404","Jacob Day","19","48",31
+"OD854631033735","O","11/09/2021","NA","","NA","Dispatched","3190","Dominic Choi","20","70",32
+"OD527296551084","O","11/09/2021","NA","","NA","Dispatched","4370","Brady Lam","21","33",33
+"OD244304319024","O","11/09/2021","NA","","NA","Dispatched","4319","Precious Contreras","22","93",34
+"OD507933354219","O","11/09/2021","NA","","NA","Dispatched","3878","Skye Mayo","23","84",35
+"OD601964367437","O","11/09/2021","NA","","NA","Dispatched","2197","Marcel Shaffer","24","67",36
+"OD528059880204","O","11/09/2021","NA","","NA","Dispatched","3571","Cindy Calhoun","25","94",37
+"OD308590470575","O","11/09/2021","NA","","NA","Dispatched","3192","Dustin Branch","26","82",38
+"OD786469436260","O","11/09/2021","NA","","NA","Dispatched","2641","Sheldon Petersen","27","29",39
+"OD693577698945","O","11/09/2021","NA","","NA","Dispatched","3139","Maximo Lowe","28","27",40
+"OD816659179289","O","11/09/2021","NA","","NA","Installation","2532","Alexis Glenn","29","99",41
+"OD153917159449","O","11/09/2021","NA","","NA","Installation","4475","Luciana Cordova","30","30",42
+"OD203950779756","O","11/09/2021","NA","","NA","Installation","4806","Mitchell Dillon","31","23",43
+"OD849692840642","O","11/09/2021","NA","","NA","Installation","2793","Myla Day","32","98",44
+"OD284695831700","O","11/09/2021","NA","","NA","Installation","4868","Bryan Buck","33","64",45
