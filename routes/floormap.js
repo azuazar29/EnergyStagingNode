@@ -28,15 +28,26 @@ router.get("/Buildings_floor_MapBlkNo/:id", function (req, res) {
 
         else {
             let result = set.recordset;
+            let endResult = []
+            result.forEach(element=>{
+                endResult.push(element["Blk No#"])
+            })
             res.json({
                 success: true,
-                result: result,
+                result: endResult,
                 message: "Successfully retreived!",
 
             });
         }
     });
 });
+
+var groupBy = function (xs, key) {
+    return xs.reduce(function (rv, x) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+    }, {});
+};
 
 
 router.get("/Buildings_floor_Map1/:id1/:id2", function (req, res) {
@@ -86,7 +97,7 @@ router.get("/Buildings_floor_Map1/:id1/:id2", function (req, res) {
 
 router.get("/Floor_Plans_area/:id", function (req, res) {
 
-    let query1 = `select [Floor plan] from [dbo].[Floor_Plans_area$] where LinkId_Floor_plan ='${req.params.id}'`;
+    let query1 = `select * from [dbo].[Floor_Plans_area$] where LinkId_Floor_plan ='${req.params.id}'`;
 
     request.query(query1, function (err, set) {
         if (err) {
@@ -97,33 +108,9 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
         }
 
         else {
-            let result1 = set.recordset;
-            result1.forEach(element => {
-                element["Floor plan"] = ImagePath + element["Floor plan"];
-            })
-
-
-            // let query2 = `update InitialDefaultValues set RoomSize = (select [Total Floor] from Floor_Plans_area$ where LinkId_Floor_plan ='${req.params.id}' )`;
-
-            // request.query(query2, function (err, set) {
-            //     if (err) {
-            //         res.json({
-            //             success: true,
-            //             message: err,
-            //         })
-            //     }
-
-            //     else {
-            //         let result2 = set.recordset;
-
-
-
-
-            //     }
-
-            // })
-
-
+            let result1 = set.recordset[0];
+            result1["Floor plan"] = ImagePath + result1["Floor plan"];
+          
 
             let query3 = `select * from InitialDefaultValues`;
 
@@ -136,14 +123,25 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
                 }
 
                 else {
-                    let result3 = set.recordset;
-                    result3.forEach(element => {
-                        element["RoomSize"] = result1["Total Floor"]
-                    })
+                    set.recordset[0].RoomSize = result1["Total Floor"]
+
+                    let roomsArray = []
+                    Object.keys(result1).forEach(function(key,index) {
+
+                       if(index >2){
+                        roomsArray.push({
+                            roomName:key,
+                            roomSize:result1[key]
+                        })
+                       }
+                       
+                      
+                      });
+                      set.recordset[0].room = roomsArray
 
                     res.json({
                         success: true,
-                        result2: result3,
+                        result2:  set.recordset[0],
                         message: "Successfully retreived!",
 
                     });
