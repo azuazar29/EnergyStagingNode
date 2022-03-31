@@ -12,6 +12,25 @@ const secret = "05231b50-fd3d-11e9-bac2-47f7251a736c"
 const middleware = require('../middleware/token-auth')
 const moment = require("moment")
 const ImagePath = require('../config/server_config')
+const multer = require('multer');
+
+
+const storage1 = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "./public/Yishun_Glen")
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    },
+
+});
+
+const upload = multer({ storage: storage1 });
+
+router.post("/single", upload.single("image"), (req, res) => {
+    console.log(req.file);
+    res.send("Image Uploaded")
+});
 
 
 router.get("/Buildings_floor_MapBlkNo/:id", function (req, res) {
@@ -29,7 +48,7 @@ router.get("/Buildings_floor_MapBlkNo/:id", function (req, res) {
         else {
             let result = set.recordset;
             let endResult = []
-            result.forEach(element=>{
+            result.forEach(element => {
                 endResult.push(element["Blk No#"])
             })
             res.json({
@@ -79,19 +98,54 @@ router.get("/Buildings_floor_Map1/:id1/:id2", function (req, res) {
 
             })
 
-            res.json({
-                success: true,
-                result: result,
-                message: "Successfully retreived!",
+            let query1 = `select * from Buildings_floor_Map$  inner join Floor_Plans_area$  on Buildings_floor_Map$.linkId_Floor_plan_1 = Floor_Plans_area$.LinkId_Floor_plan
+            where Buildings_floor_Map$.[Postal code] like '%' +'${req.params.id1}'+ '%' and  Buildings_floor_Map$.[Blk No#] like '%' +'${req.params.id2}'+ '%'`;
+
+            request.query(query1, function (err, set) {
+                if (err) {
+                    res.json({
+                        success: true,
+                        message: err,
+                    })
+                }
+
+                else {
+                    let result1 = set.recordset[0];
+
+                    let FloorPlan = []
+                    Object.keys(result1).forEach(function (key, index) {
+
+                        if (index > 2) {
+                            FloorPlan.push({
+                                name: key,
+                                imagePath: result1["Floor plan 1"],
+                                linkId: result1["LinkId_Floor_plan_1"],
+                                totalSize: result1["Total Floor"]
+                            });
+                        }
+
+                    });
+
+                    console.log(FloorPlan)
+
+
+                    res.json({
+                        success: true,
+                        result: result1,
+                        message: "Successfully retreived!",
+
+                    });
+
+                }
 
             });
 
+
         }
-
-    });
-
-
+    })
 });
+
+
 
 
 
@@ -108,9 +162,10 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
         }
 
         else {
+
             let result1 = set.recordset[0];
             result1["Floor plan"] = ImagePath + result1["Floor plan"];
-          
+
 
             let query3 = `select * from InitialDefaultValues`;
 
@@ -126,22 +181,41 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
                     set.recordset[0].RoomSize = result1["Total Floor"]
 
                     let roomsArray = []
-                    Object.keys(result1).forEach(function(key,index) {
+                    Object.keys(result1).forEach(function (key, index) {
 
-                       if(index >2){
-                        roomsArray.push({
-                            roomName:key,
-                            roomSize:result1[key]
-                        })
-                       }
-                       
-                      
-                      });
-                      set.recordset[0].room = roomsArray
+                        if (index > 2) {
+                            roomsArray.push({
+                                roomName: key,
+                                roomSize: result1[key]
+                            })
+                        }
+
+
+                    });
+
+                    set.recordset[0].room = roomsArray
+
+
+                    let roomCount = []
+                    Object.keys(result1).forEach(function (key, index) {
+
+                        if (index > 2) {
+                            if (result1[key] != "NA") {
+                                roomCount.push({
+                                    roomSize: result1[key]
+                                })
+                            }
+                        }
+
+
+                    });
+                    let bedroomCount = roomCount.length
+                    set.recordset[0].bedrooms = bedroomCount
+
 
                     res.json({
                         success: true,
-                        result2:  set.recordset[0],
+                        result2: set.recordset[0],
                         message: "Successfully retreived!",
 
                     });
