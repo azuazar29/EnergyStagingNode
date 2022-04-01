@@ -259,12 +259,12 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
 
           let finalOutput = set.recordset[0];
 
-          (set.recordset[0].type = "Condo"),
-            res.json({
-              success: true,
-              result2: set.recordset[0],
-              message: "Successfully retreived!",
-            });
+          set.recordset[0].type = "Condo";
+          res.json({
+            success: true,
+            result2: set.recordset[0],
+            message: "Successfully retreived!",
+          });
         }
       });
     }
