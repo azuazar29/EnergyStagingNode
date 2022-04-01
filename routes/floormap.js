@@ -30,7 +30,7 @@ router.post("/single", upload.single("image"), (req, res) => {
   console.log(req.file);
   res.send("Image Uploaded");
 });
-router.get("/Buildings_floor_Map/:pCode/:bno", function (req, res) {
+router.get("/Buildings_floor_Map/:pCode", function (req, res) {
   let query = `Select * From Buildings_floor_Map$ b
       inner join Floor_Plans_area$ f
       on b.LinkId_Floor_plan_1 = f.LinkId_Floor_plan
@@ -42,7 +42,7 @@ router.get("/Buildings_floor_Map/:pCode/:bno", function (req, res) {
       on b.LinkId_Floor_plan_4 = f3.LinkId_Floor_plan
       inner join Floor_Plans_area$ f4
       on b.LinkId_Floor_plan_5 = f4.LinkId_Floor_plan
-      and b.[Blk No#] = '${req.params.bno}' and b.[Postal code] = '${req.params.pCode}'`;
+      and b.[Postal code] = '${req.params.pCode}'`;
 
   request.query(query, function (err, response) {
     let result = response.recordset[0];
@@ -75,26 +75,46 @@ router.get("/Buildings_floor_Map/:pCode/:bno", function (req, res) {
 });
 
 router.get("/Buildings_floor_MapBlkNo/:id", function (req, res) {
-  let query = `select [Blk No#] from Buildings_floor_Map$ where [Postal code] like '%' +'${req.params.id}'+ '%'`;
+  let query = `Select * From Buildings_floor_Map$ b
+    inner join Floor_Plans_area$ f
+    on b.LinkId_Floor_plan_1 = f.LinkId_Floor_plan
+    inner join Floor_Plans_area$ f1
+    on b.LinkId_Floor_plan_2 = f1.LinkId_Floor_plan
+    inner join Floor_Plans_area$ f2
+    on b.LinkId_Floor_plan_3 = f2.LinkId_Floor_plan
+    inner join Floor_Plans_area$ f3
+    on b.LinkId_Floor_plan_4 = f3.LinkId_Floor_plan
+    inner join Floor_Plans_area$ f4
+    on b.LinkId_Floor_plan_5 = f4.LinkId_Floor_plan
+    and b.[Postal code] = '${req.params.id}'`;
 
-  request.query(query, function (err, set) {
-    if (err) {
-      res.json({
-        success: true,
-        message: err,
+  request.query(query, function (err, response) {
+    let result = response.recordset[0];
+
+    let finalResult = [];
+
+    result["Floor plan"].forEach((element, index) => {
+      finalResult.push({
+        name: "Floor plan " + (index + 1),
+        imagePath: filePath.HostUrl + element,
+        linkId: result["LinkId_Floor_plan"][index],
+        totalSize: result["Total Floor"][index],
+        numberOfRooms: "6",
       });
-    } else {
-      let result = set.recordset;
-      let endResult = [];
-      result.forEach((element) => {
-        endResult.push(element["Blk No#"]);
-      });
-      res.json({
-        success: true,
-        result: endResult,
-        message: "Successfully retreived!",
-      });
-    }
+    });
+
+    let finalOutput = {
+      PostalCode: result["Postal code"],
+      BlockNo: result["Blk No#"],
+      StreetName: result["Street name"],
+      FloorPlans: finalResult,
+    };
+
+    res.json({
+      success: true,
+      result: finalOutput,
+      message: "Succefully retrieved",
+    });
   });
 });
 
