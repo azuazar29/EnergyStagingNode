@@ -30,20 +30,19 @@ router.post("/single", upload.single("image"), (req, res) => {
   console.log(req.file);
   res.send("Image Uploaded");
 });
-
 router.get("/Buildings_floor_Map/:pCode/:bno", function (req, res) {
   let query = `Select * From Buildings_floor_Map$ b
-    inner join Floor_Plans_area$ f
-    on b.LinkId_Floor_plan_1 = f.LinkId_Floor_plan
-    inner join Floor_Plans_area$ f1
-    on b.LinkId_Floor_plan_2 = f1.LinkId_Floor_plan
-    inner join Floor_Plans_area$ f2
-    on b.LinkId_Floor_plan_3 = f2.LinkId_Floor_plan
-    inner join Floor_Plans_area$ f3
-    on b.LinkId_Floor_plan_4 = f3.LinkId_Floor_plan
-    inner join Floor_Plans_area$ f4
-    on b.LinkId_Floor_plan_5 = f4.LinkId_Floor_plan
-    and b.[Blk No#] = '${req.params.bno}' and b.[Postal code] = '${req.params.pCode}'`;
+      inner join Floor_Plans_area$ f
+      on b.LinkId_Floor_plan_1 = f.LinkId_Floor_plan
+      inner join Floor_Plans_area$ f1
+      on b.LinkId_Floor_plan_2 = f1.LinkId_Floor_plan
+      inner join Floor_Plans_area$ f2
+      on b.LinkId_Floor_plan_3 = f2.LinkId_Floor_plan
+      inner join Floor_Plans_area$ f3
+      on b.LinkId_Floor_plan_4 = f3.LinkId_Floor_plan
+      inner join Floor_Plans_area$ f4
+      on b.LinkId_Floor_plan_5 = f4.LinkId_Floor_plan
+      and b.[Blk No#] = '${req.params.bno}' and b.[Postal code] = '${req.params.pCode}'`;
 
   request.query(query, function (err, response) {
     let result = response.recordset[0];
@@ -72,6 +71,30 @@ router.get("/Buildings_floor_Map/:pCode/:bno", function (req, res) {
       result: finalOutput,
       message: "Succefully retrieved",
     });
+  });
+});
+
+router.get("/Buildings_floor_MapBlkNo/:id", function (req, res) {
+  let query = `select [Blk No#] from Buildings_floor_Map$ where [Postal code] like '%' +'${req.params.id}'+ '%'`;
+
+  request.query(query, function (err, set) {
+    if (err) {
+      res.json({
+        success: true,
+        message: err,
+      });
+    } else {
+      let result = set.recordset;
+      let endResult = [];
+      result.forEach((element) => {
+        endResult.push(element["Blk No#"]);
+      });
+      res.json({
+        success: true,
+        result: endResult,
+        message: "Successfully retreived!",
+      });
+    }
   });
 });
 
@@ -216,7 +239,7 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
 
           res.json({
             success: true,
-            result: set.recordset[0],
+            result2: set.recordset[0],
             message: "Successfully retreived!",
           });
         }
