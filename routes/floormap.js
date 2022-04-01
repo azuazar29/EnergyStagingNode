@@ -63,6 +63,7 @@ router.get("/Buildings_floor_Map/:pCode", function (req, res) {
       PostalCode: result["Postal code"],
       BlockNo: result["Blk No#"],
       StreetName: result["Street name"],
+      type: "Condo",
       FloorPlans: finalResult,
     };
 
@@ -108,6 +109,7 @@ router.get("/Buildings_floor_MapBlkNo/:id", function (req, res) {
       BlockNo: result["Blk No#"],
       StreetName: result["Street name"],
       FloorPlans: finalResult,
+      type: "Condo",
     };
 
     res.json({
@@ -257,11 +259,12 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
 
           let finalOutput = set.recordset[0];
 
-          res.json({
-            success: true,
-            result2: set.recordset[0],
-            message: "Successfully retreived!",
-          });
+          (set.recordset[0].type = "Condo"),
+            res.json({
+              success: true,
+              result2: set.recordset[0],
+              message: "Successfully retreived!",
+            });
         }
       });
     }
