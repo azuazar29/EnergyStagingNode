@@ -1,14 +1,12 @@
 let path = {
+  ProductImagePath: "C:\\Users\\genuser01\\Documents\\ImageRepo\\",
+  EfficiencyProfilePath: "C:\\Users\\genuser01\\Documents\\EffProfileRepo\\",
 
-    ProductImagePath: "C:\\Users\\genuser01\\Documents\\ImageRepo\\",
-    EfficiencyProfilePath: "C:\\Users\\genuser01\\Documents\\EffProfileRepo\\",
+  ProductImagePathLocal: "D:\\Azar_personal\\ImageRepo\\",
+  EfficiencyProfilePathLocal: "D:\\Azar_personal\\ImageRepo\\effProf\\",
 
-    ProductImagePathLocal: "D:\\Azar_personal\\ImageRepo\\",
-    EfficiencyProfilePathLocal: "D:\\Azar_personal\\ImageRepo\\effProf\\",
+  HostUrl: "http://energydevwebapplication.azurewebsites.net/public/",
+  //   HostUrl: "http://localhost:49320/public/",
+};
 
-    HostUrl: "http://20.198.115.38:49320/"
-
-
-}
-
-module.exports = path
+module.exports = path;
