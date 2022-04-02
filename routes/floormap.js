@@ -53,14 +53,14 @@ router.get("/Buildings_floor_Map/:pCode", function (req, res) {
       finalResult.push({
         name: "Floor plan " + (index + 1),
         imagePath: filePath.HostUrl + element,
-        linkId: result["LinkId_Floor_plan"][index],
-        totalSize: result["Total Floor"][index],
+        linkId: result["LinkId_Floor_plan"][index].toString(),
+        totalSize: result["Total Floor"][index].toString(),
         numberOfRooms: "6",
       });
     });
 
     let finalOutput = {
-      PostalCode: result["Postal code"],
+      PostalCode: result["Postal code"].toString(),
       BlockNo: result["Blk No#"],
       StreetName: result["Street name"],
       type: "Condo",
@@ -226,7 +226,7 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
             if (index > 2) {
               roomsArray.push({
                 roomName: key,
-                roomSize: result1[key],
+                roomSize: result1[key].toString(),
                 roomTemperature: set.recordset[0].idealRoomTemparature,
                 ceilingHeightMeter: set.recordset[0].ceilingHeightMeter,
                 ceilingHeightFeet: set.recordset[0].ceilingHeightFeet,
@@ -260,6 +260,9 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
           let finalOutput = set.recordset[0];
 
           set.recordset[0].type = "Condo";
+
+          set.recordset[0].RoomSize = set.recordset[0].RoomSize.toString();
+
           res.json({
             success: true,
             result2: set.recordset[0],
