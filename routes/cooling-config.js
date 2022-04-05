@@ -100,76 +100,13 @@ router.post("/auto-configuration", async function (req, res, next) {
   try {
     validationResult(req).throw();
 
-    if (!req.body.perPage) {
-      req.body.perPage = 3;
-    }
-
-    // Add Configuration
-
-    req.url = "/api/test";
-    req.method = "POST";
-
     let addConfigResult = await addConfiguration(req);
 
-    if (addConfigResult.success) {
-      let query = `Select * From UserRoom where ConfigID = '${addConfigResult.ConfigurationID}'`;
-
-      request.query(query, function (err, set) {
-        if (err) {
-          //////console("err", err)
-          res.status(400);
-          res.json({
-            success: false,
-            message: err.originalError.info.message,
-          });
-        } else {
-          req.body.rooms = set.recordsets[0];
-
-          req.params.id = addConfigResult.ConfigurationID;
-          //console.log(req.body.rooms.length)
-
-          if (set.recordsets[0].length) {
-            CoolingConfiguration(req, res, next).then((response) => {
-              res.status(200);
-              let energy = [];
-              let price = [];
-              //console.log("response",response)
-
-              response.EnergyWise.forEach((element, index) => {
-                if (index + 1 <= Number(req.body.perPage)) {
-                  energy.push(element);
-                }
-              });
-
-              response.PriceWise.forEach((element, index) => {
-                if (index + 1 <= Number(req.body.perPage)) {
-                  price.push(element);
-                }
-              });
-
-              res.json({
-                success: true,
-                message: "Cooling Configuration Details",
-                result: { EnergyWise: energy, PriceWise: price },
-                totalProducts: response.EnergyWise.length,
-              });
-            });
-          } else {
-            res.status(404);
-            res.json({
-              success: false,
-              message: "Cooling Configuration not found",
-            });
-          }
-        }
-      });
-    } else {
-      res.status(400);
-      res.json({
-        success: false,
-        message: "Error processign your request",
-      });
-    }
+    res.json({
+      success: true,
+      message: "Configuration Details",
+      ConfigurationID: addConfigResult.ConfigurationID,
+    });
   } catch (err) {
     res.status(400);
     res.json({
@@ -177,6 +114,74 @@ router.post("/auto-configuration", async function (req, res, next) {
       message: err,
     });
   }
+});
+
+router.post("/auto-configuration/:id/:sort", function (req, res, next) {
+  if (!req.body.perPage) {
+    req.body.perPage = 3;
+  }
+
+  // Add Configuration
+
+  let query = `Select * From UserRoom where ConfigID = '${req.params.id}'`;
+
+  request.query(query, function (err, set) {
+    if (err) {
+      //////console("err", err)
+      res.status(400);
+      res.json({
+        success: false,
+        message: err.originalError.info.message,
+      });
+    } else {
+      req.body.rooms = set.recordsets[0];
+
+      // req.params.id = addConfigResult.ConfigurationID;
+      // console.log(req.body.rooms.length);
+
+      if (set.recordsets[0].length) {
+        CoolingConfiguration(req, res, next).then((response) => {
+          res.status(200);
+          let energy = [];
+          let price = [];
+          //console.log("response",response)
+
+          response.EnergyWise.forEach((element, index) => {
+            if (index + 1 <= Number(req.body.perPage)) {
+              energy.push(element);
+            }
+          });
+
+          let finalResult = response.PriceWise;
+
+          if (req.params.sort.toString() == "1") {
+            finalResult = response.PriceWise;
+          } else {
+            finalResult = response.PriceWise.reverse();
+          }
+
+          finalResult.forEach((element, index) => {
+            if (index + 1 <= Number(req.body.perPage)) {
+              price.push(element);
+            }
+          });
+
+          res.json({
+            success: true,
+            message: "Cooling Configuration Details",
+            result: price,
+            totalProducts: response.EnergyWise.length,
+          });
+        });
+      } else {
+        res.status(404);
+        res.json({
+          success: false,
+          message: "Cooling Configuration not found",
+        });
+      }
+    }
+  });
 });
 
 router.post(
@@ -204,7 +209,7 @@ router.post(
         } else {
           req.body.rooms = set.recordsets[0];
 
-          //////console(req.body.rooms)
+          console(req.body.rooms);
 
           if (set.recordsets[0].length) {
             CoolingConfiguration(req, res, next).then((response) => {
