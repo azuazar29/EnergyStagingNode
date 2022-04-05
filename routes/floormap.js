@@ -271,7 +271,7 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
 
           res.json({
             success: true,
-            result2: set.recordset[0],
+            result: set.recordset[0],
             message: "Successfully retreived!",
           });
         }
