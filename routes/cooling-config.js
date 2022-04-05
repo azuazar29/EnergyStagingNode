@@ -166,11 +166,24 @@ router.post("/auto-configuration/:id/:sort", function (req, res, next) {
             }
           });
 
+          let avgTemp = 0;
+          let totTemp = 0;
+          let avgArea = 0;
+          let totArea = 0;
+
+          req.body.rooms.forEach((element) => {
+            totTemp = totTemp + Number(element.idealRoomTemparature);
+            totArea = totTemp + Number(element.roomSize);
+          });
+
           res.json({
             success: true,
             message: "Cooling Configuration Details",
             result: price,
             totalProducts: response.EnergyWise.length,
+            NoOfRooms: req.body.rooms.length,
+            AverageTemperature: totTemp / req.body.rooms.length,
+            AverageArea: totArea / req.body.rooms.length,
           });
         });
       } else {
