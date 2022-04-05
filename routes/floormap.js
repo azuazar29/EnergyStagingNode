@@ -46,6 +46,19 @@ router.get("/Buildings_floor_Map/:pCode", function (req, res) {
 
   request.query(query, function (err, response) {
     let result = response.recordset[0];
+    let countArray = [0, 0, 0, 0, 0, 0];
+    Object.keys(result).forEach((element, index) => {
+      console.log("elments", element, index);
+      if (index > 17) {
+        let count = 0;
+
+        result[element].forEach((rooms, index) => {
+          if (Number(rooms) != 0) {
+            countArray[index]++;
+          }
+        });
+      }
+    });
 
     let finalResult = [];
 
@@ -55,7 +68,7 @@ router.get("/Buildings_floor_Map/:pCode", function (req, res) {
         imagePath: filePath.HostUrl + element,
         linkId: result["LinkId_Floor_plan"][index].toString(),
         totalSize: result["Total Floor"][index].toString(),
-        numberOfRooms: "6",
+        numberOfRooms: countArray[index].toString(),
       });
     });
 
@@ -224,32 +237,24 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
           let roomsArray = [];
           Object.keys(result1).forEach(function (key, index) {
             if (index > 2) {
-              roomsArray.push({
-                roomName: key,
-                roomSize: result1[key].toString(),
-                roomTemperature: set.recordset[0].idealRoomTemparature,
-                ceilingHeightMeter: set.recordset[0].ceilingHeightMeter,
-                ceilingHeightFeet: set.recordset[0].ceilingHeightFeet,
-                weekdaysHour: occP.weekdaysHour,
-                weekendsHour: occP.weekendsHour,
-              });
+              if (result1[key] != 0) {
+                roomsArray.push({
+                  roomName: key,
+                  roomSize: result1[key].toString(),
+                  roomTemperature: set.recordset[0].idealRoomTemparature,
+                  ceilingHeightMeter: set.recordset[0].ceilingHeightMeter,
+                  ceilingHeightFeet: set.recordset[0].ceilingHeightFeet,
+                  weekdaysHour: occP.weekdaysHour,
+                  weekendsHour: occP.weekendsHour,
+                });
+              }
             }
           });
 
           set.recordset[0].Rooms = roomsArray;
 
-          let roomCount = [];
-          //   Object.keys(result1).forEach(function (key, index) {
-          //     if (index > 2) {
-          //       if (result1[key] != "NA") {
-          //         roomCount.push({
-          //           roomSize: result1[key],
-          //         });
-          //       }
-          //     }
-          //   });
-          let bedroomCount = roomCount.length;
-          set.recordset[0].NoOfRooms = "6";
+          let bedroomCount = roomsArray.length;
+          set.recordset[0].NoOfRooms = bedroomCount.toString();
 
           delete set.recordset[0].idealRoomTemparature;
           delete set.recordset[0].ceilingHeightMeter;
@@ -262,6 +267,7 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
           set.recordset[0].type = "Condo";
 
           set.recordset[0].RoomSize = set.recordset[0].RoomSize.toString();
+          set.recordset[0].bedrooms = bedroomCount.toString();
 
           res.json({
             success: true,
