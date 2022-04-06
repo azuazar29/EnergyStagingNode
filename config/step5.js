@@ -457,7 +457,7 @@ function start1(
 
       let imagePath = elementinner.condenserid.ImagePath.toString();
       if (imagePath.includes("public/images")) {
-        imagePath = filePath.HostUrl + imagePath;
+        imagePath = filePath.HostUrl1 + imagePath;
       }
       if (tempName != elementinner.condensername) {
         tempImg.push(imagePath);
@@ -496,7 +496,7 @@ function start1(
           : "";
 
         if (imagePathFCU.includes("public/images")) {
-          imagePathFCU = filePath.HostUrl + imagePathFCU;
+          imagePathFCU = filePath.HostUrl1 + imagePathFCU;
         }
 
         elementinner.fcusname[indexRoom].ImagePath = imagePathFCU;

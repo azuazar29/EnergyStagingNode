@@ -6,6 +6,7 @@ let path = {
   EfficiencyProfilePathLocal: "D:\\Azar_personal\\ImageRepo\\effProf\\",
 
   HostUrl: "http://energydevwebapplication.azurewebsites.net/public/",
+  HostUrl1: "http://energydevwebapplication.azurewebsites.net/",
   //   HostUrl: "http://localhost:49320/public/",
 };
 
