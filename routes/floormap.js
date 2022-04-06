@@ -76,7 +76,7 @@ router.get("/Buildings_floor_Map/:pCode", function (req, res) {
       PostalCode: result["Postal code"].toString(),
       BlockNo: result["Blk No#"],
       StreetName: result["Street name"],
-      type: "Condo",
+      type: "HDB",
       FloorPlans: finalResult,
     };
 
@@ -122,7 +122,7 @@ router.get("/Buildings_floor_MapBlkNo/:id", function (req, res) {
       BlockNo: result["Blk No#"],
       StreetName: result["Street name"],
       FloorPlans: finalResult,
-      type: "Condo",
+      type: "HDB",
     };
 
     res.json({
@@ -264,7 +264,7 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
 
           let finalOutput = set.recordset[0];
 
-          set.recordset[0].type = "Condo";
+          set.recordset[0].type = "HDB";
 
           set.recordset[0].RoomSize = set.recordset[0].RoomSize.toString();
           set.recordset[0].bedrooms = bedroomCount.toString();
