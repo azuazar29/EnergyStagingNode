@@ -499,6 +499,11 @@ function start1(
           imagePathFCU = filePath.HostUrl1 + imagePathFCU;
         }
 
+        Object.keys(elementinner.fcusname[indexRoom]).forEach((element) => {
+          if (elementinner.fcusname[indexRoom][element] == null) {
+            elementinner.fcusname[indexRoom][element] = "";
+          }
+        });
         elementinner.fcusname[indexRoom].ImagePath = imagePathFCU;
 
         let prodObj = {
@@ -507,7 +512,7 @@ function start1(
           roomSize: roomObj.roomSize.toString(),
           weekdayhours: weekdaysHour.toString(),
           weekendhours: weekendsHour.toString(),
-          product: elementinner.fcusname[indexRoom],
+          product: [elementinner.fcusname[indexRoom]],
         };
 
         obj.products.push(prodObj);
