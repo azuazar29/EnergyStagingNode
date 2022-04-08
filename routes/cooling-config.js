@@ -70,7 +70,7 @@ router.post("/configuration/:id", function (req, res, next) {
               success: true,
               message: "Cooling Configuration Details",
               result: { EnergyWise: energy, PriceWise: price },
-              totalProducts: response.EnergyWise.length,
+              totalProducts: response.EnergyWise.length.toString(),
             });
           });
         } else {
@@ -180,10 +180,10 @@ router.post("/auto-configuration/:id/:sort", function (req, res, next) {
             success: true,
             message: "Cooling Configuration Details",
             result: price,
-            totalProducts: response.EnergyWise.length,
-            NoOfRooms: req.body.rooms.length,
-            AverageTemperature: totTemp / req.body.rooms.length,
-            AverageArea: totArea / req.body.rooms.length,
+            totalProducts: response.EnergyWise.length.toString(),
+            NoOfRooms: req.body.rooms.length.toString(),
+            AverageTemperature: (totTemp / req.body.rooms.length).toString(),
+            AverageArea: (totArea / req.body.rooms.length).toString(),
           });
         });
       } else {
