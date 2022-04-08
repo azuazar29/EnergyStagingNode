@@ -268,6 +268,7 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
 
           set.recordset[0].RoomSize = set.recordset[0].RoomSize.toString();
           set.recordset[0].bedrooms = bedroomCount.toString();
+          set.recordset[0].currentRating = "3";
 
           res.json({
             success: true,
