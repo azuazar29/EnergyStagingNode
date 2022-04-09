@@ -589,7 +589,7 @@ function start1(
         name: names,
         count: name[names].length,
         image: tempImg[index],
-        price: name[names][index].price,
+        price: name[names][0].price,
       });
 
       // if (index == 0) {
