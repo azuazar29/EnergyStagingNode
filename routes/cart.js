@@ -96,7 +96,7 @@ var groupBy = function (xs, key) {
     return rv;
   }, {});
 };
-router.post("/setproductId", (req, res) => {
+router.post("/setproductId/:type", (req, res) => {
   let productID = [];
 
   req.body.product.display_installed_rooms.forEach((element) => {
@@ -124,15 +124,25 @@ router.post("/setproductId", (req, res) => {
       ).toString(),
     });
   });
+  let price = [];
+  req.body.product.display_product_manufacturer.forEach((element) => {
+    price.push(Number(element.price) * Number(element.count).toString());
+  });
+
+  req.body.product.display_product_manufacturer.forEach((element, index) => {
+    req.body.product.display_product_manufacturer[index].price = price[index];
+  });
   let FinalOutput = {
     FCUDetails: finalProducts,
     CondensorDetails: req.body.product.display_product_manufacturer,
   };
 
   let query = `INSERT INTO Cart
-  (product_Id,created_On) VALUES ('${JSON.stringify(
+  (product_Id,created_On,isSubscription) VALUES ('${JSON.stringify(
     FinalOutput
-  )}','${new Date().toISOString()}') SELECT SCOPE_IDENTITY() as id`;
+  )}','${new Date().toISOString()}','${
+    req.params.type
+  }') SELECT SCOPE_IDENTITY() as id`;
 
   console.log("query", query);
 

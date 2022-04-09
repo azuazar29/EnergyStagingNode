@@ -474,6 +474,7 @@ function start1(
           .toFixed(2)
           .toString(),
         power: elementinner.condenserid.PowerConsumption.toString(),
+        price: Number(elementinner.condenserid.Price).toString(),
         products: [],
       };
       let rooms = elementinner.rooms.split(",");
@@ -521,6 +522,7 @@ function start1(
 
       display_installed_rooms.push(obj);
     });
+    // console.log("display_installed_rooms", display_installed_rooms);
     let obj = {
       display_installed_rooms: display_installed_rooms,
       display_product_manufacturer: getProductName(display_installed_rooms),
@@ -577,15 +579,17 @@ function start1(
 
   function getProductName(display_installed_rooms) {
     let name = groupItem(display_installed_rooms);
+    console.log("name", name);
     let nametoreturn = "";
     let namesArray = [];
     Object.keys(name).forEach((names, index) => {
-      console.log("name", names);
+      // console.log("name", names);
 
       namesArray.push({
         name: names,
         count: name[names].length,
         image: tempImg[index],
+        price: name[names][index].price,
       });
 
       // if (index == 0) {
