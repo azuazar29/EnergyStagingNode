@@ -90,11 +90,51 @@ router.get("/cartDetails", (req, res) => {
     console.log(err);
   }
 });
-router.post("/setproductId", middleware.authenticate, (req, res) => {
+var groupBy = function (xs, key) {
+  return xs.reduce(function (rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+};
+router.post("/setproductId", (req, res) => {
+  let productID = [];
+
+  req.body.product.display_installed_rooms.forEach((element) => {
+    let productDetails = {
+      ID: element.product[0].id,
+      productName: element.product[0].FCUName,
+      price: element.product[0].Price,
+      image: element.product[0].ImagePath,
+      condensorID: element.product[0].CondenserId,
+    };
+    productID.push(productDetails);
+  });
+
+  let items = groupBy(productID, "productName");
+
+  let finalProducts = [];
+
+  Object.keys(items).forEach((element, index) => {
+    finalProducts.push({
+      productName: element,
+      productImage: items[element][0].image,
+      quantity: items[element].length.toString(),
+      price: (
+        Number(items[element][0].price) * items[element].length
+      ).toString(),
+    });
+  });
+  let FinalOutput = {
+    FCUDetails: finalProducts,
+    CondensorDetails: req.body.product.display_product_manufacturer,
+  };
+
   let query = `INSERT INTO Cart
   (product_Id,created_On) VALUES ('${JSON.stringify(
-    req.body.product
+    FinalOutput
   )}','${new Date().toISOString()}') SELECT SCOPE_IDENTITY() as id`;
+
+  console.log("query", query);
 
   request.query(query, function (err, set) {
     if (err) {
@@ -131,8 +171,8 @@ router.put(
     check("delivery").exists(),
     check("total").exists(),
   ],
-  middleware.authenticate,
-  (req, res, err) => {
+
+  (req, res) => {
     try {
       validationResult(req).throw();
       let query = `UPDATE Cart Set
@@ -147,9 +187,7 @@ router.put(
     total_MonthlyRent='${req.body.total_MonthlyRent}',down_Payment='${
         req.body.down_Payment
       }',
-    delivery= '${req.body.delivery}',total='${req.body.total}',user_Id='${
-        req.decoded.id
-      }'
+    delivery= '${req.body.delivery}',total='${req.body.total}',user_Id='1'
     Where id=${req.params.ID}`;
 
       request.query(query, function (err, set) {
@@ -287,7 +325,7 @@ router.post(
 
 router.get(
   "/getProductDetails/:ID",
-  middleware.authenticate,
+
   (req, res, err) => {
     try {
       validationResult(req).throw();
@@ -304,11 +342,19 @@ router.get(
         } else {
           let result = set.recordsets[0][0];
           result.product_Id = JSON.parse(result.product_Id);
+
+          if (result.add_On != null) {
+            result.add_On = JSON.parse(result.add_On);
+          }
+
+          result.FCUDetails = result.product_Id.FCUDetails;
+          result.CondensorDetails = result.product_Id.CondensorDetails;
+          delete result.product_Id;
           res.status(200);
           res.json({
             success: true,
             message: "Cart Details",
-            result: set.recordsets[0],
+            result: result,
           });
         }
       });
@@ -329,13 +375,14 @@ router.post(
     check("contactNumber").exists(),
     check("email").exists(),
     check("address").exists(),
+    check("additionalInfo").exists(),
   ],
-  middleware.authenticate,
+
   function (req, res) {
     try {
       validationResult(req).throw();
 
-      let query = `Select * From DeliveryAddress Where userID = '${req.decoded.id}'`;
+      let query = `Select * From DeliveryAddress Where userID = '1'`;
 
       request.query(query, function (err, set) {
         if (err) {
@@ -352,11 +399,9 @@ router.post(
             }', contactNumber = '${req.body.contactNumber}', email = '${
               req.body.email
             }',
-              address = '${
-                req.body.address
-              }', updatedOn = '${new Date().toISOString()}' Where userId = '${
-              req.decoded.id
-            }' `;
+              address = '${req.body.address}',additionalInfo = '${
+              req.body.additionalInfo
+            }', updatedOn = '${new Date().toISOString()}' Where userId = '1' `;
 
             console.log("query", query);
             request.query(query, function (err, set) {
@@ -379,9 +424,11 @@ router.post(
             let query = `Insert into DeliveryAddress values( '${
               req.body.name
             }', '${req.body.contactNumber}', '${req.body.email}',
-              '${req.body.address}', '${
-              req.decoded.id
-            }', '${new Date().toISOString()}', '${new Date().toISOString()}', '1' )`;
+              '${
+                req.body.address
+              }', '1', '${new Date().toISOString()}', '${new Date().toISOString()}', '1','${
+              req.body.additionalInfo
+            }' )`;
 
             console.log("insertquery");
             request.query(query, function (err, set) {
@@ -415,7 +462,7 @@ router.post(
 
 router.get(
   "/deliveryAddress/:id",
-  middleware.authenticate,
+
   function (req, res) {
     let query = `Select * from DeliveryAddress Where userID = ${req.params.id}`;
 
