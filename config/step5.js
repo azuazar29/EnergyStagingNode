@@ -453,7 +453,7 @@ function start1(
     condenserImg = [];
     display_price = 0;
     element.forEach((elementinner) => {
-      console.log("elementinner", elementinner);
+      // console.log("elementinner", elementinner);
 
       let imagePath = elementinner.condenserid.ImagePath.toString();
       if (imagePath.includes("public/images")) {
@@ -481,6 +481,7 @@ function start1(
       rooms.forEach((room, indexRoom) => {
         room = Number(room);
         let roomObj = roomsArray[room - 1];
+        // console.log("room", roomObj);
         let weekendsHour, weekdaysHour;
         // ////console .log("elementinner",elementinner.fcusname[indexRoom])
 
@@ -546,10 +547,18 @@ function start1(
     let products = [];
 
     obj.display_installed_rooms.forEach((element) => {
-      products.push(element.products[0]);
+      products.push(element.products);
     });
 
-    obj.display_installed_rooms = products;
+    let finalProd = [];
+
+    products.forEach((element) => {
+      element.forEach((element1) => {
+        finalProd.push(element1);
+      });
+    });
+
+    obj.display_installed_rooms = finalProd;
 
     finalProductOutput.push(obj);
     display_installed_rooms = [];
