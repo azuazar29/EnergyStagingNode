@@ -45,46 +45,60 @@ router.get("/Buildings_floor_Map/:pCode", function (req, res) {
       and b.[Postal code] = '${req.params.pCode}'`;
 
   request.query(query, function (err, response) {
-    let result = response.recordset[0];
-    let countArray = [0, 0, 0, 0, 0, 0];
-    Object.keys(result).forEach((element, index) => {
-      console.log("elments", element, index);
-      if (index > 17) {
-        let count = 0;
+    if (!err) {
+      if (response.recordset.length) {
+        let result = response.recordset[0];
+        let countArray = [0, 0, 0, 0, 0, 0];
+        Object.keys(result).forEach((element, index) => {
+          console.log("elments", element, index);
+          if (index > 17) {
+            let count = 0;
 
-        result[element].forEach((rooms, index) => {
-          if (Number(rooms) != 0) {
-            countArray[index]++;
+            result[element].forEach((rooms, index) => {
+              if (Number(rooms) != 0) {
+                countArray[index]++;
+              }
+            });
           }
         });
+
+        let finalResult = [];
+
+        result["Floor plan"].forEach((element, index) => {
+          finalResult.push({
+            name: "Floor plan " + (index + 1),
+            imagePath: filePath.HostUrl + element,
+            linkId: result["LinkId_Floor_plan"][index].toString(),
+            totalSize: result["Total Floor"][index].toString(),
+            numberOfRooms: countArray[index].toString(),
+          });
+        });
+
+        let finalOutput = {
+          PostalCode: result["Postal code"].toString(),
+          BlockNo: result["Blk No#"],
+          StreetName: result["Street name"],
+          type: "HDB",
+          FloorPlans: finalResult,
+        };
+
+        res.json({
+          success: true,
+          result: finalOutput,
+          message: "Succefully retrieved",
+        });
+      } else {
+        res.json({
+          success: false,
+          message: "No results found",
+        });
       }
-    });
-
-    let finalResult = [];
-
-    result["Floor plan"].forEach((element, index) => {
-      finalResult.push({
-        name: "Floor plan " + (index + 1),
-        imagePath: filePath.HostUrl + element,
-        linkId: result["LinkId_Floor_plan"][index].toString(),
-        totalSize: result["Total Floor"][index].toString(),
-        numberOfRooms: countArray[index].toString(),
+    } else {
+      res.json({
+        success: false,
+        message: err,
       });
-    });
-
-    let finalOutput = {
-      PostalCode: result["Postal code"].toString(),
-      BlockNo: result["Blk No#"],
-      StreetName: result["Street name"],
-      type: "HDB",
-      FloorPlans: finalResult,
-    };
-
-    res.json({
-      success: true,
-      result: finalOutput,
-      message: "Succefully retrieved",
-    });
+    }
   });
 });
 
@@ -103,33 +117,47 @@ router.get("/Buildings_floor_MapBlkNo/:id", function (req, res) {
     and b.[Postal code] = '${req.params.id}'`;
 
   request.query(query, function (err, response) {
-    let result = response.recordset[0];
+    if (!err) {
+      if (response.recordset.length) {
+        let result = response.recordset[0];
 
-    let finalResult = [];
+        let finalResult = [];
 
-    result["Floor plan"].forEach((element, index) => {
-      finalResult.push({
-        name: "Floor plan " + (index + 1),
-        imagePath: filePath.HostUrl + element,
-        linkId: result["LinkId_Floor_plan"][index],
-        totalSize: result["Total Floor"][index],
-        numberOfRooms: "6",
+        result["Floor plan"].forEach((element, index) => {
+          finalResult.push({
+            name: "Floor plan " + (index + 1),
+            imagePath: filePath.HostUrl + element,
+            linkId: result["LinkId_Floor_plan"][index],
+            totalSize: result["Total Floor"][index],
+            numberOfRooms: "6",
+          });
+        });
+
+        let finalOutput = {
+          PostalCode: result["Postal code"],
+          BlockNo: result["Blk No#"],
+          StreetName: result["Street name"],
+          FloorPlans: finalResult,
+          type: "HDB",
+        };
+
+        res.json({
+          success: true,
+          result: finalOutput,
+          message: "Succefully retrieved",
+        });
+      } else {
+        res.json({
+          success: false,
+          message: "No results found",
+        });
+      }
+    } else {
+      res.json({
+        success: false,
+        message: err,
       });
-    });
-
-    let finalOutput = {
-      PostalCode: result["Postal code"],
-      BlockNo: result["Blk No#"],
-      StreetName: result["Street name"],
-      FloorPlans: finalResult,
-      type: "HDB",
-    };
-
-    res.json({
-      success: true,
-      result: finalOutput,
-      message: "Succefully retrieved",
-    });
+    }
   });
 });
 
@@ -208,75 +236,82 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
   request.query(query1, function (err, set) {
     if (err) {
       res.json({
-        success: true,
+        success: false,
         message: err,
       });
     } else {
-      let result1 = set.recordset[0];
-      result1["Floor plan"] = ImagePath + result1["Floor plan"];
+      if (set.recordset.length) {
+        let result1 = set.recordset[0];
+        result1["Floor plan"] = ImagePath + result1["Floor plan"];
 
-      let query3 = `select * from InitialDefaultValues`;
+        let query3 = `select * from InitialDefaultValues`;
 
-      request.query(query3, async function (err, set) {
-        if (err) {
-          res.json({
-            success: true,
-            message: err,
-          });
-        } else {
-          set.recordset[0].RoomSize = result1["Total Floor"];
-          let occP = await new Promise((resolve, reject) => {
-            request.query(
-              "Select * from DefaultOccupancyPattern",
-              function (err, response) {
-                resolve(response.recordset[0]);
+        request.query(query3, async function (err, set) {
+          if (err) {
+            res.json({
+              success: true,
+              message: err,
+            });
+          } else {
+            set.recordset[0].RoomSize = result1["Total Floor"];
+            let occP = await new Promise((resolve, reject) => {
+              request.query(
+                "Select * from DefaultOccupancyPattern",
+                function (err, response) {
+                  resolve(response.recordset[0]);
+                }
+              );
+            });
+
+            let roomsArray = [];
+            Object.keys(result1).forEach(function (key, index) {
+              if (index > 2) {
+                if (result1[key] != 0) {
+                  roomsArray.push({
+                    roomName: key,
+                    roomSize: result1[key].toString(),
+                    roomTemperature: set.recordset[0].idealRoomTemparature,
+                    ceilingHeightMeter: set.recordset[0].ceilingHeightMeter,
+                    ceilingHeightFeet: set.recordset[0].ceilingHeightFeet,
+                    weekdaysHour: occP.weekdaysHour,
+                    weekendsHour: occP.weekendsHour,
+                  });
+                }
               }
-            );
-          });
+            });
 
-          let roomsArray = [];
-          Object.keys(result1).forEach(function (key, index) {
-            if (index > 2) {
-              if (result1[key] != 0) {
-                roomsArray.push({
-                  roomName: key,
-                  roomSize: result1[key].toString(),
-                  roomTemperature: set.recordset[0].idealRoomTemparature,
-                  ceilingHeightMeter: set.recordset[0].ceilingHeightMeter,
-                  ceilingHeightFeet: set.recordset[0].ceilingHeightFeet,
-                  weekdaysHour: occP.weekdaysHour,
-                  weekendsHour: occP.weekendsHour,
-                });
-              }
-            }
-          });
+            set.recordset[0].Rooms = roomsArray;
 
-          set.recordset[0].Rooms = roomsArray;
+            let bedroomCount = roomsArray.length;
+            set.recordset[0].NoOfRooms = bedroomCount.toString();
 
-          let bedroomCount = roomsArray.length;
-          set.recordset[0].NoOfRooms = bedroomCount.toString();
+            delete set.recordset[0].idealRoomTemparature;
+            delete set.recordset[0].ceilingHeightMeter;
+            delete set.recordset[0].currentRating;
+            delete set.recordset[0].currentRatingDeafult;
+            delete set.recordset[0].room;
 
-          delete set.recordset[0].idealRoomTemparature;
-          delete set.recordset[0].ceilingHeightMeter;
-          delete set.recordset[0].currentRating;
-          delete set.recordset[0].currentRatingDeafult;
-          delete set.recordset[0].room;
+            let finalOutput = set.recordset[0];
 
-          let finalOutput = set.recordset[0];
+            set.recordset[0].type = "HDB";
 
-          set.recordset[0].type = "HDB";
+            set.recordset[0].RoomSize = set.recordset[0].RoomSize.toString();
+            set.recordset[0].bedrooms = bedroomCount.toString();
+            set.recordset[0].currentRating = "3";
 
-          set.recordset[0].RoomSize = set.recordset[0].RoomSize.toString();
-          set.recordset[0].bedrooms = bedroomCount.toString();
-          set.recordset[0].currentRating = "3";
-
-          res.json({
-            success: true,
-            result: set.recordset[0],
-            message: "Successfully retreived!",
-          });
-        }
-      });
+            res.json({
+              success: true,
+              result: set.recordset[0],
+              message: "Successfully retreived!",
+            });
+          }
+        });
+      } else {
+        res.json({
+          success: true,
+          message: "No results found",
+        });
+      }
     }
   });
 });
