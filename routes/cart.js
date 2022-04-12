@@ -96,7 +96,7 @@ var groupBy = function (xs, key) {
     return rv;
   }, {});
 };
-router.post("/setproductId/:type", (req, res) => {
+router.post("/setproductId/:type", async (req, res) => {
   let productID = [];
 
   req.body.product.display_installed_rooms.forEach((element) => {
@@ -137,12 +137,40 @@ router.post("/setproductId/:type", (req, res) => {
     CondensorDetails: req.body.product.display_product_manufacturer,
   };
 
+  let query0 = `select * from AgreementDetails`;
+  let query1 = `select * from SubscriptionPattern`;
+  let query2 = `select * from AddOnDetails`;
+
+  let AddOnDetails = await new Promise((resolve, reject) => {
+    request.query(query2, function (err, recordset) {
+      if (recordset.recordset.length) {
+        resolve(recordset.recordsets[0]);
+      }
+    });
+  });
+
+  let resultArray = [];
+  let accessories = [
+    {
+      name: "Energy meter",
+      quantity: "2",
+      price: "24",
+    },
+    {
+      name: "Piping",
+      quantity: "20",
+      price: "24",
+    },
+  ];
+
   let query = `INSERT INTO Cart
-  (product_Id,created_On,isSubscription) VALUES ('${JSON.stringify(
+  (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery]) VALUES ('${JSON.stringify(
     FinalOutput
-  )}','${new Date().toISOString()}','${
-    req.params.type
-  }') SELECT SCOPE_IDENTITY() as id`;
+  )}','${new Date().toISOString()}','${req.params.type}','${JSON.stringify(
+    AddOnDetails
+  )}','12','54','${JSON.stringify(
+    accessories
+  )}','20') SELECT SCOPE_IDENTITY() as id`;
 
   console.log("query", query);
 
@@ -156,6 +184,7 @@ router.post("/setproductId/:type", (req, res) => {
       });
     } else {
       res.status(200);
+
       res.json({
         success: true,
         message: "SuccessFully Added",
@@ -170,15 +199,13 @@ router.put(
   [
     check("add_On").exists(),
 
-    check("installion_Charges").exists(),
     check("maintenance_Charges").exists(),
-    check("subcription_Type").exists(),
 
+    check("subcription_Type").exists(),
     check("base_MonthlyRent").exists(),
-    check("gst").exists(),
+
     check("total_MonthlyRent").exists(),
     check("down_Payment").exists(),
-    check("delivery").exists(),
     check("total").exists(),
   ],
 
@@ -186,18 +213,16 @@ router.put(
     try {
       validationResult(req).throw();
       let query = `UPDATE Cart Set
-  add_On = '${JSON.stringify(
-    req.body.add_On
-  )}',quantity ='1',installion_Charges ='${req.body.installion_Charges}',
+  add_On = '${JSON.stringify(req.body.add_On)}',quantity ='1',
   maintenance_Charges='${req.body.maintenance_Charges}',
   subcription_Type= '${
     req.body.subcription_Type ? req.body.subcription_Type : "OT"
   }',updated_On='${new Date().toISOString()}',
-    base_MonthlyRent ='${req.body.base_MonthlyRent}',gst ='${req.body.gst}',
+    base_MonthlyRent ='${req.body.base_MonthlyRent}',
     total_MonthlyRent='${req.body.total_MonthlyRent}',down_Payment='${
         req.body.down_Payment
       }',
-    delivery= '${req.body.delivery}',total='${req.body.total}',user_Id='1'
+   total='${req.body.total}',user_Id='1'
     Where id=${req.params.ID}`;
 
       request.query(query, function (err, set) {
@@ -229,7 +254,7 @@ router.put(
 router.post(
   "/confirmOrder/:ID",
   [check("paymentID").exists()],
-  middleware.authenticate,
+
   (req, res, err) => {
     try {
       validationResult(req).throw();
@@ -341,7 +366,10 @@ router.get(
       validationResult(req).throw();
       let query = `Select * From Cart where Id =${req.params.ID} `;
 
-      request.query(query, function (err, set) {
+      let query0 = `select * from AgreementDetails`;
+      let query1 = `select * from SubscriptionPattern`;
+
+      request.query(query, async function (err, set) {
         if (err) {
           console.log("err", err);
           res.status(400);
@@ -356,9 +384,28 @@ router.get(
           if (result.add_On != null) {
             result.add_On = JSON.parse(result.add_On);
           }
+          if (result.accessories != null) {
+            result.accessories = JSON.parse(result.accessories);
+          }
 
+          let AgreementDetails = await new Promise((resolve, reject) => {
+            request.query(query0, function (err, recordset) {
+              if (recordset.recordset.length) {
+                resolve(recordset.recordsets[0]);
+              }
+            });
+          });
+          let SubscriptionDetails = await new Promise((resolve, reject) => {
+            request.query(query1, function (err, recordset) {
+              if (recordset.recordset.length) {
+                resolve(recordset.recordsets[0]);
+              }
+            });
+          });
           result.FCUDetails = result.product_Id.FCUDetails;
           result.CondensorDetails = result.product_Id.CondensorDetails;
+          result.AgreementDetails = AgreementDetails;
+          result.SubscriptionDetails = SubscriptionDetails;
           delete result.product_Id;
           res.status(200);
           res.json({
@@ -384,7 +431,8 @@ router.post(
     check("name").exists(),
     check("contactNumber").exists(),
     check("email").exists(),
-    check("address").exists(),
+    check("address1").exists(),
+    check("address2").exists(),
     check("additionalInfo").exists(),
   ],
 
@@ -409,7 +457,9 @@ router.post(
             }', contactNumber = '${req.body.contactNumber}', email = '${
               req.body.email
             }',
-              address = '${req.body.address}',additionalInfo = '${
+              address1 = '${req.body.address1}', address2 = '${
+              req.body.address2
+            }',additionalInfo = '${
               req.body.additionalInfo
             }', updatedOn = '${new Date().toISOString()}' Where userId = '1' `;
 
@@ -435,10 +485,10 @@ router.post(
               req.body.name
             }', '${req.body.contactNumber}', '${req.body.email}',
               '${
-                req.body.address
+                req.body.address1
               }', '1', '${new Date().toISOString()}', '${new Date().toISOString()}', '1','${
               req.body.additionalInfo
-            }' )`;
+            }','${req.body.address2}' )`;
 
             console.log("insertquery");
             request.query(query, function (err, set) {

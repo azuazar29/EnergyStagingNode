@@ -547,6 +547,7 @@ function start1(
     };
 
     let products = [];
+    let price = 0;
 
     obj.display_installed_rooms.forEach((element) => {
       products.push(element.products);
@@ -557,12 +558,16 @@ function start1(
     products.forEach((element) => {
       element.forEach((element1) => {
         finalProd.push(element1);
+        price = price + Number(element1.product[0].Price);
       });
     });
 
     obj.display_installed_rooms = finalProd;
+    // obj.display_price = Number(obj.display_price) + price;
 
     finalProductOutput.push(obj);
+    price = 0;
+    display_price = 0;
     display_installed_rooms = [];
   });
 
