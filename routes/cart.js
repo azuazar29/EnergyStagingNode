@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 var sql = require("../database");
 var request = new sql.Request();
-var config = require("../config/general_config");
+var filepath = require("../config/filePath");
 const rp = require("request-promise");
 const { check, oneOf, validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
@@ -155,22 +155,24 @@ router.post("/setproductId/:type", async (req, res) => {
       name: "Energy meter",
       quantity: "2",
       price: "24",
+      image: filepath.HostUrl + "addons/ic_energymeter.png",
     },
     {
       name: "Piping",
       quantity: "20",
       price: "24",
+      image: filepath.HostUrl + "addons/ic_pipe.png",
     },
   ];
 
   let query = `INSERT INTO Cart
-  (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery]) VALUES ('${JSON.stringify(
+  (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery],[savings]) VALUES ('${JSON.stringify(
     FinalOutput
   )}','${new Date().toISOString()}','${req.params.type}','${JSON.stringify(
     AddOnDetails
   )}','12','54','${JSON.stringify(
     accessories
-  )}','20') SELECT SCOPE_IDENTITY() as id`;
+  )}','20','500') SELECT SCOPE_IDENTITY() as id`;
 
   console.log("query", query);
 
@@ -406,6 +408,7 @@ router.get(
           result.CondensorDetails = result.product_Id.CondensorDetails;
           result.AgreementDetails = AgreementDetails;
           result.SubscriptionDetails = SubscriptionDetails;
+
           delete result.product_Id;
           res.status(200);
           res.json({
