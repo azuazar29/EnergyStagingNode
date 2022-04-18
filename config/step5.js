@@ -523,6 +523,18 @@ function start1(
       display_installed_rooms.push(obj);
     });
     // console.log("display_installed_rooms", display_installed_rooms);
+
+    let subCost = 0;
+
+    let cNumber = getProductName(display_installed_rooms);
+
+    let totalCCost = 0;
+    cNumber.forEach((element) => {
+      totalCCost = totalCCost + Number(element.price) * Number(element.count);
+    });
+
+    subCost = Math.floor((Number(display_price) + totalCCost) / 84);
+
     let obj = {
       display_installed_rooms: display_installed_rooms,
       display_product_manufacturer: getProductName(display_installed_rooms),
@@ -541,7 +553,7 @@ function start1(
       compressor_needed: display_installed_rooms.length.toString(),
       FCU_needed: roomsArray.length.toString(),
       condenserIDs: condenserIDs,
-      product_subscription_cost: "129",
+      product_subscription_cost: subCost,
       product_description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
     };
