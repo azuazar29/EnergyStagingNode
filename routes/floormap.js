@@ -50,12 +50,16 @@ router.get("/Buildings_floor_Map/:pCode", function (req, res) {
         let result = response.recordset[0];
         let countArray = [0, 0, 0, 0, 0, 0];
         Object.keys(result).forEach((element, index) => {
-          console.log("elments", element, index);
           if (index > 17) {
             let count = 0;
 
             result[element].forEach((rooms, index) => {
-              if (Number(rooms) != 0) {
+              console.log("elments", element);
+
+              if (
+                Number(rooms) != 0 &&
+                element.toString().toLowerCase().includes("bedroom")
+              ) {
                 countArray[index]++;
               }
             });
