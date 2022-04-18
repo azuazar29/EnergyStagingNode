@@ -286,7 +286,13 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
 
             set.recordset[0].Rooms = roomsArray;
 
-            let bedroomCount = roomsArray.length;
+            let bedroomCount = 0;
+            roomsArray.forEach((element) => {
+              if (element.roomName.toLowerCase().includes("bedroom")) {
+                bedroomCount++;
+              }
+            });
+
             set.recordset[0].NoOfRooms = bedroomCount.toString();
 
             delete set.recordset[0].idealRoomTemparature;
