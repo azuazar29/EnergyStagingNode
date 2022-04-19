@@ -524,10 +524,32 @@ router.post(
 );
 
 router.get(
-  "/deliveryAddress/:id",
+  "/deliveryAddress/:id/:postalCode",
 
-  function (req, res) {
+  async function (req, res) {
     let query = `Select * from DeliveryAddress Where userID = ${req.params.id}`;
+
+    let postalAddress = await new Promise((resolve,reject)=>{
+
+      request.query(`Select [Postal code],[Blk No#],[Street name] From Buildings_floor_Map$ where [Postal code] = '${req.params.postalCode}'`,function(err,recordset){
+
+        if(recordset.recordset.length){
+
+          recordset.recordset[0].BlkNo = recordset.recordset[0]['Blk No#']
+          delete recordset.recordset[0]['Blk No#']
+          resolve({
+            success:true,
+            resulr:recordset.recordset[0]
+          })
+        }else{
+          resolve({
+            success:false
+          })
+        }
+
+      })
+
+    })
 
     request.query(query, function (err, set) {
       if (err) {
@@ -542,7 +564,7 @@ router.get(
         res.json({
           success: true,
           message: "Delivery address for userID :" + req.params.id,
-          result: set.recordsets[0],
+          result: {...set.recordsets[0][0],...postalAddress.resulr},
         });
       }
     });

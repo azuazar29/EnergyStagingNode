@@ -222,7 +222,7 @@ router.post(
         } else {
           req.body.rooms = set.recordsets[0];
 
-          console(req.body.rooms);
+          console.log("roomd,", req.body.rooms);
 
           if (set.recordsets[0].length) {
             CoolingConfiguration(req, res, next).then((response) => {

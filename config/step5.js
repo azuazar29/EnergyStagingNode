@@ -400,7 +400,7 @@ function start1(
     }
   }
 
-  console.log(input1[0]);
+  // console.log(input1[0]);
 
   //monthly operating power
   for (var i = 0; i < input1.length; i++) {
@@ -448,6 +448,7 @@ function start1(
   let display_price = 0;
   let tempName = "";
   let tempImg = [];
+  // console.log('input1',...input1)
   input1.forEach((element, index) => {
     condenserIDs = [];
     condenserImg = [];
