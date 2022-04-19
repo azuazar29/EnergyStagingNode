@@ -536,6 +536,10 @@ router.get(
         if(recordset.recordset.length){
 
           recordset.recordset[0].BlkNo = recordset.recordset[0]['Blk No#']
+          recordset.recordset[0].PostalCode = recordset.recordset[0]['Postal code']
+          recordset.recordset[0].StreetName = recordset.recordset[0]['Street name']
+          delete recordset.recordset[0]['Postal code']
+          delete recordset.recordset[0]['Street name']
           delete recordset.recordset[0]['Blk No#']
           resolve({
             success:true,
