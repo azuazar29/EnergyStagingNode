@@ -406,6 +406,26 @@ router.get(
           });
           result.FCUDetails = result.product_Id.FCUDetails;
           result.CondensorDetails = result.product_Id.CondensorDetails;
+
+          let totalCost = 0
+
+          result.FCUDetails.forEach(element=>{
+
+            totalCost = totalCost + Number(element.price)
+
+          })
+
+          result.CondensorDetails.forEach(element=>{
+
+            totalCost = totalCost + Number(element.price)
+
+          })
+
+          result.basic_cost = Math.round(totalCost/36)
+          result.vale_cost = Math.round(totalCost/60)
+          result.prime_cost = Math.round(totalCost/84)
+
+
           result.AgreementDetails = AgreementDetails;
           result.SubscriptionDetails = SubscriptionDetails;
 
