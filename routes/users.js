@@ -296,10 +296,10 @@ module.exports = {
                           var count = 0;
                           for (var i2 = 0; i2 < fcuarrays.length; i2++) {
                             
-                            if(allfcus[i2] == '4600' || allfcus[i2] == '1200' || allfcus[i2] == '1650'){
-                              console.log('fcuarrays[i2]',fcuarrays[i2]<=allfcus[i2])
+                            // if(allfcus[i2] == '4600' || allfcus[i2] == '1200' || allfcus[i2] == '1650'){
+                            //   console.log('fcuarrays[i2]',fcuarrays[i2]<=allfcus[i2])
 
-                            }
+                            // }
                             let isTrue = false
                             allfcus.forEach(element=>{
 
@@ -314,9 +314,9 @@ module.exports = {
                             count++
                            
                           }
-                           console.log("count",count,fcuarrays.length)
+                          //  console.log("count",count,fcuarrays.length)
                           if ((count === fcuarrays.length) && (count === allfcus.length)  ) {
-                            console.log("finall ifff",allfcunames.length,allfcus.length)
+                            // console.log("finall ifff",allfcunames.length,allfcus.length)
                             listt.push(
                               `{"rooms":"${
                                 room_perm_for_each_config1[i][j]
@@ -382,7 +382,7 @@ module.exports = {
                   var val = [];
                   var curr = 0;
                   const allEqual = (arr) => arr.every((v) => v === arr[0]);
-                  console.log("allequal",allEqual)
+                  // console.log("allequal",allEqual)
                   function call(val, i1) {
                     if (!allEqual(val)) {
                       curr = val.indexOf(Math.min(...val));
@@ -444,7 +444,7 @@ module.exports = {
                     }
                     select_product_list.push(r);
                   }
-                console .log("selected list",select_product_list)
+                // console .log("selected list",select_product_list)
 
                   var sum = 0;
                   for (var i = 0; i < each_room_load.length; i++) {

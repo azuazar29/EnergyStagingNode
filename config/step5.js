@@ -597,7 +597,7 @@ function start1(
 
   function getProductName(display_installed_rooms) {
     let name = groupItem(display_installed_rooms);
-    console.log("name", name);
+    // console.log("name", name);
     let nametoreturn = "";
     let namesArray = [];
     Object.keys(name).forEach((names, index) => {
