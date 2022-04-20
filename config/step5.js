@@ -535,6 +535,8 @@ function start1(
     });
 
     subCost = Math.floor((Number(display_price) + totalCCost) / 84);
+    let newImage  = []
+   
 
     let obj = {
       display_installed_rooms: display_installed_rooms,
@@ -556,7 +558,7 @@ function start1(
       condenserIDs: condenserIDs,
       product_subscription_cost: subCost.toString(),
       product_description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        "Portable & lightweight.Widely appreciated model among beauty parlors, tattoo artists, food decoration, nail art parlors. Aerograph Airbrush air hose pipe is of good flexibility and quality than ordinary tube. Suitable For automotive painting, temporary body tattoo, Nail Art, Cake/Food decoration. Type: single cylinder piston: power: 1/5 horsepower Voltage: 220-240v/50hz. Suit for 0.2mm - 1.0mm airbrush",
     };
 
     let products = [];
@@ -572,11 +574,21 @@ function start1(
       element.forEach((element1) => {
         finalProd.push(element1);
         price = price + Number(element1.product[0].Price);
+        newImage.push(element1.product[0].ImagePath)
+
       });
     });
 
     obj.display_installed_rooms = finalProd;
     // obj.display_price = Number(obj.display_price) + price;
+
+    obj.display_product_manufacturer.forEach((element,index)=>{
+      element.image = newImage[index]
+  })
+
+  obj.display_product_img = newImage
+
+    
 
     finalProductOutput.push(obj);
     price = 0;
