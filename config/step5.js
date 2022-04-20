@@ -534,7 +534,9 @@ function start1(
       totalCCost = totalCCost + Number(element.price) * Number(element.count);
     });
 
-    subCost = Math.floor((Number(display_price) + totalCCost) / 84);
+    subCost = Math.floor((Number(display_price) + totalCCost) / 36);
+    let subCost5 = Math.floor((Number(display_price) + totalCCost) / 60);
+    let subCost7 = Math.floor((Number(display_price) + totalCCost) / 84);
     let newImage  = []
    
 
@@ -557,6 +559,9 @@ function start1(
       FCU_needed: roomsArray.length.toString(),
       condenserIDs: condenserIDs,
       product_subscription_cost: subCost.toString(),
+      product_subscription_cost3: subCost.toString(),
+      product_subscription_cost5: subCost5.toString(),
+      product_subscription_cost7: subCost7.toString(),
       product_description:
         "Portable & lightweight.Widely appreciated model among beauty parlors, tattoo artists, food decoration, nail art parlors. Aerograph Airbrush air hose pipe is of good flexibility and quality than ordinary tube. Suitable For automotive painting, temporary body tattoo, Nail Art, Cake/Food decoration. Type: single cylinder piston: power: 1/5 horsepower Voltage: 220-240v/50hz. Suit for 0.2mm - 1.0mm airbrush",
     };
