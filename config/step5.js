@@ -564,7 +564,7 @@ function start1(
       product_subscription_cost5: subCost5.toString(),
       product_subscription_cost7: subCost7.toString(),
       product_description:
-        "Portable & lightweight.Widely appreciated model among beauty parlors, tattoo artists, food decoration, nail art parlors. Aerograph Airbrush air hose pipe is of good flexibility and quality than ordinary tube. Suitable For automotive painting, temporary body tattoo, Nail Art, Cake/Food decoration. Type: single cylinder piston: power: 1/5 horsepower Voltage: 220-240v/50hz. Suit for 0.2mm - 1.0mm airbrush",
+        "AC with non-inverter compressor, Smart & Elegant design to suit your office & home requirements / interiors Capacity: 1.5 ton suitable for medium size rooms (Up to 150 square feet) Energy Rating: 5 Star, Annual Energy Consumption: 1114.71 Units, ISEER Value: 3.37 Warranty: 1 Year Comprehensive on AC and 5 Years on Compressor 100% Inner Grooved Copper Tubes: Enhances cooling and also ensures durability of the product",
     };
 
     let products = [];
