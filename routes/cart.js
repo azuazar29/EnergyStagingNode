@@ -170,7 +170,7 @@ router.post("/setproductId/:type", async (req, res) => {
     FinalOutput
   )}','${new Date().toISOString()}','${req.params.type}','${JSON.stringify(
     AddOnDetails
-  )}','12','54','${JSON.stringify(
+  )}','7','54','${JSON.stringify(
     accessories
   )}','20','500') SELECT SCOPE_IDENTITY() as id`;
 
