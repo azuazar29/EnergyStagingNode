@@ -543,6 +543,7 @@ function start1(
     let obj = {
       display_installed_rooms: display_installed_rooms,
       display_product_manufacturer: getProductName(display_installed_rooms),
+      display_product_manufacturer1: getProductName(display_installed_rooms),
       display_product_img: condenserImg,
       display_monthly_operating_power: (
         element.monthy_operating_power / 1000

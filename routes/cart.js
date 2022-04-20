@@ -125,16 +125,16 @@ router.post("/setproductId/:type", async (req, res) => {
     });
   });
   let price = [];
-  req.body.product.display_product_manufacturer.forEach((element) => {
+  req.body.product.display_product_manufacturer1.forEach((element) => {
     price.push(Number(element.price) * Number(element.count).toString());
   });
 
-  req.body.product.display_product_manufacturer.forEach((element, index) => {
-    req.body.product.display_product_manufacturer[index].price = price[index];
+  req.body.product.display_product_manufacturer1.forEach((element, index) => {
+    req.body.product.display_product_manufacturer1[index].price = price[index];
   });
   let FinalOutput = {
     FCUDetails: finalProducts,
-    CondensorDetails: req.body.product.display_product_manufacturer,
+    CondensorDetails: req.body.product.display_product_manufacturer1,
   };
 
   let query0 = `select * from AgreementDetails`;
