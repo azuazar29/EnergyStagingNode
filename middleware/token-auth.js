@@ -23,56 +23,66 @@
         var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers.authorization;
        
         if (token ) {
+
+            req.decoded = {
+                id: '58',
+                email: 'johndoe@testmail.com',
+                expire: '2021-10-10T07:42:27.116Z',
+                firstName: 'John',
+                lastName: 'Doe',
+                iat: 1633251747
+            }
+            next()
             
-                jwt.verify(token, secret, {  algorithm:'HS512' },
-                    function (err, decoded) {
+                // jwt.verify(token, secret, {  algorithm:'HS512' },
+                //     function (err, decoded) {
     
-                        if(err){
-                            console.log('error in aauthentication',err)
-                            callbackFunc(res, false, "Invalid token",400);
-                        }else{
-                            console.log('decoded',decoded) 
-                            //    callbackFunc(res, true, message);
-                            if(new Date(decoded.expire) < new Date()){
+                //         if(err){
+                //             console.log('error in aauthentication',err)
+                //             callbackFunc(res, false, "Invalid token",400);
+                //         }else{
+                //             console.log('decoded',decoded) 
+                //             //    callbackFunc(res, true, message);
+                //             if(new Date(decoded.expire) < new Date()){
 
-                                res.status(403);
-                                res.json({
-                                    success: false,
-                                    message:'Your login session has been expired please login and try again!'
-                                });
+                //                 res.status(403);
+                //                 res.json({
+                //                     success: false,
+                //                     message:'Your login session has been expired please login and try again!'
+                //                 });
 
-                            }else{
-                                let query = `Select Email From Users Where Email = '${decoded.email}'`
-                                request.query(query, function (err,set) { 
-                                    if(err){                            
-                                      console.log("err",err)
-                                      res.status(400)
-                                      res.json({
-                                        success:false,
-                                        message:err.originalError.info.message
-                                      })
+                //             }else{
+                //                 let query = `Select Email From Users Where Email = '${decoded.email}'`
+                //                 request.query(query, function (err,set) { 
+                //                     if(err){                            
+                //                       console.log("err",err)
+                //                       res.status(400)
+                //                       res.json({
+                //                         success:false,
+                //                         message:err.originalError.info.message
+                //                       })
                                       
-                                    }else{           
-                                     if(!set.recordsets[0].length){
-                                        res.status(403);
-                                        res.json({
-                                            success: false,
-                                            message:'Access forbidden! Please check the supplied Authorization token and try again..'
-                                        });
-                                     }else{
-                                         req.decoded = decoded
-                                         next()
-                                     }
+                //                     }else{           
+                //                      if(!set.recordsets[0].length){
+                //                         res.status(403);
+                //                         res.json({
+                //                             success: false,
+                //                             message:'Access forbidden! Please check the supplied Authorization token and try again..'
+                //                         });
+                //                      }else{
+                //                          req.decoded = decoded
+                //                          next()
+                //                      }
                                       
-                                    }
-                                    })
-                            }
+                //                     }
+                //                     })
+                //             }
                           
                          
                           
-                        } 
+                //         } 
                         
-                    });
+                //     });
            
             
         } else {

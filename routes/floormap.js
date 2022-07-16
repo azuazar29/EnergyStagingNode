@@ -267,6 +267,14 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
               );
             });
 
+            occP.mondayList = JSON.parse(occP.mondayList)
+            occP.tuesdayList = JSON.parse(occP.tuesdayList)
+            occP.wednesdayList = JSON.parse(occP.wednesdayList)
+            occP.thursdayList = JSON.parse(occP.thursdayList)
+            occP.fridayList = JSON.parse(occP.fridayList)
+            occP.saturdayList = JSON.parse(occP.saturdayList)
+            occP.sundayList = JSON.parse(occP.sundayList)
+
             let roomsArray = [];
             Object.keys(result1).forEach(function (key, index) {
               if (index > 2) {
@@ -279,6 +287,7 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
                     ceilingHeightFeet: set.recordset[0].ceilingHeightFeet,
                     weekdaysHour: occP.weekdaysHour,
                     weekendsHour: occP.weekendsHour,
+                    OccupancyPattern: occP
                   });
                 }
               }

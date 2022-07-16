@@ -365,22 +365,22 @@ function addRoom(roomName, id, guid, roomData) {
           } else {
             let occupancyPattern = set.recordset[0];
             let query = `Insert into UserOccupancyPattern values(            
-              '${occupancyPattern.mondayOccupancy}',
-              '${occupancyPattern.tuesdayOccupancy}',
-              '${occupancyPattern.wednesdayOccupancy}',
-              '${occupancyPattern.thursdayOccupancy}',
-              '${occupancyPattern.fridayOccupancy}',
-              '${occupancyPattern.saturdayOccupancy}',
-              '${occupancyPattern.sundayOccupancy}',
-              '${occupancyPattern.usageAdherence}',
-              '${occupancyPattern.mondayList}',
-              '${occupancyPattern.tuesdayList}',
-              '${occupancyPattern.wednesdayList}',
-              '${occupancyPattern.thursdayList}',
-              '${occupancyPattern.fridayList}',
-              '${occupancyPattern.saturdayList}',
-              '${occupancyPattern.sundayList}', '${roomID}', '${guid}', '${id}', '${occupancyPattern.weekendsHour}', '${occupancyPattern.weekdaysHour}',
-              '${occupancyPattern.occupancyPatternHoursMinute}'
+              '${roomData.occupancyPattern.mondayOccupancy}',
+              '${roomData.occupancyPattern.tuesdayOccupancy}',
+              '${roomData.occupancyPattern.wednesdayOccupancy}',
+              '${roomData.occupancyPattern.thursdayOccupancy}',
+              '${roomData.occupancyPattern.fridayOccupancy}',
+              '${roomData.occupancyPattern.saturdayOccupancy}',
+              '${roomData.occupancyPattern.sundayOccupancy}',
+              '${roomData.occupancyPattern.usageAdherence}',
+              '${JSON.stringify(roomData.occupancyPattern.mondayList)}',
+              '${JSON.stringify(roomData.occupancyPattern.tuesdayList)}',
+              '${JSON.stringify(roomData.occupancyPattern.wednesdayList)}',
+              '${JSON.stringify(roomData.occupancyPattern.thursdayList)}',
+              '${JSON.stringify(roomData.occupancyPattern.fridayList)}',
+              '${JSON.stringify(roomData.occupancyPattern.saturdayList)}',
+              '${JSON.stringify(roomData.occupancyPattern.sundayList)}', '${roomID}', '${guid}', '${id}', '${roomData.occupancyPattern.weekendsHour}', '${roomData.occupancyPattern.weekdaysHour}',
+              '${roomData.occupancyPattern.occupancyPatternHoursMinute}'
               )`;
 
             request.query(query, function (err, set) {

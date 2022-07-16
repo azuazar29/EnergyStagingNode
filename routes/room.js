@@ -18,7 +18,7 @@ const { CoolingConfiguration } = require("./users");
 router.get("/defaultValues", middleware.authenticate, function (req, res) {
   let query = `Select * from InitialDefaultValues`;
 
-  request.query(query, function (err, set) {
+  request.query(query, async function (err, set) {
     if (err) {
       console.log("err", err);
       res.status(400);
@@ -29,7 +29,32 @@ router.get("/defaultValues", middleware.authenticate, function (req, res) {
     } else {
       let result = set.recordset[0];
       result.currentRatingDeafult = JSON.parse(result.currentRatingDeafult);
-      result.room = JSON.parse(result.room);
+      result.room = result.room
+
+      delete result.RoomSize
+      delete result.bedrooms
+      delete result.room
+
+      let occP = await new Promise((resolve, reject) => {
+        request.query(
+          "Select * from DefaultOccupancyPattern",
+          function (err, response) {
+            resolve(response.recordset[0]);
+          }
+        );
+      });
+
+      result.weekdaysHour =  occP.weekdaysHour,
+      result.weekendsHour =  occP.weekend
+
+      occP.mondayList = JSON.parse(occP.mondayList)
+      occP.tuesdayList = JSON.parse(occP.tuesdayList)
+      occP.wednesdayList = JSON.parse(occP.wednesdayList)
+      occP.thursdayList = JSON.parse(occP.thursdayList)
+      occP.fridayList = JSON.parse(occP.fridayList)
+      occP.saturdayList = JSON.parse(occP.saturdayList)
+      occP.sundayList = JSON.parse(occP.sundayList)
+      result.OccupancyPattern = occP
       res.status(200);
       res.json({
         success: true,
