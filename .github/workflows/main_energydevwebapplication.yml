@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'EnergyDevWebApplication'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_11D372893BA84DAD876B184A4DB05A0D }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_61CF67FC199241B4A1026FC2CEAACC7F }}
           package: .
