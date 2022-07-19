@@ -287,7 +287,8 @@ router.get("/Floor_Plans_area/:id", function (req, res) {
                     ceilingHeightFeet: set.recordset[0].ceilingHeightFeet,
                     weekdaysHour: occP.weekdaysHour,
                     weekendsHour: occP.weekendsHour,
-                    OccupancyPattern: occP
+                    OccupancyPattern: occP,
+                    id:index
                   });
                 }
               }
