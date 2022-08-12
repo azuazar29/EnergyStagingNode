@@ -413,6 +413,8 @@ function start1(
       1000;
   }
 
+  console.log("monthly operating power",input1[0].monthy_operating_power)
+
   //monthly operating power
   for (var i = 0; i < input1.length; i++) {
     input1[i].yearly_operating_power = input1[i].monthy_operating_power * 12;
