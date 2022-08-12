@@ -239,6 +239,8 @@ function start1(
     }
   }
 
+  console.log("sunday load",sun_load)
+
   //hourly_operating_load
   var mon_opt_load = [],
     tue_opt_load = [],

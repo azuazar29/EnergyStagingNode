@@ -116,10 +116,11 @@ router.post("/auto-configuration", async function (req, res, next) {
   }
 });
 
-router.post("/auto-configuration/:id/:sort/:energy", function (req, res, next) {
+router.post("/auto-configuration/:id", function (req, res, next) {
   if (!req.body.perPage) {
     req.body.perPage = 3;
   }
+  
 
   // Add Configuration
 
@@ -150,23 +151,29 @@ router.post("/auto-configuration/:id/:sort/:energy", function (req, res, next) {
 
           let finalResult = response.PriceWise;
 
-          if (req.params.sort.toString() == "1") {
+          if(req.body.sortType && req.body.sortType == '0'){
+            if (req.body.sortValue.toString() == "1") {
            
-            finalResult =  finalResult.sort((a,b) => (a.display_price > b.display_price) ? 1 : ((b.display_price > a.display_price) ? -1 : 0))
-          } else {
-            // finalResult = response.PriceWise.reverse();
-            finalResult =  finalResult.sort((a,b) => (a.display_price < b.display_price) ? 1 : ((b.display_price < a.display_price) ? -1 : 0))
-
-          }
-          if (req.params.energy.toString() == "1") {
+              finalResult =  finalResult.sort((a,b) => (a.display_price > b.display_price) ? 1 : ((b.display_price > a.display_price) ? -1 : 0))
+            } else {
+              // finalResult = response.PriceWise.reverse();
+              finalResult =  finalResult.sort((a,b) => (a.display_price < b.display_price) ? 1 : ((b.display_price < a.display_price) ? -1 : 0))
+  
+            }
+          }else if(req.body.sortType && req.body.sortType == '1'){
+            if (req.body.sortValue.toString() == "1") {
            
-            finalResult =  finalResult.sort((a,b) => (a.display_monthly_operating_power > b.display_monthly_operating_power) ? 1 : ((b.display_monthly_operating_power > a.display_monthly_operating_power) ? -1 : 0))
-          } else {
-            // finalResult = response.PriceWise.reverse();
-            finalResult =  finalResult.sort((a,b) => (a.display_monthly_operating_power < b.display_monthly_operating_power) ? 1 : ((b.display_monthly_operating_power < a.display_monthly_operating_power) ? -1 : 0))
-
+              finalResult =  finalResult.sort((a,b) => (a.display_monthly_operating_power > b.display_monthly_operating_power) ? 1 : ((b.display_monthly_operating_power > a.display_monthly_operating_power) ? -1 : 0))
+            } else {
+              // finalResult = response.PriceWise.reverse();
+              finalResult =  finalResult.sort((a,b) => (a.display_monthly_operating_power < b.display_monthly_operating_power) ? 1 : ((b.display_monthly_operating_power < a.display_monthly_operating_power) ? -1 : 0))
+  
+            }
+  
           }
 
+         
+          
           finalResult.forEach((element, index) => {
             if (index + 1 <= Number(req.body.perPage)) {
               price.push(element);

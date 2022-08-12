@@ -264,6 +264,7 @@ module.exports = {
                       user_current_rating = Number(
                         req.body.rooms[0].currentRating
                       );
+                      console.log(condenser.length)
                       for (var l = 0; l < condenser.length; l++) {
                         var num = condenser[l].CurrentRating.replace(/\D/g, "");
                       // console.log("user_current_rating",num)
