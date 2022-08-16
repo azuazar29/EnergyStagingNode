@@ -120,7 +120,7 @@ router.post("/auto-configuration/:id", function (req, res, next) {
   if (!req.body.perPage) {
     req.body.perPage = 3;
   }
-  
+
 
   // Add Configuration
 
@@ -147,33 +147,33 @@ router.post("/auto-configuration/:id", function (req, res, next) {
           let price = [];
           //console.log("response",response)
 
-         
+
 
           let finalResult = response.PriceWise;
 
-          if(req.body.sortType && req.body.sortType == '0'){
+          if (req.body.sortType && req.body.sortType == '0') {
             if (req.body.sortValue.toString() == "1") {
-           
-              finalResult =  finalResult.sort((a,b) => (a.display_price > b.display_price) ? 1 : ((b.display_price > a.display_price) ? -1 : 0))
+
+              finalResult = finalResult.sort((a, b) => (Number(a.display_price) > Number(b.display_price)) ? 1 : ((Number(b.display_price) > Number(a.display_price)) ? -1 : 0))
             } else {
               // finalResult = response.PriceWise.reverse();
-              finalResult =  finalResult.sort((a,b) => (a.display_price < b.display_price) ? 1 : ((b.display_price < a.display_price) ? -1 : 0))
-  
+              finalResult = finalResult.sort((a, b) => (Number(a.display_price) < Number(b.display_price)) ? 1 : ((Number(b.display_price) < Number(a.display_price)) ? -1 : 0))
+
             }
-          }else if(req.body.sortType && req.body.sortType == '1'){
+          } else if (req.body.sortType && req.body.sortType == '1') {
             if (req.body.sortValue.toString() == "1") {
-           
-              finalResult =  finalResult.sort((a,b) => (a.display_monthly_operating_power > b.display_monthly_operating_power) ? 1 : ((b.display_monthly_operating_power > a.display_monthly_operating_power) ? -1 : 0))
+
+              finalResult = finalResult.sort((a, b) => (a.display_monthly_operating_power > b.display_monthly_operating_power) ? 1 : ((b.display_monthly_operating_power > a.display_monthly_operating_power) ? -1 : 0))
             } else {
               // finalResult = response.PriceWise.reverse();
-              finalResult =  finalResult.sort((a,b) => (a.display_monthly_operating_power < b.display_monthly_operating_power) ? 1 : ((b.display_monthly_operating_power < a.display_monthly_operating_power) ? -1 : 0))
-  
+              finalResult = finalResult.sort((a, b) => (a.display_monthly_operating_power < b.display_monthly_operating_power) ? 1 : ((b.display_monthly_operating_power < a.display_monthly_operating_power) ? -1 : 0))
+
             }
-  
+
           }
 
-         
-          
+
+
           finalResult.forEach((element, index) => {
             if (index + 1 <= Number(req.body.perPage)) {
               price.push(element);
@@ -337,12 +337,10 @@ function updateRoom(roomData, userId, configID) {
         });
     } else {
       let query = `Update UserRoom Set roomName = '${roomData.roomName}', 
-        idealRoomTemparature = '${
-          roomData.idealRoomTemparature
+        idealRoomTemparature = '${roomData.idealRoomTemparature
         }', ceilingHeightMeter = '${roomData.ceilingHeightMeter}', 
-        ceilingHeightFeet = '${roomData.ceilingHeightFeet}', roomSize = '${
-        roomData.roomSize
-      }', 
+        ceilingHeightFeet = '${roomData.ceilingHeightFeet}', roomSize = '${roomData.roomSize
+        }', 
         updatedOn = '${new Date().toISOString()}' where Id = ${roomData.Id}`;
       //////console("query", query)
       request.query(query, function (err, set) {
@@ -420,12 +418,11 @@ function addConfiguration(req) {
         rooms.push(element.roomName);
       });
       let tempUserid = 1;
-      let query = `Insert into UserConfiguration values( '${
-        req.body.configurationName
-      }', '${req.body.totalRooms}', '${req.body.totalSize}',
+      let query = `Insert into UserConfiguration values( '${req.body.configurationName
+        }', '${req.body.totalRooms}', '${req.body.totalSize}',
      '${JSON.stringify(
-       rooms
-     )}', '${new Date().toISOString()}', '${new Date().toISOString()}',
+          rooms
+        )}', '${new Date().toISOString()}', '${new Date().toISOString()}',
       '1', '${tempUserid}', '0') SELECT SCOPE_IDENTITY() as id`;
 
       request.query(query, function (err, set) {

@@ -1,4 +1,3 @@
-//const {step1,step2,step3} = require('./functions');
 
 const compressor_config = require("../config/compressor_config");
 const room_permutations = require("../config/room_permutations");
@@ -29,7 +28,6 @@ function step1(area, idealRoomTemparature, ceilingHeightMeter) {
   var basic_cooling_load = 0;
   var room_height_to_ceiling = 0;
 
-  // ////////////////////////console ("dbobj",dbobj)
   dbobj.forEach(function (element) {
     if (Number(ceilingHeightMeter) <= 3) {
       room_height_to_ceiling = "1";
@@ -51,7 +49,6 @@ function step1(area, idealRoomTemparature, ceilingHeightMeter) {
 function step2(area, cl) {
   const true_load = area * cl * load_rating_factor;
   totrooms1 = totrooms1 + 1;
-  // sum_of_all_true_loads = sum_of_all_true_loads+true_load;
   return true_load;
 }
 
@@ -167,23 +164,19 @@ module.exports = {
                   response.locals.totrooms1 = totrooms1;
                   response.locals.compressor_needed = compressor_needed;
 
-                  //console .log('res.local', response.locals)
 
                   var arr = [];
                   for (var g = 0; g < totrooms1; g++) {
                     arr[g] = g + 1;
                   }
 
-                  // var totnoofcomp = compressor_needed        //compressor_needed
 
                   var output = [];
                   var RoomPermutations = [];
-                  //console .log('totalroom', totrooms1)
                   output = compressor_config.combineElements(totrooms1);
 
                   RoomPermutations = room_permutations.permute(arr);
 
-                  //console .log("output.lrngth", output.length)
 
                   var room_perm_for_each_config1 =
                     room_perm_for_each_config.start(
@@ -228,16 +221,13 @@ module.exports = {
                   var output1 = [];
                   output1 = room_perm_for_each_config1;
 
-                  //console .log("room_perm_for_each_config1")
 
                   for (var i = 0; i < room_perm_for_each_config1.length; i++) {
-                    // display_to_rooms.push(room_perm_for_each_config1[i])
                     for (
                       var j = 0;
                       j < room_perm_for_each_config1[i].length;
                       j++
                     ) {
-                      // ////console .log(room_perm_for_each_config1[i][j])
                       var tot = 0,
                         sum = 0,
                         fcuarrays = [];
@@ -248,17 +238,17 @@ module.exports = {
                       ) {
                         sum +=
                           each_room_load[
-                            room_perm_for_each_config1[i][j][k] - 1
+                          room_perm_for_each_config1[i][j][k] - 1
                           ];
                         fcuarrays.push(
                           each_room_load[
-                            room_perm_for_each_config1[i][j][k] - 1
+                          room_perm_for_each_config1[i][j][k] - 1
                           ]
                         );
                         tot += 1;
                       }
-                      console.log("element fcu",fcuarrays)
-                      console.log("sum",sum)
+                      console.log("element fcu", fcuarrays)
+                      console.log("sum", sum)
                       var status = "system" + tot;
                       var listt = [];
                       user_current_rating = Number(
@@ -267,7 +257,6 @@ module.exports = {
                       console.log(condenser.length)
                       for (var l = 0; l < condenser.length; l++) {
                         var num = condenser[l].CurrentRating.replace(/\D/g, "");
-                      // console.log("user_current_rating",num)
 
                         if (
                           num >= user_current_rating &&
@@ -276,7 +265,6 @@ module.exports = {
                           condenser[l].CoolingCapacity >= sum &&
                           condenser[l].FCUCapacity >= sum
                         ) {
-                          // console.log("it came here if condition",condenser[l].id)
                           var allfcunames = [],
                             allfcus = [];
 
@@ -289,55 +277,44 @@ module.exports = {
                               allfcus.push(fcu[i1].FCU);
                             }
                           }
-                       
-                          // console.log("allfcus",allfcus)
-                        
+
+
 
                           flag1 = 1;
                           var count = 0;
                           for (var i2 = 0; i2 < fcuarrays.length; i2++) {
-                            
-                            // if(allfcus[i2] == '4600' || allfcus[i2] == '1200' || allfcus[i2] == '1650'){
-                            //   console.log('fcuarrays[i2]',fcuarrays[i2]<=allfcus[i2])
 
-                            // }
+
                             let isTrue = false
-                            allfcus.forEach(element=>{
+                            allfcus.forEach(element => {
 
-                              if(fcuarrays[i2] <= element){
+                              if (fcuarrays[i2] <= element) {
                                 isTrue = true
-                              }else{
+                              } else {
                                 isTrue = false
                               }
 
                             })
-                            if(isTrue)
-                            count++
-                           
+                            if (isTrue)
+                              count++
+
                           }
-                          //  console.log("count",count,fcuarrays.length)
-                          if ((count === fcuarrays.length) && (count === allfcus.length)  ) {
-                            // console.log("finall ifff",allfcunames.length,allfcus.length)
+                          if ((count === fcuarrays.length) && (count === allfcus.length)) {
                             listt.push(
-                              `{"rooms":"${
-                                room_perm_for_each_config1[i][j]
-                              }","condensername":"${
-                                condenser[l].ProductName
+                              `{"rooms":"${room_perm_for_each_config1[i][j]
+                              }","condensername":"${condenser[l].ProductName
                               }","condenserid":${JSON.stringify(
                                 condenser[l]
                               )},"fcusname":${JSON.stringify(
                                 allfcunames
-                              )},"fcus":"${allfcus}","coolingcapacity":"${
-                                condenser[l].CoolingCapacity
-                              }","price":"${
-                                condenser[l].Price
-                              }","currentrating":"${
-                                condenser[l].CurrentRating
+                              )},"fcus":"${allfcus}","coolingcapacity":"${condenser[l].CoolingCapacity
+                              }","price":"${condenser[l].Price
+                              }","currentrating":"${condenser[l].CurrentRating
                               }"}`
                             );
                           } else {
                           }
-                        
+
                           allfcunames = [];
                           allfcus = [];
                         }
@@ -346,12 +323,10 @@ module.exports = {
                     }
                   }
 
-                  // console.log("product lenth", JSON.parse(productList))
-                
+
 
                   //grouping products with based on it's rooms
                   var temporary = chunk(productList);
-                  // console.log("chunk",JSON.parse(temporary))
                   function chunk(arr) {
                     var i,
                       j,
@@ -377,13 +352,11 @@ module.exports = {
                       li.push(temporary[i]);
                     }
                   }
-                // console.log('li',li)
 
-                  //evening the all products as same amount
+                  //even the products with same amount
                   var val = [];
                   var curr = 0;
                   const allEqual = (arr) => arr.every((v) => v === arr[0]);
-                  // console.log("allequal",allEqual)
                   function call(val, i1) {
                     if (!allEqual(val)) {
                       curr = val.indexOf(Math.min(...val));
@@ -395,7 +368,6 @@ module.exports = {
                         li[i1][curr].push(li[i1][curr][Math.min(...val) - 1]);
                       }
                     }
-                    // console.log('val',val)
 
                     val = [];
                     for (var j = 0; j < li[i].length; j++) {
@@ -413,7 +385,6 @@ module.exports = {
                       call(val, i);
                     }
                   }
-                  // console.log('li.length',li.length)
 
                   //combining the product datas based on index
                   var res = [];
@@ -423,7 +394,6 @@ module.exports = {
                     );
                   }
 
-                  // console.log("res.length",res.length)
                   //splitting a string based on $
                   var temp = [];
                   for (var i = 0; i < res.length; i++) {
@@ -433,7 +403,6 @@ module.exports = {
                   }
 
                   //list view
-                  // console .log(temp.length)
 
                   //converting list to meaningful obj
                   let r = [],
@@ -445,7 +414,6 @@ module.exports = {
                     }
                     select_product_list.push(r);
                   }
-                // console .log("selected list",select_product_list)
 
                   var sum = 0;
                   for (var i = 0; i < each_room_load.length; i++) {

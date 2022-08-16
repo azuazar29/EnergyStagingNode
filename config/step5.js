@@ -9,7 +9,6 @@ function start1(
   total_true_load,
   roomsArray
 ) {
-  // console.log("input", input1)
 
   var mon = [],
     tue = [],
@@ -76,20 +75,17 @@ function start1(
   for (var i = 0; i < occ_patt.length; i++) {
     if (occ_patt[i].configID == configid) {
       mon = [];
-      // mon_load=[]
       room_weekdays.push(
         occ_patt[i].mondayList.length +
-          occ_patt[i].tuesdayList.length +
-          occ_patt[i].wednesdayList.length +
-          occ_patt[i].thursdayList.length +
-          occ_patt[i].fridayList.length
+        occ_patt[i].tuesdayList.length +
+        occ_patt[i].wednesdayList.length +
+        occ_patt[i].thursdayList.length +
+        occ_patt[i].fridayList.length
       );
       room_weekends.push(
         occ_patt[i].saturdayList.length + occ_patt[i].sundayList.length
       );
       for (var j = 0; j < occ_patt[i].mondayList.length; j++) {
-        // ////////////////////console .log(occ_patt[i].mondayList[j])
-        // ////////////////////console .log("i"+(r+1))
         const [digits, word] = occ_patt[i].mondayList[j].match(/\D+|\d+/g);
         if (word === "AM") {
           am.push(occ_patt[i].mondayList[j]);
@@ -99,6 +95,7 @@ function start1(
       }
       r = r + 1;
 
+      console.log("callit(am, pm)", callit(am, pm))
       mon.push(callit(am, pm));
       mon_load.push(hs.mon_true_load(mon, r, true_load));
     }
@@ -112,7 +109,6 @@ function start1(
   for (var i = 0; i < occ_patt.length; i++) {
     if (occ_patt[i].configID == configid) {
       tue = [];
-      // mon_load=[]
       for (var j = 0; j < occ_patt[i].tuesdayList.length; j++) {
         const [digits, word] = occ_patt[i].tuesdayList[j].match(/\D+|\d+/g);
         if (word === "AM") {
@@ -239,7 +235,7 @@ function start1(
     }
   }
 
-  console.log("sunday load",sun_load)
+  console.log("sunday load", sun_load)
 
   //hourly_operating_load
   var mon_opt_load = [],
@@ -254,7 +250,6 @@ function start1(
     let tot = [];
 
     for (var j = 0; j < input1[i].length; j++) {
-      // ////////////////////console .log(input1[i][j].manufacturer)
       mon_opt_load = [];
       tue_opt_load = [];
       wed_opt_load = [];
@@ -313,8 +308,6 @@ function start1(
         sat_opt_load,
         sun_opt_load,
       ];
-      ////////////////////console .log("total",tot)
-      // ////////////////////console .log(input1[i][j].hourly_operating_load)
     }
     input1[i].hourly_operating_load = tot;
   }
@@ -327,6 +320,7 @@ function start1(
     for (var j = 0; j < input1[i].hourly_operating_load.length; j++) {
       inner1 = [];
       for (var k = 0; k < input1[i].hourly_operating_load[j].length; k++) {
+
         for (var t = 0; t < eff.length; t++) {
           if (
             Number(input1[i].hourly_operating_load[j][k]) ===
@@ -336,6 +330,7 @@ function start1(
           }
         }
       }
+      console.log("inner", inner1)
       outer1.push(inner1);
     }
     input1[i].hourly_cop = outer1;
@@ -364,13 +359,9 @@ function start1(
       outer1.push(inner1);
     }
     input1[i].hourly_operating_power = outer1;
-    // ////////////////////console .log(out)
   }
 
-  //console .log(eff)
   var usage_adherence = Number(occ_patt[0].usageAdherence) / 10; //0.75; //(75%) get value from user
-  // var usage_adherence= 1//0.75; //(75%) get value from user
-  //console .log("usage adherance",usage_adherence)
   //sum of weekday & sum of weekends
   var inner1 = [],
     inner2 = [];
@@ -393,7 +384,6 @@ function start1(
         use.push(usage_adherence * inner1[z]);
       }
 
-      //console .log("inner",inner1)
       input1[i].weekdays = use;
       input1[i].weekends = inner2;
     } else {
@@ -402,7 +392,6 @@ function start1(
     }
   }
 
-  // console.log(input1[0]);
 
   //monthly operating power
   for (var i = 0; i < input1.length; i++) {
@@ -413,7 +402,7 @@ function start1(
       1000;
   }
 
-  console.log("monthly operating power",input1[0].monthy_operating_power)
+  console.log("monthly operating power", input1[0].monthy_operating_power)
 
   //monthly operating power
   for (var i = 0; i < input1.length; i++) {
@@ -421,7 +410,6 @@ function start1(
   }
 
   var electricity_tariff = 0.29; //1.25
-  ///electricity tariff for week
   for (var i = 0; i < input1.length; i++) {
     var week =
       input1[i].weekdays.reduce((a, b) => a + b, 0) / 1000 +
@@ -452,13 +440,11 @@ function start1(
   let display_price = 0;
   let tempName = "";
   let tempImg = [];
-  // console.log('input1',...input1)
   input1.forEach((element, index) => {
     condenserIDs = [];
     condenserImg = [];
     display_price = 0;
     element.forEach((elementinner) => {
-      // console.log("elementinner", elementinner);
 
       let imagePath = elementinner.condenserid.ImagePath.toString();
       if (imagePath.includes("public/images")) {
@@ -487,9 +473,7 @@ function start1(
       rooms.forEach((room, indexRoom) => {
         room = Number(room);
         let roomObj = roomsArray[room - 1];
-        // console.log("room", roomObj);
         let weekendsHour, weekdaysHour;
-        // ////console .log("elementinner",elementinner.fcusname[indexRoom])
 
         occ_patt.forEach((occ) => {
           if (occ.roomID.toString() == roomObj.Id.toString()) {
@@ -527,7 +511,6 @@ function start1(
 
       display_installed_rooms.push(obj);
     });
-    // console.log("display_installed_rooms", display_installed_rooms);
 
     let subCost = 0;
 
@@ -541,8 +524,8 @@ function start1(
     subCost = Math.floor((Number(display_price) + totalCCost) / 36);
     let subCost5 = Math.floor((Number(display_price) + totalCCost) / 60);
     let subCost7 = Math.floor((Number(display_price) + totalCCost) / 84);
-    let newImage  = []
-   
+    let newImage = []
+
 
     let obj = {
       display_installed_rooms: display_installed_rooms,
@@ -590,15 +573,14 @@ function start1(
     });
 
     obj.display_installed_rooms = finalProd;
-    // obj.display_price = Number(obj.display_price) + price;
 
-    obj.display_product_manufacturer.forEach((element,index)=>{
+    obj.display_product_manufacturer.forEach((element, index) => {
       element.image = newImage[index]
-  })
+    })
 
-  obj.display_product_img = newImage
+    obj.display_product_img = newImage
 
-    
+
 
     finalProductOutput.push(obj);
     price = 0;
@@ -606,7 +588,6 @@ function start1(
     display_installed_rooms = [];
   });
 
-  //console .log("final product lenght",finalProductOutput.length)
 
   function groupItem(array) {
     result = array.reduce(function (r, a) {
