@@ -69,11 +69,13 @@ router.post('/send-otp', async function (req, res) {
 
     console.log("req.body", req.body)
 
-    let finalResult = []
+    let finalResult = {}
     if (req.body.phoneNumber && req.body.channel) {
 
         for (let i = 0; i < req.body.channel.length; i++) {
-            finalResult.push(await sendSMS(req.body.phoneNumber, req.body.channel[i]))
+
+            // finalResult.push(await sendSMS(req.body.phoneNumber, req.body.channel[i]))
+            finalResult = { ...finalResult, ...await sendSMS(req.body.phoneNumber, req.body.channel[i]) }
         }
 
         res.json({
