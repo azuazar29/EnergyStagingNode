@@ -12,6 +12,8 @@ const multer = require('multer');
 const { promises } = require('stream');
 var fs = require('fs')
 const json2csv = require('json2csv').parse;
+const middleware = require("../middleware/token-auth");
+
 
 var storage = multer.diskStorage({
     destination: async function (req, files, callback) {
@@ -2199,6 +2201,135 @@ router.get("/GetProductSaleDetails", function (req, res) {
     })
 })
 
+router.get('/slots', function (req, res) {
+
+    request.query(`Select * From Slots`, function (err, set) {
+
+        if (!err) {
+            res.json({
+                success: true,
+                message: "Slots details for Visit and Installation date",
+                result: set.recordsets[0]
+            })
+        }
+
+
+    })
+
+})
+router.post('/updateSiteVisitDateByUser',
+    [check("visitDay").exists(), check("visitSlot").exists()],
+    middleware.authenticate, function (req, res) {
+
+        let query = `INSERT INTO [dbo].[SubscriptionManagement]
+    ([visitDay]
+    ,[visitSlot],[visitStatus],[userID]
+    ,[addedOn]
+    ,[updatedOn])
+VALUES
+    ('${req.body.visitDay}',>
+    ${req.body.visitSlot},1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}')`
+
+        request.query(query, function (err, response) {
+
+            if (!err) {
+                res.json({
+                    success: true,
+                    message: "Successfully updated"
+                })
+            } else {
+                console.log("err", err)
+                res.json({
+                    success: false,
+                    message: "Error updating status"
+                })
+            }
+
+        })
+
+    })
+router.post('/updateSiteVisitDateByAdmin/:id',
+    [check("visitDate").exists(), check("visitSlot").exists()],
+    middleware.authenticate, function (req, res) {
+
+        let query = `update SubscriptionManagement set visitDate = '${req.body.visitDate}', visitSlot = ${req.body.visitDay}, visitStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.id}`
+
+        request.query(query, function (err, response) {
+
+            if (!err) {
+                res.json({
+                    success: true,
+                    message: "Successfully updated"
+                })
+            } else {
+                console.log("err", err)
+                res.json({
+                    success: false,
+                    message: "Error updating status"
+                })
+            }
+
+        })
+
+    })
+
+router.post('/updateInstallationDateByUser',
+    [check("installationDay").exists(), check("installationSlot").exists()],
+    middleware.authenticate, function (req, res) {
+
+        let query = `INSERT INTO [dbo].[SubscriptionManagement]
+    ([installationDay]
+    ,[visitSlot],[installationStatus],[userID]
+    ,[addedOn]
+    ,[updatedOn])
+VALUES
+    ('${req.body.installationDay}',>
+    ${req.body.installationSlot},1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}')`
+
+        request.query(query, function (err, response) {
+
+            if (!err) {
+                res.json({
+                    success: true,
+                    message: "Successfully updated"
+                })
+            } else {
+                console.log("err", err)
+                res.json({
+                    success: false,
+                    message: "Error updating status"
+                })
+            }
+
+        })
+
+    })
+router.post('/updateSiteVisitByAdmin/:id',
+    [check("installationDate").exists(), check("installationSlot").exists()],
+    middleware.authenticate, function (req, res) {
+
+        let query = `update SubscriptionManagement set installationDate = '${req.body.installationDate}', installationSlot = ${req.body.installationSlot}, installationStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.id}`
+
+        request.query(query, function (err, response) {
+
+            if (!err) {
+                res.json({
+                    success: true,
+                    message: "Successfully updated"
+                })
+            } else {
+                console.log("err", err)
+                res.json({
+                    success: false,
+                    message: "Error updating status"
+                })
+            }
+
+        })
+
+    })
+
+
 
 function dynamicSort(property) {
     var sortOrder = 1;
@@ -2213,5 +2344,6 @@ var groupBy = function (xs, key) {
         return rv;
     }, {});
 };
+
 
 module.exports = router; 

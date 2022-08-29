@@ -8,6 +8,7 @@ var coolingConfig = require('./routes/cooling-config')
 var dashboardRouter = require('./routes/dashboard')
 var orders = require('./routes/order')
 var floormapRouter = require('./routes/floormap');
+var twilio = require('./routes/twilio')
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -33,7 +34,9 @@ app.use('/api', coolingConfig)
 app.use('/api', dashboardRouter)
 app.use('/api', orders)
 app.use('/api', floormapRouter)
+app.use('/api', twilio)
 app.set('rootDir', __dirname);
+
 app.use("/public", express.static(__dirname + '/public/'));
 
 
