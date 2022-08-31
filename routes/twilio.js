@@ -6,7 +6,7 @@ const authToken = '34566c3f30f7dad2e6ae5d51ad47ef5c';
 const serviceSid = 'VA668b6f328c4bf9cd00ee73ace1028bf9';
 const client = require('twilio')(accountSid, authToken);
 const rp = require('request-promise')
-const country = '+91'
+const country = '+65'
 const { check, oneOf, validationResult } = require('express-validator');
 var sql = require("../database");
 var request = new sql.Request();
@@ -71,6 +71,8 @@ router.post('/send-otp', async function (req, res) {
 
     let finalResult = {}
     if (req.body.phoneNumber && req.body.channel) {
+
+        req.body.channel = ["sms", "whatsapp"]
 
         for (let i = 0; i < req.body.channel.length; i++) {
 
