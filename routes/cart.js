@@ -217,13 +217,11 @@ router.put(
       let query = `UPDATE Cart Set
   add_On = '${JSON.stringify(req.body.add_On)}',quantity ='1',
   maintenance_Charges='${req.body.maintenance_Charges}',
-  subcription_Type= '${
-    req.body.subcription_Type ? req.body.subcription_Type : "OT"
-  }',updated_On='${new Date().toISOString()}',
+  subcription_Type= '${req.body.subcription_Type ? req.body.subcription_Type : "OT"
+        }',updated_On='${new Date().toISOString()}',
     base_MonthlyRent ='${req.body.base_MonthlyRent}',
-    total_MonthlyRent='${req.body.total_MonthlyRent}',down_Payment='${
-        req.body.down_Payment
-      }',
+    total_MonthlyRent='${req.body.total_MonthlyRent}',down_Payment='${req.body.down_Payment
+        }',
    total='${req.body.total}',user_Id='1'
     Where id=${req.params.ID}`;
 
@@ -307,18 +305,19 @@ router.post(
                      ,'${cart.total}'
                      ,'${cart.FirstName} ${cart.LastName}'
                      ,'${cart.user_Id}'
-                     ,'${
-                       products.condenserIDs ? products.condenserIDs[0] : "101"
-                     }'
-                     )`;
+                     ,'${products.condenserIDs ? products.condenserIDs[0] : "101"
+              }'
+                     ) SELECT SCOPE_IDENTITY() as id`;
 
             console.log("query", query);
 
             request.query(query, function (err, responseOrder) {
               if (!err) {
+
+                request.query(`update Cart set orderID = ${responseOrder.recordset[0].id} where id = ${req.params.ID}`)
+
                 request.query(
-                  `update Customer_New set CustomerType = '${
-                    cart.subcription_Type == "OT" ? "OT" : "AS"
+                  `update Customer_New set CustomerType = '${cart.subcription_Type == "OT" ? "OT" : "AS"
                   }' where userID = '${cart.user_Id}'`,
                   function (err, responseOrd) {
                     if (!err) {
@@ -409,21 +408,21 @@ router.get(
 
           let totalCost = 0
 
-          result.FCUDetails.forEach(element=>{
+          result.FCUDetails.forEach(element => {
 
             totalCost = totalCost + Number(element.price)
 
           })
 
-          result.CondensorDetails.forEach(element=>{
+          result.CondensorDetails.forEach(element => {
 
             totalCost = totalCost + Number(element.price)
 
           })
 
-          result.basic_cost = Math.round(totalCost/36)
-          result.vale_cost = Math.round(totalCost/60)
-          result.prime_cost = Math.round(totalCost/84)
+          result.basic_cost = Math.round(totalCost / 36)
+          result.vale_cost = Math.round(totalCost / 60)
+          result.prime_cost = Math.round(totalCost / 84)
 
 
           result.AgreementDetails = AgreementDetails;
@@ -475,17 +474,13 @@ router.post(
           });
         } else {
           if (set.recordsets[0].length) {
-            let query = `update DeliveryAddress Set name = '${
-              req.body.name
-            }', contactNumber = '${req.body.contactNumber}', email = '${
-              req.body.email
-            }',
-              address1 = '${req.body.address1}', address2 = '${
-              req.body.address2
-            }',additionalInfo = '${
-              req.body.additionalInfo
-            }', updatedOn = '${new Date().toISOString()}', isPrimary = '${req.body.isBilling?req.body.isBilling:'0'}', bAddress1 =  '${req.body.bAddress1?req.body.bAddress1:''}'
-            , bAddress2 =  '${req.body.bAddress2?req.body.bAddress2:''}', bAddress3 =  '${req.body.bAddress3?req.body.bAddress3:''}'  Where userId = '1' `;
+            let query = `update DeliveryAddress Set name = '${req.body.name
+              }', contactNumber = '${req.body.contactNumber}', email = '${req.body.email
+              }',
+              address1 = '${req.body.address1}', address2 = '${req.body.address2
+              }',additionalInfo = '${req.body.additionalInfo
+              }', updatedOn = '${new Date().toISOString()}', isPrimary = '${req.body.isBilling ? req.body.isBilling : '0'}', bAddress1 =  '${req.body.bAddress1 ? req.body.bAddress1 : ''}'
+            , bAddress2 =  '${req.body.bAddress2 ? req.body.bAddress2 : ''}', bAddress3 =  '${req.body.bAddress3 ? req.body.bAddress3 : ''}'  Where userId = '1' `;
 
             console.log("query", query);
             request.query(query, function (err, set) {
@@ -505,15 +500,12 @@ router.post(
               }
             });
           } else {
-            let query = `Insert into DeliveryAddress values( '${
-              req.body.name
-            }', '${req.body.contactNumber}', '${req.body.email}',
-              '${
-                req.body.address1
-              }', '1', '${new Date().toISOString()}', '${new Date().toISOString()}', '${req.body.isBilling?req.body.isBilling:'0'}','${
-              req.body.additionalInfo
-            }','${req.body.address2}','${req.body.baddress1?req.body.bAddress1:''}','${req.body.bAddress2?req.body.bAddress2:''}'
-            ,'${req.body.bAddress3?req.body.bAddress3:''}' )`;
+            let query = `Insert into DeliveryAddress values( '${req.body.name
+              }', '${req.body.contactNumber}', '${req.body.email}',
+              '${req.body.address1
+              }', '1', '${new Date().toISOString()}', '${new Date().toISOString()}', '${req.body.isBilling ? req.body.isBilling : '0'}','${req.body.additionalInfo
+              }','${req.body.address2}','${req.body.baddress1 ? req.body.bAddress1 : ''}','${req.body.bAddress2 ? req.body.bAddress2 : ''}'
+            ,'${req.body.bAddress3 ? req.body.bAddress3 : ''}' )`;
 
             console.log("insertquery");
             request.query(query, function (err, set) {
@@ -551,11 +543,11 @@ router.get(
   async function (req, res) {
     let query = `Select * from DeliveryAddress Where userID = ${req.params.id}`;
 
-    let postalAddress = await new Promise((resolve,reject)=>{
+    let postalAddress = await new Promise((resolve, reject) => {
 
-      request.query(`Select [Postal code],[Blk No#],[Street name] From Buildings_floor_Map$ where [Postal code] = '${req.params.postalCode}'`,function(err,recordset){
+      request.query(`Select [Postal code],[Blk No#],[Street name] From Buildings_floor_Map$ where [Postal code] = '${req.params.postalCode}'`, function (err, recordset) {
 
-        if(recordset.recordset.length){
+        if (recordset.recordset.length) {
 
           recordset.recordset[0].BlkNo = recordset.recordset[0]['Blk No#']
           recordset.recordset[0].PostalCode = recordset.recordset[0]['Postal code']
@@ -564,12 +556,12 @@ router.get(
           delete recordset.recordset[0]['Street name']
           delete recordset.recordset[0]['Blk No#']
           resolve({
-            success:true,
-            resulr:recordset.recordset[0]
+            success: true,
+            resulr: recordset.recordset[0]
           })
-        }else{
+        } else {
           resolve({
-            success:false
+            success: false
           })
         }
 
@@ -590,7 +582,7 @@ router.get(
         res.json({
           success: true,
           message: "Delivery address for userID :" + req.params.id,
-          result: {...set.recordsets[0][0],...postalAddress.resulr},
+          result: { ...set.recordsets[0][0], ...postalAddress.resulr },
         });
       }
     });
