@@ -13,6 +13,7 @@ const { promises } = require('stream');
 var fs = require('fs')
 const json2csv = require('json2csv').parse;
 const middleware = require("../middleware/token-auth");
+const { resolve } = require('path');
 
 
 var storage = multer.diskStorage({
@@ -2218,49 +2219,105 @@ router.get('/slots', function (req, res) {
     })
 
 })
+
+function getOrderID(id) {
+
+    return new Promise((resolve, reject) => {
+        // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
+        request.query(`select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
+
+            // console.log("res", recordset)
+            resolve(recordset.recordset[0].Id)
+
+        })
+    })
+
+
+
+}
 router.post('/updateSiteVisitDateByUser',
-    [check("visitDay").exists(), check("visitSlot").exists()],
-    middleware.authenticate, function (req, res) {
+    [check("visitDay").exists()],
+    middleware.authenticate, async function (req, res) {
 
-        let query = `INSERT INTO [dbo].[SubscriptionManagement]
-    ([visitDay]
-    ,[visitSlot],[visitStatus],[userID]
-    ,[addedOn]
-    ,[updatedOn])
-VALUES
-    ('${req.body.visitDay}',>
-    ${req.body.visitSlot},1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}')`
+        let orderID = await getOrderID(req.decoded.id)
 
-        request.query(query, function (err, response) {
+        request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
 
-            if (!err) {
-                res.json({
-                    success: true,
-                    message: "Successfully updated"
+            console.log("err", err, recordset)
+
+            if (recordset.recordsets[0].length) {
+                let query = `Update SubscriptionManagement
+   
+    set visitDay = '${JSON.stringify(req.body.visitDay)}' where userID =  ${req.decoded.id} and orderID = ${orderID}`
+
+                console.log("query", query)
+
+                request.query(query, function (err, response) {
+
+                    if (!err) {
+                        res.json({
+                            success: true,
+                            message: "Successfully updated",
+                            date: new Date()
+                        })
+                    } else {
+                        console.log("err", err)
+                        res.json({
+                            success: false,
+                            message: "Error updating status"
+                        })
+                    }
+
                 })
+
             } else {
-                console.log("err", err)
-                res.json({
-                    success: false,
-                    message: "Error updating status"
+                let query = `INSERT INTO [dbo].[SubscriptionManagement]
+    ([visitDay],
+    [visitStatus],[userID]
+    ,[addedOn]
+    ,[updatedOn],[orderID])
+VALUES
+    ('${JSON.stringify(req.body.visitDay)}',
+    1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}',${orderID})`
+
+                console.log("query", query)
+
+                request.query(query, function (err, response) {
+
+                    if (!err) {
+                        res.json({
+                            success: true,
+                            message: "Successfully updated",
+                            date: new Date()
+                        })
+                    } else {
+                        console.log("err", err)
+                        res.json({
+                            success: false,
+                            message: "Error updating status"
+                        })
+                    }
+
                 })
             }
 
         })
 
+
+
     })
-router.post('/updateSiteVisitDateByAdmin/:id',
-    [check("visitDate").exists(), check("visitSlot").exists()],
+router.post('/updateSiteVisitDateByAdmin/:userID/:orderID',
+    [check("visitDate").exists()],
     middleware.authenticate, function (req, res) {
 
-        let query = `update SubscriptionManagement set visitDate = '${req.body.visitDate}', visitSlot = ${req.body.visitDay}, visitStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.id}`
+        let query = `update SubscriptionManagement set visitDate = '${req.body.visitDate}', visitStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
 
         request.query(query, function (err, response) {
 
             if (!err) {
                 res.json({
                     success: true,
-                    message: "Successfully updated"
+                    message: "Successfully updated",
                 })
             } else {
                 console.log("err", err)
@@ -2275,48 +2332,88 @@ router.post('/updateSiteVisitDateByAdmin/:id',
     })
 
 router.post('/updateInstallationDateByUser',
-    [check("installationDay").exists(), check("installationSlot").exists()],
-    middleware.authenticate, function (req, res) {
+    [check("installationDay").exists()],
+    middleware.authenticate, async function (req, res) {
 
-        let query = `INSERT INTO [dbo].[SubscriptionManagement]
-    ([installationDay]
-    ,[visitSlot],[installationStatus],[userID]
-    ,[addedOn]
-    ,[updatedOn])
-VALUES
-    ('${req.body.installationDay}',>
-    ${req.body.installationSlot},1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}')`
+        let orderID = await getOrderID(req.decoded.id)
 
-        request.query(query, function (err, response) {
+        request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
 
-            if (!err) {
-                res.json({
-                    success: true,
-                    message: "Successfully updated"
+            console.log("err", err, recordset)
+
+            if (recordset.recordsets[0].length) {
+                let query = `Update SubscriptionManagement
+   
+    set installationDay = '${JSON.stringify(req.body.installationDay)}', installationStatus = '1'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
+
+                console.log("query", query)
+
+                request.query(query, function (err, response) {
+
+                    if (!err) {
+                        res.json({
+                            success: true,
+                            message: "Successfully updated",
+                            date: new Date()
+                        })
+                    } else {
+                        console.log("err", err)
+                        res.json({
+                            success: false,
+                            message: "Error updating status"
+                        })
+                    }
+
                 })
+
             } else {
-                console.log("err", err)
-                res.json({
-                    success: false,
-                    message: "Error updating status"
+                let query = `INSERT INTO [dbo].[SubscriptionManagement]
+    ([installationDay],
+    [installationStatus],[userID]
+    ,[addedOn]
+    ,[updatedOn],[orderID])
+VALUES
+    ('${JSON.stringify(req.body.installationDay)}',
+    1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}',${orderID})`
+
+                console.log("query", query)
+
+                request.query(query, function (err, response) {
+
+                    if (!err) {
+                        res.json({
+                            success: true,
+                            message: "Successfully updated",
+                            date: new Date()
+                        })
+                    } else {
+                        console.log("err", err)
+                        res.json({
+                            success: false,
+                            message: "Error updating status"
+                        })
+                    }
+
                 })
             }
 
         })
 
+
+
     })
-router.post('/updateSiteVisitByAdmin/:id',
-    [check("installationDate").exists(), check("installationSlot").exists()],
+router.post('/updateinstallationDateByAdmin/:userID/:orderID',
+    [check("installationDate").exists()],
     middleware.authenticate, function (req, res) {
 
-        let query = `update SubscriptionManagement set installationDate = '${req.body.installationDate}', installationSlot = ${req.body.installationSlot}, installationStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.id}`
+        let query = `update SubscriptionManagement set installationDate = '${req.body.installationDate}', installationStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
 
         request.query(query, function (err, response) {
 
             if (!err) {
                 res.json({
                     success: true,
-                    message: "Successfully updated"
+                    message: "Successfully updated",
                 })
             } else {
                 console.log("err", err)

@@ -2,11 +2,11 @@ var express = require('express');
 var router = express.Router();
 // var twilio = require('twilio');
 const accountSid = 'AC4e67a1253563b4eb0d9d60df1b78fea4';
-const authToken = '1314d2be2ed13b2716c7594c9541d12b';
+const authToken = 'fa545b73435447cb5360f089f014eb5b';
 const serviceSid = 'VA668b6f328c4bf9cd00ee73ace1028bf9';
 const client = require('twilio')(accountSid, authToken);
 const rp = require('request-promise')
-const country = '+65'
+const country = '+91'
 const { check, oneOf, validationResult } = require('express-validator');
 var sql = require("../database");
 var request = new sql.Request();
@@ -27,7 +27,7 @@ function sendSMS(to, channel) {
     console.log("to, channel", to, channel)
     return new Promise((resolve, reject) => {
         var data = {
-            "To": country + to,
+            "To": to,
             "Channel": channel,
         }
         console.log('data', data)
@@ -47,7 +47,7 @@ function sendSMS(to, channel) {
             resolve({
                 [channel]: {
                     success: true,
-                    message: `OTP has been sent to ${country + to} via ${channel}`
+                    message: `OTP has been sent to ${to} via ${channel}`
                 }
             })
 
@@ -56,7 +56,7 @@ function sendSMS(to, channel) {
             resolve({
                 [channel]: {
                     success: false,
-                    message: `Sending OTP has been failed to ${country + to} via ${channel}`
+                    message: `Sending OTP has been failed to ${to} via ${channel}`
                 }
             })
 
@@ -101,7 +101,7 @@ router.post('/send-otp', async function (req, res) {
 router.post('/verify', function (req, res, next) {
     if (req.body.otp && req.body.phoneNumber) {
         const code = req.body.otp,
-            to = country + req.body.phoneNumber;
+            to = req.body.phoneNumber;
 
         const twilioAccountSid = accountSid,
             twilioAuthToken = authToken,
@@ -141,10 +141,26 @@ router.post('/verify', function (req, res, next) {
 
                     } else {
                         if (set.recordset.length) {
+
+                            var payload = {}
+                            payload.id = set.recordsets[0][0].Id
+                            payload.email = set.recordsets[0][0].Email
+                            payload.expire = moment(new Date()).add('30', 'minutes').toDate()
+                            payload.firstName = set.recordset[0].FirstName
+                            payload.lastName = set.recordset[0].LastName
+                            payload.phoneNumber = set.recordset[0].PhoneNumber
+                            payload.address = set.recordset[0].address ? set.recordset[0].address : ""
+                            payload.isSocialLogin = set.recordset[0].IsSocialLogin
+
+                            var token = jwt.sign(payload, secret);
+
+
+
                             res.json({
                                 success: true,
                                 message: "User details respective to the Phone Number passed.",
-                                result: set.recordset[0]
+                                result: set.recordset[0],
+                                token: token
                             })
                         } else {
 
