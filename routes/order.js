@@ -2308,7 +2308,7 @@ VALUES
     })
 router.post('/updateSiteVisitDateByAdmin/:userID/:orderID',
     [check("visitDate").exists()],
-    middleware.authenticate, function (req, res) {
+    function (req, res) {
 
         let query = `update SubscriptionManagement set visitDate = '${req.body.visitDate}', visitStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
 
@@ -2404,7 +2404,7 @@ VALUES
     })
 router.post('/updateinstallationDateByAdmin/:userID/:orderID',
     [check("installationDate").exists()],
-    middleware.authenticate, function (req, res) {
+    function (req, res) {
 
         let query = `update SubscriptionManagement set installationDate = '${req.body.installationDate}', installationStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
 
@@ -2426,6 +2426,41 @@ router.post('/updateinstallationDateByAdmin/:userID/:orderID',
         })
 
     })
+
+router.get('/subscriptionManagementDetails/:id', async function (req, res) {
+
+    let orderID = await getOrderID(req.params.id)
+
+
+    request.query(`Select * From SubscriptionManagement where userID = ${req.params.id} and orderID  = ${orderID}`, function (err, recordset) {
+
+        if (!err) {
+
+
+
+            try {
+                recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
+                recordset.recordset[0].installationDay = JSON.parse(recordset.recordset[0].installationDay)
+            } catch {
+
+            }
+
+            res.json({
+                success: true,
+                response: recordset.recordset[0],
+                message: "SubscriotionManagement details"
+            })
+        } else {
+            res.json({
+                success: false,
+                message: err
+            })
+        }
+
+
+    })
+
+})
 
 
 
