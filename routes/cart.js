@@ -305,9 +305,9 @@ router.post(
                      ,'${cart.total}'
                      ,'${cart.FirstName} ${cart.LastName}'
                      ,'${cart.user_Id}'
-                     ,'${products.condenserIDs ? products.condenserIDs[0] : "101", 'OR'
-              }'
-                     ) SELECT SCOPE_IDENTITY() as id`;
+                     ,'101', 'OR')
+              
+                     SELECT SCOPE_IDENTITY() as id`;
 
             console.log("query", query);
 

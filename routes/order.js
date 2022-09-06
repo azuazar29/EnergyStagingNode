@@ -2226,8 +2226,15 @@ function getOrderID(id) {
         // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
         request.query(`select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
 
-            // console.log("res", recordset)
-            resolve(recordset.recordset[0].Id)
+            if (recordset.recordset.length) {
+                console.log("res", id)
+
+                resolve(recordset.recordset[0].Id)
+
+            } else {
+                resolve('')
+
+            }
 
         })
     })
@@ -2241,67 +2248,76 @@ router.post('/updateSiteVisitDateByUser',
 
         let orderID = await getOrderID(req.decoded.id)
 
-        request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
+        if (orderID != '') {
+            request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
 
-            console.log("err", err, recordset)
+                console.log("err", err, recordset)
 
-            if (recordset.recordsets[0].length) {
-                let query = `Update SubscriptionManagement
-   
-    set visitDay = '${JSON.stringify(req.body.visitDay)}' where userID =  ${req.decoded.id} and orderID = ${orderID}`
+                if (recordset.recordsets[0].length) {
+                    let query = `Update SubscriptionManagement
+       
+        set visitDay = '${JSON.stringify(req.body.visitDay)}' where userID =  ${req.decoded.id} and orderID = ${orderID}`
 
-                console.log("query", query)
+                    console.log("query", query)
 
-                request.query(query, function (err, response) {
+                    request.query(query, function (err, response) {
 
-                    if (!err) {
-                        res.json({
-                            success: true,
-                            message: "Successfully updated",
-                            date: new Date()
-                        })
-                    } else {
-                        console.log("err", err)
-                        res.json({
-                            success: false,
-                            message: "Error updating status"
-                        })
-                    }
+                        if (!err) {
+                            res.json({
+                                success: true,
+                                message: "Successfully updated",
+                                date: new Date()
+                            })
+                        } else {
+                            console.log("err", err)
+                            res.json({
+                                success: false,
+                                message: "Error updating status"
+                            })
+                        }
 
-                })
+                    })
 
-            } else {
-                let query = `INSERT INTO [dbo].[SubscriptionManagement]
-    ([visitDay],
-    [visitStatus],[userID]
-    ,[addedOn]
-    ,[updatedOn],[orderID])
-VALUES
-    ('${JSON.stringify(req.body.visitDay)}',
-    1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}',${orderID})`
+                } else {
+                    let query = `INSERT INTO [dbo].[SubscriptionManagement]
+        ([visitDay],
+        [visitStatus],[userID]
+        ,[addedOn]
+        ,[updatedOn],[orderID])
+    VALUES
+        ('${JSON.stringify(req.body.visitDay)}',
+        1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}',${orderID})`
 
-                console.log("query", query)
+                    console.log("query", query)
 
-                request.query(query, function (err, response) {
+                    request.query(query, function (err, response) {
 
-                    if (!err) {
-                        res.json({
-                            success: true,
-                            message: "Successfully updated",
-                            date: new Date()
-                        })
-                    } else {
-                        console.log("err", err)
-                        res.json({
-                            success: false,
-                            message: "Error updating status"
-                        })
-                    }
+                        if (!err) {
+                            res.json({
+                                success: true,
+                                message: "Successfully updated",
+                                date: new Date()
+                            })
+                        } else {
+                            console.log("err", err)
+                            res.json({
+                                success: false,
+                                message: "Error updating status"
+                            })
+                        }
 
-                })
-            }
+                    })
+                }
 
-        })
+            })
+        } else {
+            res.json({
+                success: false,
+                message: 'No order found'
+            })
+        }
+
+
 
 
 
@@ -2338,67 +2354,76 @@ router.post('/updateInstallationDateByUser',
 
         let orderID = await getOrderID(req.decoded.id)
 
-        request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
+        if (orderID != '') {
+            request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
 
-            console.log("err", err, recordset)
+                console.log("err", err, recordset)
 
-            if (recordset.recordsets[0].length) {
-                let query = `Update SubscriptionManagement
-   
-    set installationDay = '${JSON.stringify(req.body.installationDay)}', installationStatus = '1'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
+                if (recordset.recordsets[0].length) {
+                    let query = `Update SubscriptionManagement
+       
+        set installationDay = '${JSON.stringify(req.body.installationDay)}', installationStatus = '1'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
 
-                console.log("query", query)
+                    console.log("query", query)
 
-                request.query(query, function (err, response) {
+                    request.query(query, function (err, response) {
 
-                    if (!err) {
-                        res.json({
-                            success: true,
-                            message: "Successfully updated",
-                            date: new Date()
-                        })
-                    } else {
-                        console.log("err", err)
-                        res.json({
-                            success: false,
-                            message: "Error updating status"
-                        })
-                    }
+                        if (!err) {
+                            res.json({
+                                success: true,
+                                message: "Successfully updated",
+                                date: new Date()
+                            })
+                        } else {
+                            console.log("err", err)
+                            res.json({
+                                success: false,
+                                message: "Error updating status"
+                            })
+                        }
 
-                })
+                    })
 
-            } else {
-                let query = `INSERT INTO [dbo].[SubscriptionManagement]
-    ([installationDay],
-    [installationStatus],[userID]
-    ,[addedOn]
-    ,[updatedOn],[orderID])
-VALUES
-    ('${JSON.stringify(req.body.installationDay)}',
-    1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}',${orderID})`
+                } else {
+                    let query = `INSERT INTO [dbo].[SubscriptionManagement]
+        ([installationDay],
+        [installationStatus],[userID]
+        ,[addedOn]
+        ,[updatedOn],[orderID])
+    VALUES
+        ('${JSON.stringify(req.body.installationDay)}',
+        1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}',${orderID})`
 
-                console.log("query", query)
+                    console.log("query", query)
 
-                request.query(query, function (err, response) {
+                    request.query(query, function (err, response) {
 
-                    if (!err) {
-                        res.json({
-                            success: true,
-                            message: "Successfully updated",
-                            date: new Date()
-                        })
-                    } else {
-                        console.log("err", err)
-                        res.json({
-                            success: false,
-                            message: "Error updating status"
-                        })
-                    }
+                        if (!err) {
+                            res.json({
+                                success: true,
+                                message: "Successfully updated",
+                                date: new Date()
+                            })
+                        } else {
+                            console.log("err", err)
+                            res.json({
+                                success: false,
+                                message: "Error updating status"
+                            })
+                        }
 
-                })
-            }
+                    })
+                }
 
-        })
+            })
+        } else {
+            res.json({
+                success: false,
+                message: 'No order found'
+            })
+        }
+
+
 
 
 
@@ -2433,35 +2458,69 @@ router.post('/updateinstallationDateByAdmin/:userID/:orderID',
 router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
     let orderID = await getOrderID(req.params.id)
+    console.log("orderID", orderID)
+
+    if (orderID != '') {
+        console.log("orderID", orderID)
+
+        request.query(`Select * From SubscriptionManagement where userID = ${req.params.id} and orderID  = ${orderID}`, function (err, recordset) {
+
+            if (!err) {
 
 
-    request.query(`Select * From SubscriptionManagement where userID = ${req.params.id} and orderID  = ${orderID}`, function (err, recordset) {
 
-        if (!err) {
+                try {
+                    recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
+                    recordset.recordset[0].installationDay = JSON.parse(recordset.recordset[0].installationDay)
+                } catch {
 
+                }
 
-
-            try {
-                recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
-                recordset.recordset[0].installationDay = JSON.parse(recordset.recordset[0].installationDay)
-            } catch {
-
+                res.json({
+                    success: true,
+                    response: recordset.recordset[0],
+                    message: "SubscriotionManagement details"
+                })
+            } else {
+                res.json({
+                    success: false,
+                    message: err
+                })
             }
 
-            res.json({
-                success: true,
-                response: recordset.recordset[0],
-                message: "SubscriotionManagement details"
-            })
-        } else {
-            res.json({
-                success: false,
-                message: err
-            })
-        }
+
+        })
+    } else {
+        request.query(`Select * From SubscriptionManagement where userID = ${req.params.id} and orderID  = ${orderID}`, function (err, recordset) {
+
+            if (!err) {
 
 
-    })
+
+                try {
+                    recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
+                    recordset.recordset[0].installationDay = JSON.parse(recordset.recordset[0].installationDay)
+                } catch {
+
+                }
+
+                res.json({
+                    success: true,
+                    response: recordset.recordset[0],
+                    message: "SubscriotionManagement details"
+                })
+            } else {
+                res.json({
+                    success: false,
+                    message: err
+                })
+            }
+
+
+        })
+    }
+
+
 
 })
 
