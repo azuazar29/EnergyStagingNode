@@ -1,10 +1,9 @@
 var express = require('express');
 var router = express.Router();
 // var twilio = require('twilio');
-const accountSid = 'AC4e67a1253563b4eb0d9d60df1b78fea4';
-const authToken = 'fa545b73435447cb5360f089f014eb5b';
-const serviceSid = 'VA668b6f328c4bf9cd00ee73ace1028bf9';
-const client = require('twilio')(accountSid, authToken);
+const accountSid = '';
+const authToken = '';
+const serviceSid = '';
 const rp = require('request-promise')
 const country = '+91'
 const { check, oneOf, validationResult } = require('express-validator');
@@ -23,21 +22,39 @@ const jwt = require('jsonwebtoken')
 
 /* POST verify phone number. */
 
+function getTwilioCredentials() {
+
+    return new Promise((resolve, reject) => {
+
+        request.query(`Select * from Twilio_Credentials`, function (err, recordset) {
+            console.log("err", err)
+            resolve(recordset.recordset[0])
+        })
+
+    })
+
+}
+
 function sendSMS(to, channel) {
     console.log("to, channel", to, channel)
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         var data = {
             "To": to,
             "Channel": channel,
         }
         console.log('data', data)
+
+
+        let cred = await getTwilioCredentials()
+        console.log("cred", cred)
+
         var options = {
-            url: `https://verify.twilio.com/v2/Services/${serviceSid}/Verifications`,
+            url: `https://verify.twilio.com/v2/Services/${cred.serviceSid}/Verifications`,
             method: 'POST',
             formData: data,
             auth: {
-                'user': accountSid,
-                'pass': authToken
+                'user': cred.accountSid,
+                'pass': cred.authToken
             },
             json: true
         };
@@ -98,14 +115,16 @@ router.post('/send-otp', async function (req, res) {
 });
 
 /* POST verify phone number. */
-router.post('/verify', function (req, res, next) {
+router.post('/verify', async function (req, res, next) {
     if (req.body.otp && req.body.phoneNumber) {
         const code = req.body.otp,
             to = req.body.phoneNumber;
 
-        const twilioAccountSid = accountSid,
-            twilioAuthToken = authToken,
-            twilioVerificationSid = serviceSid
+        let cred = await getTwilioCredentials()
+
+        const twilioAccountSid = cred.accountSid,
+            twilioAuthToken = cred.authToken,
+            twilioVerificationSid = cred.serviceSid
 
         var data = {
             "To": to,
@@ -333,6 +352,7 @@ router.put('/updateName',
                         res.json({
                             success: true,
                             message: "User has been updated successfully",
+                            result: set.recordset[0],
                             token: token
                         })
 
