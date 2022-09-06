@@ -2307,14 +2307,15 @@ VALUES
 
     })
 router.post('/updateSiteVisitDateByAdmin/:userID/:orderID',
-    [check("visitDate").exists()],
+    [check("visitDate").exists(), check("visitSlot").exists()],
     function (req, res) {
 
-        let query = `update SubscriptionManagement set visitDate = '${req.body.visitDate}', visitStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
+        let query = `update SubscriptionManagement set visitDate = '${req.body.visitDate}',visitSlot = ${req.body.visitSlot}, visitStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
 
         request.query(query, function (err, response) {
 
             if (!err) {
+
                 res.json({
                     success: true,
                     message: "Successfully updated",
@@ -2403,12 +2404,14 @@ VALUES
 
     })
 router.post('/updateinstallationDateByAdmin/:userID/:orderID',
-    [check("installationDate").exists()],
+    [check("installationDate").exists(), check("installationSlot").exists()],
     function (req, res) {
 
-        let query = `update SubscriptionManagement set installationDate = '${req.body.installationDate}', installationStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
+        let query = `update SubscriptionManagement set installationDate = '${req.body.installationDate}',installationSlot = ${req.body.installationSlot}, installationStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
 
         request.query(query, function (err, response) {
+
+
 
             if (!err) {
                 res.json({
@@ -2459,6 +2462,42 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
 
     })
+
+})
+
+router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
+
+    let status = req.body.status
+
+    if (status == 'OR' || status == 'SV' || status == 'IN') {
+        request.query(`update OrderList set orderFlow = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, recordset) {
+
+            request.query(`update OrderList set orderStatus = 'PE' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
+            console.log('err', err)
+            if (!err) {
+                res.json({
+                    success: true,
+                    message: 'Successfully updated.'
+                })
+            }
+
+        })
+    } else if (status == 'CO') {
+
+        request.query(`update OrderList set orderFlow = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, recordset) {
+
+            request.query(`update OrderList set orderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
+            console.log('err', err)
+            if (!err) {
+                res.json({
+                    success: true,
+                    message: 'Successfully updated.'
+                })
+            }
+
+        })
+
+    }
 
 })
 

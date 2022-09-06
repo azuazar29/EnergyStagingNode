@@ -292,7 +292,7 @@ router.post(
                      ,[OrderTotal]
                      ,[Customer]
                      ,[UserId]
-                     ,[ProductId])
+                     ,[ProductId],[orderFlow])
                VALUES
                      (
                        '${"OD" + getRandom(12)}'
@@ -305,7 +305,7 @@ router.post(
                      ,'${cart.total}'
                      ,'${cart.FirstName} ${cart.LastName}'
                      ,'${cart.user_Id}'
-                     ,'${products.condenserIDs ? products.condenserIDs[0] : "101"
+                     ,'${products.condenserIDs ? products.condenserIDs[0] : "101", 'OR'
               }'
                      ) SELECT SCOPE_IDENTITY() as id`;
 
