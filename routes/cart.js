@@ -222,7 +222,7 @@ router.put(
     base_MonthlyRent ='${req.body.base_MonthlyRent}',
     total_MonthlyRent='${req.body.total_MonthlyRent}',down_Payment='${req.body.down_Payment
         }',
-   total='${req.body.total}',user_Id='1'
+   total='${req.body.total}'
     Where id=${req.params.ID}`;
 
       request.query(query, function (err, set) {

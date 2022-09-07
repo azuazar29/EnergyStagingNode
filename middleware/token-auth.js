@@ -2,12 +2,12 @@
 
     'use strict';
 
-    var jwt = require('jsonwebtoken'),        
+    var jwt = require('jsonwebtoken'),
         secret = "05231b50-fd3d-11e9-bac2-47f7251a736c",
         sql = require("../database"),
-        request = new sql.Request(); 
+        request = new sql.Request();
 
-    function callbackFunc (res, bitVal, message,status) {
+    function callbackFunc(res, bitVal, message, status) {
         res.status(status);
         res.json({
             isToken: bitVal,
@@ -15,78 +15,78 @@
             message: message
         });
     }
- 
+
     tokenAuthenticationMiddleware.authenticate = function (req, res, next) {
         // console.log("request body ", req.body); 
         // console.log("request headers ", req.headers);
         // check header or url parameters or post parameters for token
         var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers.authorization;
-       
-        if (token ) {
 
-            req.decoded = {
-                id: '58',
-                email: 'johndoe@testmail.com',
-                expire: '2021-10-10T07:42:27.116Z',
-                firstName: 'John',
-                lastName: 'Doe',
-                iat: 1633251747
-            }
-            next()
-            
-                // jwt.verify(token, secret, {  algorithm:'HS512' },
-                //     function (err, decoded) {
-    
-                //         if(err){
-                //             console.log('error in aauthentication',err)
-                //             callbackFunc(res, false, "Invalid token",400);
-                //         }else{
-                //             console.log('decoded',decoded) 
-                //             //    callbackFunc(res, true, message);
-                //             if(new Date(decoded.expire) < new Date()){
+        if (token) {
 
-                //                 res.status(403);
-                //                 res.json({
-                //                     success: false,
-                //                     message:'Your login session has been expired please login and try again!'
-                //                 });
+            // req.decoded = {
+            //     id: '58',
+            //     email: 'johndoe@testmail.com',
+            //     expire: '2021-10-10T07:42:27.116Z',
+            //     firstName: 'John',
+            //     lastName: 'Doe',
+            //     iat: 1633251747
+            // }
+            // next()
 
-                //             }else{
-                //                 let query = `Select Email From Users Where Email = '${decoded.email}'`
-                //                 request.query(query, function (err,set) { 
-                //                     if(err){                            
-                //                       console.log("err",err)
-                //                       res.status(400)
-                //                       res.json({
-                //                         success:false,
-                //                         message:err.originalError.info.message
-                //                       })
-                                      
-                //                     }else{           
-                //                      if(!set.recordsets[0].length){
-                //                         res.status(403);
-                //                         res.json({
-                //                             success: false,
-                //                             message:'Access forbidden! Please check the supplied Authorization token and try again..'
-                //                         });
-                //                      }else{
-                //                          req.decoded = decoded
-                //                          next()
-                //                      }
-                                      
-                //                     }
-                //                     })
-                //             }
-                          
-                         
-                          
-                //         } 
-                        
-                //     });
-           
-            
+            jwt.verify(token, secret, { algorithm: 'HS512' },
+                function (err, decoded) {
+
+                    if (err) {
+                        console.log('error in aauthentication', err)
+                        callbackFunc(res, false, "Invalid token", 400);
+                    } else {
+                        console.log('decoded', decoded)
+                        //    callbackFunc(res, true, message);
+                        if (new Date(decoded.expire) < new Date()) {
+
+                            res.status(403);
+                            res.json({
+                                success: false,
+                                message: 'Your login session has been expired please login and try again!'
+                            });
+
+                        } else {
+                            let query = `Select PhoneNumber From Users Where PhoneNumber = '${decoded.phoneNumber}'`
+                            request.query(query, function (err, set) {
+                                if (err) {
+                                    console.log("err", err)
+                                    res.status(400)
+                                    res.json({
+                                        success: false,
+                                        message: err.originalError.info.message
+                                    })
+
+                                } else {
+                                    if (!set.recordsets[0].length) {
+                                        res.status(403);
+                                        res.json({
+                                            success: false,
+                                            message: 'Access forbidden! Please check the supplied Authorization token and try again..'
+                                        });
+                                    } else {
+                                        req.decoded = decoded
+                                        next()
+                                    }
+
+                                }
+                            })
+                        }
+
+
+
+                    }
+
+                });
+
+
         } else {
-            callbackFunc(res, false, "Please supply authorization token to continue ",403);
+            callbackFunc(res, false, "Please supply authorization token to continue ", 403);
         }
     };
 
