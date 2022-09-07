@@ -96,7 +96,7 @@ var groupBy = function (xs, key) {
     return rv;
   }, {});
 };
-router.post("/setproductId/:type", async (req, res) => {
+router.post("/setproductId/:type", middleware.authenticate, async (req, res) => {
   let productID = [];
 
   req.body.product.display_installed_rooms.forEach((element) => {
@@ -166,13 +166,13 @@ router.post("/setproductId/:type", async (req, res) => {
   ];
 
   let query = `INSERT INTO Cart
-  (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery],[savings]) VALUES ('${JSON.stringify(
+  (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery],[savings],[user_Id]) VALUES ('${JSON.stringify(
     FinalOutput
   )}','${new Date().toISOString()}','${req.params.type}','${JSON.stringify(
     AddOnDetails
   )}','7','54','${JSON.stringify(
     accessories
-  )}','20','500') SELECT SCOPE_IDENTITY() as id`;
+  )}','20','500','${req.decoded.id}') SELECT SCOPE_IDENTITY() as id`;
 
   console.log("query", query);
 
@@ -278,7 +278,7 @@ router.post(
             let cart = CartDetails.recordset[0];
             console.log("cart", cart);
 
-            let products = JSON.parse(cart.product_Id);
+            // let products = JSON.parse(cart.product_Id);
 
             let query = `
           INSERT INTO [dbo].[OrderList]

@@ -2226,6 +2226,7 @@ function getOrderID(id) {
         // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
         request.query(`select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
 
+            console.log("err", err)
             if (recordset.recordset.length) {
                 console.log("res", id)
 
@@ -2491,32 +2492,9 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
         })
     } else {
-        request.query(`Select * From SubscriptionManagement where userID = ${req.params.id} and orderID  = ${orderID}`, function (err, recordset) {
-
-            if (!err) {
-
-
-
-                try {
-                    recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
-                    recordset.recordset[0].installationDay = JSON.parse(recordset.recordset[0].installationDay)
-                } catch {
-
-                }
-
-                res.json({
-                    success: true,
-                    response: recordset.recordset[0],
-                    message: "SubscriotionManagement details"
-                })
-            } else {
-                res.json({
-                    success: false,
-                    message: err
-                })
-            }
-
-
+        res.json({
+            success: false,
+            message: "This user doesn't has any pending order to proceed."
         })
     }
 
