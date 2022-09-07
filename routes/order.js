@@ -2464,7 +2464,22 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
     if (orderID != '') {
         console.log("orderID", orderID)
 
-        request.query(`Select * From SubscriptionManagement where userID = ${req.params.id} and orderID  = ${orderID}`, function (err, recordset) {
+        let query = `Select sm.*, p.propertySize, p.totalRooms, c.product_Id as productDetails, c.total as totalAmount, c.subcription_Type, c.isSubscription  From SubscriptionManagement as sm
+        inner join Cart as c on c.orderID = ${orderID}
+        
+        LEFT JOIN UserConfiguration p ON (
+               p.userID = ${req.params.id}
+           AND NOT EXISTS (
+             SELECT 1 FROM UserConfiguration p1
+             WHERE p1.userID = ${req.params.id}
+             AND p1.id > p.id
+           )
+        )
+        where sm.userID = ${req.params.id} and sm.orderID  = ${orderID}
+        
+        `
+
+        request.query(query, function (err, recordset) {
 
             if (!err) {
 
@@ -2472,6 +2487,9 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
                 try {
                     recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
+                    recordset.recordset[0].propertySize = Number(recordset.recordset[0].propertySize).toFixed(2)
+                    recordset.recordset[0].productDetails = JSON.parse(recordset.recordset[0].productDetails)
+
                     recordset.recordset[0].installationDay = JSON.parse(recordset.recordset[0].installationDay)
                 } catch {
 

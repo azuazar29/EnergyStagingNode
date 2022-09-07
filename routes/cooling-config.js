@@ -96,7 +96,7 @@ router.post("/test", function (req, res) {
   console.log("it came here");
 });
 
-router.post("/auto-configuration", async function (req, res, next) {
+router.post("/auto-configuration", middleware.authenticate, async function (req, res, next) {
   try {
     validationResult(req).throw();
 
@@ -417,7 +417,7 @@ function addConfiguration(req) {
       req.body.rooms.forEach((element) => {
         rooms.push(element.roomName);
       });
-      let tempUserid = 1;
+      let tempUserid = req.decoded.id;
       let query = `Insert into UserConfiguration values( '${req.body.configurationName
         }', '${req.body.totalRooms}', '${req.body.totalSize}',
      '${JSON.stringify(

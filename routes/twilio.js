@@ -113,6 +113,29 @@ router.post('/send-otp', async function (req, res) {
 
 
 });
+function getOrderID(id) {
+
+    return new Promise((resolve, reject) => {
+        // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
+        request.query(`select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
+
+            console.log("err", err)
+            if (recordset.recordset.length) {
+                console.log("res", id)
+
+                resolve(true)
+
+            } else {
+                resolve('')
+
+            }
+
+        })
+    })
+
+
+
+}
 
 /* POST verify phone number. */
 router.post('/verify', async function (req, res, next) {
@@ -148,7 +171,7 @@ router.post('/verify', async function (req, res, next) {
             if (response.valid) {
 
                 let query = `select * from Users Where PhoneNumber='${req.body.phoneNumber}'`
-                request.query(query, function (err, set) {
+                request.query(query, async function (err, set) {
                     if (err) {
 
                         console.log("err", err)
@@ -161,6 +184,8 @@ router.post('/verify', async function (req, res, next) {
                     } else {
                         if (set.recordset.length) {
 
+
+
                             var payload = {}
                             payload.id = set.recordsets[0][0].Id
                             payload.email = set.recordsets[0][0].Email
@@ -172,6 +197,11 @@ router.post('/verify', async function (req, res, next) {
                             payload.isSocialLogin = set.recordset[0].IsSocialLogin
 
                             var token = jwt.sign(payload, secret);
+
+                            let isOrder = await getOrderID(set.recordsets[0][0].Id)
+                            if (isOrder) {
+                                set.recordset[0].status = '3'
+                            }
 
 
 
