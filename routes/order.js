@@ -2487,9 +2487,10 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
 
                 try {
-                    recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
-                    recordset.recordset[0].propertySize = Number(recordset.recordset[0].propertySize).toFixed(2)
                     recordset.recordset[0].productDetails = JSON.parse(recordset.recordset[0].productDetails)
+                    recordset.recordset[0].propertySize = Number(recordset.recordset[0].propertySize).toFixed(2)
+
+                    recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
 
                     recordset.recordset[0].installationDay = JSON.parse(recordset.recordset[0].installationDay)
                 } catch {
