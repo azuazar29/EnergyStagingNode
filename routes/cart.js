@@ -322,12 +322,12 @@ router.post(
                   async function (err, responseOrd) {
 
                     let querySUB = `INSERT INTO [dbo].[SubscriptionManagement]
-                    ([visitDay],
+                    (
                     [visitStatus],[userID]
                     ,[addedOn]
                     ,[updatedOn],[orderID])
                 VALUES
-                    ('',
+                    (
                     1,${cart.user_Id},'${new Date().toISOString()}','${new Date().toISOString()}',${responseOrder.recordset[0].id})`
 
                     request.query(querySUB)
