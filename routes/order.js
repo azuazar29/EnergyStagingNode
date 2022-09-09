@@ -2478,6 +2478,7 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
         where sm.userID = ${req.params.id} and sm.orderID  = ${orderID}
         
         `
+        console.log("order", query)
 
         request.query(query, function (err, recordset) {
 

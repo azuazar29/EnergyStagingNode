@@ -319,7 +319,20 @@ router.post(
                 request.query(
                   `update Customer_New set CustomerType = '${cart.subcription_Type == "OT" ? "OT" : "AS"
                   }' where userID = '${cart.user_Id}'`,
-                  function (err, responseOrd) {
+                  async function (err, responseOrd) {
+
+                    let querySUB = `INSERT INTO [dbo].[SubscriptionManagement]
+                    ([visitDay],
+                    [visitStatus],[userID]
+                    ,[addedOn]
+                    ,[updatedOn],[orderID])
+                VALUES
+                    ('',
+                    1,${cart.user_Id},'${new Date().toISOString()}','${new Date().toISOString()}',${responseOrder.recordset[0].id})`
+
+                    request.query(querySUB)
+
+
                     if (!err) {
                       res.status(200);
                       res.json({
