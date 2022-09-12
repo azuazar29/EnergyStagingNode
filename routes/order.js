@@ -2493,16 +2493,21 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
                     recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
 
-                    recordset.recordset[0].installationDay = JSON.parse(recordset.recordset[0].installationDay)
+                    recordset.recordset[0].InstallationDay = JSON.parse(recordset.recordset[0].InstallationDay)
+                    res.json({
+                        success: true,
+                        response: recordset.recordset[0],
+                        message: "SubscriotionManagement details"
+                    })
                 } catch {
-
+                    res.json({
+                        success: true,
+                        response: recordset.recordset[0],
+                        message: "SubscriotionManagement details"
+                    })
                 }
 
-                res.json({
-                    success: true,
-                    response: recordset.recordset[0],
-                    message: "SubscriotionManagement details"
-                })
+
             } else {
                 res.json({
                     success: false,
