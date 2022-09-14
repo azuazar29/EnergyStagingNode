@@ -184,7 +184,7 @@ router.post('/login',
               if (req.body.password) {
                 bcrypt.compare(req.body.password, set.recordsets[0][0].Password).then(function (result) {
                   if (result) {
-                    let time = '5'
+                    let time = '10000'
                     if (req.body.expireTime) {
                       time = req.body.expireTime
                     }
@@ -248,7 +248,7 @@ router.post('/login',
 
             } else {
 
-              let time = '5'
+              let time = '100000'
               if (req.body.expireTime) {
                 time = req.body.expireTime
               }

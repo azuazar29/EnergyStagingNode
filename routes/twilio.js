@@ -189,7 +189,7 @@ router.post('/verify', async function (req, res, next) {
                             var payload = {}
                             payload.id = set.recordsets[0][0].Id
                             payload.email = set.recordsets[0][0].Email
-                            payload.expire = moment(new Date()).add('30', 'minutes').toDate()
+                            payload.expire = moment(new Date()).add('1000000', 'minutes').toDate()
                             payload.firstName = set.recordset[0].FirstName
                             payload.lastName = set.recordset[0].LastName
                             payload.phoneNumber = set.recordset[0].PhoneNumber
@@ -370,7 +370,7 @@ router.put('/updateName',
                         var payload = {}
                         payload.id = set.recordsets[0][0].Id
                         payload.email = set.recordsets[0][0].Email
-                        payload.expire = moment(new Date()).add('30', 'minutes').toDate()
+                        payload.expire = moment(new Date()).add('100000', 'minutes').toDate()
                         payload.firstName = set.recordset[0].FirstName
                         payload.lastName = set.recordset[0].LastName
                         payload.phoneNumber = set.recordset[0].PhoneNumber
