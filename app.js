@@ -166,7 +166,7 @@ VALUES
 
 }
 
-cron.schedule('0 */15 * * * *', async () => {
+cron.schedule('*/15 * * * * ', async () => {
   console.log('running a task every minute');
 
   let device = [
