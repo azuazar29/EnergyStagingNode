@@ -34,6 +34,8 @@ var device_id = config.device_id
 var nonce = config.nonce
 const path = '/v1.0/devices/' + device_id + '/statistics/total?code=add_ele';
 
+var tuyo = require('./routes/tuyo')
+
 
 const get_access_token = function () {
   return new Promise(function (resolve, reject) {
@@ -130,6 +132,7 @@ app.use('/api', dashboardRouter)
 app.use('/api', orders)
 app.use('/api', floormapRouter)
 app.use('/api', twilio)
+app.use('/api', tuyo)
 app.set('rootDir', __dirname);
 
 app.use("/public", express.static(__dirname + '/public/'));
@@ -169,7 +172,7 @@ VALUES
 
 
 var job = new CronJob(
-  '* * * * *',
+  '*/15 * * * *',
   async function () {
     console.log('running a task every minute');
 
