@@ -9,7 +9,8 @@ var dashboardRouter = require('./routes/dashboard')
 var orders = require('./routes/order')
 var floormapRouter = require('./routes/floormap');
 var twilio = require('./routes/twilio')
-var cron = require('node-cron');
+// var cron = require('node-cron');
+var CronJob = require('cron').CronJob;
 
 var sql = require("./database");
 var request = new sql.Request();
@@ -80,7 +81,7 @@ async function getTotalEnergy(device_id) {
 
       headers: { 'content-type': 'application/x-www-form-urlencoded', 'client_id': client_id, 'sign': sign, 't': timestamp, 'sign_method': 'HMAC-SHA256', 'access_token': access_token }
     }).then(function (response) {
-      console.log("reponse", response.data)
+      // console.log("reponse", response.data)
 
       resolve(response.data.result.total)
       // resolve(response.data.result.total)
@@ -151,7 +152,7 @@ VALUES
     ,'${new Date().toISOString()}'
     ,'${deviceName}')`
 
-    console.log("query", query)
+    // console.log("query", query)
     request.query(query, function (err, response) {
       console.log('err', err)
       console.log('response', response)
@@ -166,30 +167,36 @@ VALUES
 
 }
 
-cron.schedule('*/5 * * * * ', async () => {
-  console.log('running a task every minute');
 
-  let device = [
-    {
-      devideId: 'bfc29c88239e88abfdfioi',
-      deviceName: 'smart plug 3',
-    },
-    {
-      devideId: 'bfbcd23d1b285a2391ul20',
-      deviceName: 'smart plug 2',
-    },
-    {
-      devideId: 'bf664ad3a1ff7085d7pyvr',
-      deviceName: 'smart plug',
+var job = new CronJob(
+  '*/15 * * * *',
+  async function () {
+    console.log('running a task every minute');
+
+    let device = [
+      {
+        devideId: 'bfc29c88239e88abfdfioi',
+        deviceName: 'smart plug 3',
+      },
+      {
+        devideId: 'bfbcd23d1b285a2391ul20',
+        deviceName: 'smart plug 2',
+      },
+      {
+        devideId: 'bf664ad3a1ff7085d7pyvr',
+        deviceName: 'smart plug',
+      }
+    ]
+
+    for (let i = 0; i < device.length; i++) {
+      await updateEnergyDetails(device[i].devideId, device[i].deviceName)
     }
-  ]
+  },
+  null,
+  true,
+  'America/Los_Angeles'
+);
 
-  for (let i = 0; i < device.length; i++) {
-    await updateEnergyDetails(device[i].devideId, device[i].deviceName)
-  }
-
-
-});
 
 
 
