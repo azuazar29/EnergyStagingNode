@@ -98,6 +98,8 @@ router.post('/getEnergyConsumption', function (req, res) {
             }
             console.log("days", days)
             let final = []
+            let todaysenergy = 0
+            let maxdayenergy = 0
 
             days.forEach((day, i) => {
                 final[i] = {
@@ -108,6 +110,14 @@ router.post('/getEnergyConsumption', function (req, res) {
                     if (day.day == moment(element.updatedOn).day()) {
                         final[i].energyConsumed = (Number(final[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
                     }
+
+                    if (day.day == moment(new Date()).day()) {
+                        todaysenergy = (Number(todaysenergy) + Number(element.EnergyConsumed)).toFixed(2)
+                    }
+
+                    maxdayenergy = (Number(maxdayenergy) + Number(element.EnergyConsumed)).toFixed(2)
+
+
                 })
 
             })
@@ -216,6 +226,10 @@ router.post('/getEnergyConsumption', function (req, res) {
                 TotalEnergySpendTrend: Number(total).toFixed(2),
                 TotalMoneySpendTrend: Number(total * .023).toFixed(2),
                 Threshold: 75 * Number(month) * 30,
+                TotalEnergySpendToday: todaysenergy,
+                TotalMoneySpendToday: (Number(todaysenergy) * .23).toFixed(2),
+                TotalMoneySpendmax: (Number(maxdayenergy) * .23).toFixed(2),
+                TotalEnergySpendmax: maxdayenergy,
             })
 
 
