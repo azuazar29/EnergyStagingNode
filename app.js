@@ -157,8 +157,8 @@ VALUES
 
     // console.log("query", query)
     request.query(query, function (err, response) {
-      console.log('err', err)
-      console.log('response', response)
+      // console.log('err', err)
+      // console.log('response', response)
 
       resolve(true)
 
