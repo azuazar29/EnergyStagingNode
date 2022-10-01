@@ -8,6 +8,9 @@ const moment = require("moment")
 
 
 
+const red = "#c62828", lightGreen = "#4b00ff", green = "#7c84f0", grey = '#ffffff'
+const redValue = 120, lightGreenValue = 60, greenValue = 80, greyValue = 0
+
 var groupBy = function (xs, key) {
     return xs.reduce(function (rv, x) {
         (rv[x[key]] = rv[x[key]] || []).push(x);
@@ -33,6 +36,22 @@ router.get('/energyConsumption', function (req, res) {
     })
 
 })
+
+function getColor(value) {
+
+    if (value <= greyValue) {
+        return grey
+    } else if (value <= lightGreenValue) {
+        return lightGreen
+    } else if (value <= greenValue) {
+        return green
+    } else if (value >= redValue) {
+        return red
+    } else {
+        return red
+    }
+
+}
 
 router.post('/getEnergyConsumption', function (req, res) {
 
@@ -78,7 +97,7 @@ router.post('/getEnergyConsumption', function (req, res) {
 
 
             let startDate1 = moment(new Date()).startOf('month').format("MM/DD/YYYY")
-            let endDate1 = moment(new Date()).format("MM/DD/YYYY")
+            let endDate1 = moment(new Date()).endOf('month').format("MM/DD/YYYY")
 
 
             console.log("sucess")
@@ -104,7 +123,8 @@ router.post('/getEnergyConsumption', function (req, res) {
             days.forEach((day, i) => {
                 final[i] = {
                     day: day.dayName,
-                    energyConsumed: "0"
+                    energyConsumed: "0",
+                    color: ''
                 }
                 result.forEach(element => {
                     if (day.day == moment(element.updatedOn).day()) {
@@ -124,7 +144,7 @@ router.post('/getEnergyConsumption', function (req, res) {
             let total = 0
             final.forEach(element => {
 
-                // element.color = getColor(Number(element.energyConsumed).toFixed(2))
+                element.color = getColor(Number(element.energyConsumed).toFixed(2))
                 total = total + Number(element.energyConsumed)
 
             })
@@ -140,7 +160,8 @@ router.post('/getEnergyConsumption', function (req, res) {
 
                 finalResult[i] = {
                     day: i + 1,
-                    energyConsumed: "0"
+                    energyConsumed: "0",
+                    color: ''
                 }
 
                 result.forEach(element => {
@@ -164,6 +185,8 @@ router.post('/getEnergyConsumption', function (req, res) {
             finalResult1.forEach(element => {
 
                 totalMonthly = totalMonthly + Number(element.energyConsumed)
+
+                element.color = getColor(Number(element.energyConsumed).toFixed(2))
 
             })
 
@@ -253,6 +276,8 @@ router.post('/getEnergyConsumption', function (req, res) {
 
 
 })
+
+
 
 function datediff(first, second) {
 
