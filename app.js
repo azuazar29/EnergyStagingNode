@@ -197,7 +197,7 @@ var job = new CronJob(
   },
   null,
   true,
-  'America/Los_Angeles'
+  false
 );
 
 
