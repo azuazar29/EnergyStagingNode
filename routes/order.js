@@ -1724,8 +1724,8 @@ router.get("/getDashBoardChart", function (req, res) {
                             previoussales: array2,
                             energyconsumption: array3.array,
                             previousEnegryConsumption: array4.array,
-                            totalEnergyConsumption: array3.total,
-                            totalPreviousConsumption: array4.total
+                            totalEnergyConsumption: Number(array3.total).toFixed(2),
+                            totalPreviousConsumption: Number(array4.total).toFixed(2)
                         })
 
 
