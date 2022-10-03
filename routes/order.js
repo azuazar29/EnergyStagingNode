@@ -1756,6 +1756,7 @@ function getEnergyDetails(startDate, endDate) {
             } else {
 
 
+                // console.log("set.recordsets", set.recordsets[0])
 
                 let result = set.recordsets[0]
 
@@ -1771,15 +1772,25 @@ function getEnergyDetails(startDate, endDate) {
 
                 let resultFinal = groupBy(result, 'updatedOn')
 
+                console.log(resultFinal)
+
                 let groupedData = []
 
                 Object.keys(resultFinal).forEach(element => {
 
-                    groupedData.push(resultFinal[element][resultFinal[element].length - 1])
+                    let data = groupBy(resultFinal[element], 'Device_ID')
+                    Object.keys(data).forEach(elementInner => {
+                        groupedData.push(data[elementInner][data[elementInner].length - 1])
+                    })
+
+                    // groupedData.push(resultFinal[element][resultFinal[element].length - 1])
 
                 })
 
-                result = groupedData
+
+
+
+
 
 
 
@@ -1791,7 +1802,7 @@ function getEnergyDetails(startDate, endDate) {
 
                     // console.log("mmm", m.day())
                     let isAvailable = false
-                    result.forEach(element => {
+                    groupedData.forEach(element => {
 
 
                         // console.log("elemen", element)
@@ -1818,7 +1829,27 @@ function getEnergyDetails(startDate, endDate) {
                     }
                 }
 
-                resolve(final)
+                let finalGroup = groupBy(final, 'Day')
+
+                let finalArray = []
+
+                Object.keys(finalGroup).forEach(element => {
+
+                    let obj = {
+                        Day: element,
+                        Energy: 0
+                    }
+
+                    finalGroup[element].forEach(elementInner => {
+                        obj.Energy = (Number(obj.Energy) + Number(elementInner.Energy)).toFixed(2)
+                    })
+
+                    finalArray.push(obj)
+
+
+                })
+
+                resolve(finalArray)
 
 
 
