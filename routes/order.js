@@ -1718,7 +1718,15 @@ router.get("/getDashBoardChart", function (req, res) {
                             })
 
                         })
-                        res.json({ success: true, sales: tempArray, previoussales: array2, energyconsumption: array3, previousEnegryConsumption: array4 })
+                        res.json({
+                            success: true,
+                            sales: tempArray,
+                            previoussales: array2,
+                            energyconsumption: array3.array,
+                            previousEnegryConsumption: array4.array,
+                            totalEnergyConsumption: array3.total,
+                            totalPreviousConsumption: array4.total
+                        })
 
 
 
@@ -1772,7 +1780,7 @@ function getEnergyDetails(startDate, endDate) {
 
                 let resultFinal = groupBy(result, 'updatedOn')
 
-                console.log(resultFinal)
+                // console.log(resultFinal)
 
                 let groupedData = []
 
@@ -1849,7 +1857,25 @@ function getEnergyDetails(startDate, endDate) {
 
                 })
 
-                resolve(finalArray)
+                let total = 0
+
+                finalArray.forEach((element, index) => {
+
+                    if (element.Energy != 0) {
+                        if (index == 0) {
+                            total = element.Energy
+
+                        } else {
+                            total = total + (Number(element.Energy) - Number(finalArray[index - 1].Energy))
+
+                        }
+
+                    }
+
+                })
+                console.log('total', total)
+
+                resolve({ array: finalArray, total: total })
 
 
 
