@@ -199,7 +199,7 @@ router.post('/getEnergyConsumption', function (req, res) {
                     // //console.log(moment(element.updatedOn).date())
                     if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
                         finalResult.push({
-                            day: m.date(),
+                            day: m.date().toString(),
                             energyConsumed: element.EnergyConsumed,
                             color: ''
                         })
@@ -208,7 +208,7 @@ router.post('/getEnergyConsumption', function (req, res) {
                 })
                 if (!isAvailable) {
                     finalResult.push({
-                        day: m.date(),
+                        day: m.date().toString(),
                         energyConsumed: 0,
                         color: ''
                     })
@@ -545,7 +545,7 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                     //console.log(moment(element.updatedOn).date())
                     if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
                         finalResult.push({
-                            day: m.date(),
+                            day: m.date().toString(),
                             energyConsumed: element.EnergyConsumed,
                             color: ''
                         })
@@ -554,7 +554,7 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                 })
                 if (!isAvailable) {
                     finalResult.push({
-                        day: m.date(),
+                        day: m.date().toString(),
                         energyConsumed: 0,
                         color: ''
                     })
