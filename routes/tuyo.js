@@ -168,7 +168,7 @@ router.post('/getEnergyConsumption', function (req, res) {
                 if (!isAvailable) {
                     final.push({
                         day: m.format('dddd'),
-                        energyConsumed: 0,
+                        energyConsumed: "0",
                         color: ''
                     })
                 }
@@ -516,7 +516,7 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                 if (!isAvailable) {
                     final.push({
                         day: m.format('dddd'),
-                        energyConsumed: 0,
+                        energyConsumed: "0",
                         color: ''
                     })
                 }
