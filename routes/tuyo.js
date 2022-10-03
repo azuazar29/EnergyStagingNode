@@ -41,6 +41,7 @@ router.get('/energyConsumption', function (req, res) {
 function getColor(value, min, factor) {
 
 
+    // console.log(value, min, factor)
 
     if (value >= min && value <= (min + factor)) {
         return lightGreen
@@ -142,11 +143,12 @@ router.post('/getEnergyConsumption', function (req, res) {
             let final = []
             for (var m = moment(ab); m.diff(bb, 'days') <= 0; m.add(1, 'days')) {
 
-                console.log("mmm", m.day())
+                // console.log("mmm", m.day())
                 let isAvailable = false
                 result.forEach(element => {
 
 
+                    // console.log("elemen", element)
 
                     if (moment(element.updatedOn).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
                         final.push({
@@ -278,24 +280,18 @@ router.post('/getEnergyConsumption', function (req, res) {
                     weeklyMax = element.energyConsumed
                 }
             })
-            let index1 = 0
-            final.forEach((element, index) => {
-                if (element.energyConsumed != 0) {
+            let MinArrayWeek = []
 
-                    index1 = index
-
-                    if (index == index1)
-                        weeklyMin = element.energyConsumed
-
-                    if (weeklyMin < element.energyConsumed) {
-                        weeklyMin = element.energyConsumed
-                    }
-
-
-
-                }
-
+            finalResult1.forEach(element => {
+                if (element.energyConsumed != 0)
+                    MinArrayWeek.push(element)
             })
+
+            weeklyMin = MinArrayWeek.reduce(function (prev, curr) {
+                return prev.energyConsumed < curr.energyConsumed ? prev : curr;
+            });
+            weeklyMin = weeklyMin.energyConsumed
+            // console.log("min", monthlyMin.energyConsumed)
 
             let factor = (weeklyMax - weeklyMin) / 3
 
@@ -315,23 +311,38 @@ router.post('/getEnergyConsumption', function (req, res) {
                 }
             })
             let index11 = 0
-            finalResult1.forEach((element, index) => {
-                if (element.energyConsumed != 0) {
 
-                    index11 = index
+            MinArray = []
 
-                    if (index == index11)
-                        monthlyMin = element.energyConsumed
-
-                    if (monthlyMin < element.energyConsumed) {
-                        monthlyMin = element.energyConsumed
-                    }
-
-
-
-                }
-
+            finalResult1.forEach(element => {
+                if (element.energyConsumed != 0)
+                    MinArray.push(element)
             })
+
+            monthlyMin = MinArray.reduce(function (prev, curr) {
+                return prev.energyConsumed < curr.energyConsumed ? prev : curr;
+            });
+            monthlyMin = monthlyMin.energyConsumed
+            console.log("min", monthlyMin.energyConsumed)
+            // finalResult1.forEach((element, index) => {
+            //     if (element.energyConsumed != 0) {
+
+            //         index11 = index
+
+            //         if (index == index11)
+            //             monthlyMin = element.energyConsumed
+
+            //         if (monthlyMin < element.energyConsumed) {
+            //             monthlyMin = element.energyConsumed
+            //         }
+
+
+
+            //     }
+
+            // })
+
+            console.log("monthlyMax - monthlyMin", monthlyMax, monthlyMin)
 
             let factorMonthly = (monthlyMax - monthlyMin) / 3
 
@@ -364,7 +375,7 @@ router.post('/getEnergyConsumption', function (req, res) {
                 TotalEnergySpendToday: todaysenergy,
                 TotalMoneySpendToday: ((Number(todaysenergy)) * .23).toFixed(2),
                 TotalMoneySpendmax: ((Number(maxdayenergy)) * .23).toFixed(2),
-                TotalEnergySpendmax: maxdayenergy,
+                TotalEnergySpendmax: maxdayenergy.toString(),
                 installationDate: '15-10-2022'
             })
 
@@ -615,60 +626,69 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                     weeklyMax = element.energyConsumed
                 }
             })
-            let index1 = 0
-            final.forEach((element, index) => {
-                if (element.energyConsumed != 0) {
+            let MinArrayWeek = []
 
-                    index1 = index
-
-                    if (index == index1)
-                        weeklyMin = element.energyConsumed
-
-                    if (weeklyMin < element.energyConsumed) {
-                        weeklyMin = element.energyConsumed
-                    }
-
-
-
-                }
-
+            finalResult1.forEach(element => {
+                if (element.energyConsumed != 0)
+                    MinArrayWeek.push(element)
             })
+
+            weeklyMin = MinArrayWeek.reduce(function (prev, curr) {
+                return prev.energyConsumed < curr.energyConsumed ? prev : curr;
+            });
+            weeklyMin = weeklyMin.energyConsumed
+            // console.log("min", monthlyMin.energyConsumed)
 
             let factor = (weeklyMax - weeklyMin) / 3
 
             final.forEach(element => {
 
                 let color = getColor(element.energyConsumed, weeklyMin, factor)
-                //console.log("color", color)
+                // //console.log("color", color)
                 element.color = color
 
             })
 
             let monthlyMax = 0, monthlyMin = 0
             finalResult1.forEach(element => {
-                //console.log("max", element.energyConsumed)
+                // //console.log("max", element.energyConsumed)
                 if (monthlyMax < element.energyConsumed) {
                     monthlyMax = element.energyConsumed
                 }
             })
             let index11 = 0
-            finalResult1.forEach((element, index) => {
-                if (element.energyConsumed != 0) {
 
-                    index11 = index
+            MinArray = []
 
-                    if (index == index11)
-                        monthlyMin = element.energyConsumed
-
-                    if (monthlyMin < element.energyConsumed) {
-                        monthlyMin = element.energyConsumed
-                    }
-
-
-
-                }
-
+            finalResult1.forEach(element => {
+                if (element.energyConsumed != 0)
+                    MinArray.push(element)
             })
+
+            monthlyMin = MinArray.reduce(function (prev, curr) {
+                return prev.energyConsumed < curr.energyConsumed ? prev : curr;
+            });
+            monthlyMin = monthlyMin.energyConsumed
+            console.log("min", monthlyMin.energyConsumed)
+            // finalResult1.forEach((element, index) => {
+            //     if (element.energyConsumed != 0) {
+
+            //         index11 = index
+
+            //         if (index == index11)
+            //             monthlyMin = element.energyConsumed
+
+            //         if (monthlyMin < element.energyConsumed) {
+            //             monthlyMin = element.energyConsumed
+            //         }
+
+
+
+            //     }
+
+            // })
+
+            console.log("monthlyMax - monthlyMin", monthlyMax, monthlyMin)
 
             let factorMonthly = (monthlyMax - monthlyMin) / 3
 
@@ -679,7 +699,6 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                 element.color = color
 
             })
-
 
 
             res.status(200)
@@ -701,7 +720,7 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                 TotalEnergySpendToday: todaysenergy,
                 TotalMoneySpendToday: ((Number(todaysenergy) / .408) * .23).toFixed(2),
                 TotalMoneySpendmax: ((Number(maxdayenergy) / .408) * .23).toFixed(2),
-                TotalEnergySpendmax: maxdayenergy,
+                TotalEnergySpendmax: maxdayenergy.toString(),
                 installationDate: '15-10-2022'
             })
 
