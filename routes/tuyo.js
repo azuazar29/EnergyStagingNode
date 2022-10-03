@@ -153,7 +153,7 @@ router.post('/getEnergyConsumption', function (req, res) {
                     if (moment(element.updatedOn).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
                         final.push({
                             day: m.format('dddd'),
-                            energyConsumed: element.EnergyConsumed,
+                            energyConsumed: element.EnergyConsumed.toString(),
                             color: ''
                         })
                         if (moment(new Date()).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
@@ -457,6 +457,7 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                 element.updatedOn = moment(element.updatedOn).format('MM/DD/YYYY')
                 element.EnergyConsumed = element.EnergyConsumed * .408
 
+
             })
 
 
@@ -474,44 +475,54 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
 
             result = groupedData
 
-
-            result.forEach(element => {
-                energyConsumed = Number(energyConsumed) + Number(element.EnergyConsumed)
-            })
-            for (let i = 0; i < 7; i++) {
-                days.push(
-                    {
-                        day: moment(endDate).subtract(i, 'days').day(),
-                        dayName: moment(endDate).subtract(i, 'days').format("dddd"),
-
-                    })
-            }
-            // //console.log("days", days)
-            let final = []
-            let todaysenergy = 0
             let maxdayenergy = 0
 
-            days.forEach((day, i) => {
-                final[i] = {
-                    day: day.dayName,
-                    energyConsumed: "0",
-                    color: ''
-                }
+            result.forEach(element => {
+                maxdayenergy = Number(maxdayenergy) + Number(element.EnergyConsumed)
+            })
+
+            let ab = moment(new Date()).subtract('7', 'days').format('YYYY-MM-DD')
+            let bb = moment(new Date()).format('YYYY-MM-DD')
+
+            console.log('bb', bb)
+            console.log('ab', ab)
+
+            let todaysenergy = 0
+            let final = []
+            for (var m = moment(ab); m.diff(bb, 'days') <= 0; m.add(1, 'days')) {
+
+                // console.log("mmm", m.day())
+                let isAvailable = false
                 result.forEach(element => {
-                    if (day.day == moment(element.updatedOn).day()) {
-                        final[i].energyConsumed = (Number(final[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
+
+
+                    // console.log("elemen", element)
+
+                    if (moment(element.updatedOn).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
+                        final.push({
+                            day: m.format('dddd'),
+                            energyConsumed: element.EnergyConsumed.toString(),
+                            color: ''
+                        })
+                        if (moment(new Date()).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
+                            todaysenergy = (Number(todaysenergy) + Number(element.EnergyConsumed)).toFixed(2)
+                        }
+
+                        isAvailable = true
+
                     }
-
-                    if (day.day == moment(new Date()).day()) {
-                        todaysenergy = (Number(todaysenergy) + Number(element.EnergyConsumed)).toFixed(2)
-                    }
-
-                    maxdayenergy = (Number(maxdayenergy) + Number(element.EnergyConsumed)).toFixed(2)
-
 
                 })
+                if (!isAvailable) {
+                    final.push({
+                        day: m.format('dddd'),
+                        energyConsumed: 0,
+                        color: ''
+                    })
+                }
+            }
 
-            })
+
             let total = 0
             final.forEach(element => {
 
@@ -519,11 +530,7 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
 
             })
 
-            // //console.log('result', result)
 
-            // let diff = datediff(parseDate(startDate1), parseDate(endDate1)) + 1
-
-            // //console.log("diff", diff)
 
             let startDate1 = moment(new Date()).startOf('month').toDate()
             let endDate1 = moment(new Date()).endOf('month').toDate()
@@ -531,18 +538,13 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
             var a = moment(moment(startDate1).format('YYYY-MM-DD'));
             var b = moment(moment(endDate1).format('YYYY-MM-DD'));
 
-
-
-
-
-
             for (var m = moment(a); m.diff(b, 'days') <= 0; m.add(1, 'days')) {
 
                 let isAvailable = false
 
 
                 result.forEach(element => {
-                    //console.log(moment(element.updatedOn).date())
+                    // //console.log(moment(element.updatedOn).date())
                     if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
                         finalResult.push({
                             day: m.date().toString(),
@@ -701,6 +703,7 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
             })
 
 
+
             res.status(200)
             res.json({
                 success: true,
@@ -745,6 +748,8 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
 
 
 })
+
+
 
 
 function datediff(first, second) {
