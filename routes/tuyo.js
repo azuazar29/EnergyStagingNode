@@ -386,7 +386,7 @@ router.post('/getEnergyConsumption', function (req, res) {
                 TotalMoneySpendToday: ((Number(todaysenergy)) * .23).toFixed(2),
                 TotalMoneySpendmax: ((Number(maxdayenergy)) * .23).toFixed(2),
                 TotalEnergySpendmax: maxdayenergy.toString(),
-                installationDate: '15-10-2022'
+                installationDate: '28-09-2022'
             })
 
 
@@ -744,7 +744,7 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                 TotalMoneySpendToday: ((Number(todaysenergy) / .408) * .23).toFixed(2),
                 TotalMoneySpendmax: ((Number(maxdayenergy) / .408) * .23).toFixed(2),
                 TotalEnergySpendmax: maxdayenergy.toString(),
-                installationDate: '15-10-2022'
+                installationDate: '28-09-2022'
             })
 
 
