@@ -1811,7 +1811,7 @@ function getEnergyDetails(startDate, endDate) {
                     })
                     if (!isAvailable) {
                         final.push({
-                            day: m.format('DD/M'),
+                            Day: m.format('DD/M'),
                             Energy: "0",
 
                         })
