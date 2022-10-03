@@ -133,7 +133,7 @@ router.post('/getEnergyConsumption', function (req, res) {
                 maxdayenergy = Number(maxdayenergy) + Number(element.EnergyConsumed)
             })
 
-            let ab = moment(new Date()).subtract('7', 'days').format('YYYY-MM-DD')
+            let ab = moment(new Date()).subtract('6', 'days').format('YYYY-MM-DD')
             let bb = moment(new Date()).format('YYYY-MM-DD')
 
             console.log('bb', bb)
@@ -351,6 +351,16 @@ router.post('/getEnergyConsumption', function (req, res) {
                 let color = getColor(element.energyConsumed, monthlyMin, factorMonthly)
                 //console.log("color", color)
                 element.color = color
+
+            })
+
+            final.forEach(element => {
+
+                if (element.day == moment(new Date()).format("dddd")) {
+
+                    element.day = 'Today'
+
+                }
 
             })
 
@@ -481,7 +491,7 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                 maxdayenergy = Number(maxdayenergy) + Number(element.EnergyConsumed)
             })
 
-            let ab = moment(new Date()).subtract('7', 'days').format('YYYY-MM-DD')
+            let ab = moment(new Date()).subtract('6', 'days').format('YYYY-MM-DD')
             let bb = moment(new Date()).format('YYYY-MM-DD')
 
             console.log('bb', bb)
@@ -699,6 +709,16 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
                 let color = getColor(element.energyConsumed, monthlyMin, factorMonthly)
                 //console.log("color", color)
                 element.color = color
+
+            })
+
+            final.forEach(element => {
+
+                if (element.day == moment(new Date()).format("dddd")) {
+
+                    element.day = 'Today'
+
+                }
 
             })
 
