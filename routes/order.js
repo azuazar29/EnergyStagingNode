@@ -18,16 +18,16 @@ const { resolve } = require('path');
 
 var storage = multer.diskStorage({
     destination: async function (req, files, callback) {
-        console.log("req", files)
+        //console.log("req", files)
         var data = JSON.parse(req.body.data)
         var filepath = "public/images/" + data.Manufacturer.replace(/ /g, '') + "_" + data.ModelNo.replace(/ /g, '')
-        // console.log("filepath",filePath)
+        // //console.log("filepath",filePath)
         await createFolder(filepath)
 
         callback(null, filepath);
     },
     filename: function (req, file, callback) {
-        console.log("name", file);
+        //console.log("name", file);
         callback(null, file.fieldname + file.originalname.substr(file.originalname.indexOf('.')))
     }
 });
@@ -37,7 +37,7 @@ var storageEff = multer.diskStorage({
     destination: async function (req, file, callback) {
 
         var data = JSON.parse(req.body.data)
-        // console.log(data)
+        // //console.log(data)
         var filepath = "public/Eff/" + data.ProductName.replace(/ /g, '') + "-" + data.ModelNo.replace(/ /g, '')
         await createFolder(filepath)
         callback(null, filepath);
@@ -45,7 +45,7 @@ var storageEff = multer.diskStorage({
     filename: function (req, file, callback) {
         let name = file.originalname
         var data = JSON.parse(req.body.data)
-        //console.log("name", name.substr(name.lastIndexOf('.')))
+        ////console.log("name", name.substr(name.lastIndexOf('.')))
         callback(null, data.ProductName + "-" + new Date().getTime() + name.substr(name.lastIndexOf('.')))
     }
 });
@@ -54,13 +54,13 @@ function createFolder(filepath) {
         // var filepath = pdfpath + folderName
         fs.access(filepath, async function (err) {
             if (err && err.code === 'ENOENT') {
-                console.log("filepath", filepath)
+                //console.log("filepath", filepath)
                 if (fs.existsSync(filepath)) {
-                    console.log("it came here")
+                    //console.log("it came here")
                     resolve()
                 } else {
                     fs.mkdir(filepath, (err) => {
-                        console.log(err, "err")
+                        //console.log(err, "err")
                         if (err) {
 
                             resolve();
@@ -91,11 +91,11 @@ router.get("/GetDashboardDetails", function (req, res) {
         query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
     }
 
-    console.log(query)
+    //console.log(query)
 
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -140,13 +140,13 @@ router.get("/GetDashboardDetails", function (req, res) {
 
 
 
-                // //console.log(previousdate)
-                //    //console.log("previous_date",previousdate)
+                // ////console.log(previousdate)
+                //    ////console.log("previous_date",previousdate)
                 query2 = `Select * from dbo.OrderList where OrderDate between  '${new Date(previousdate).toISOString()}' and '${moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString()}'`
-                //console.log("query2", query2)
+                ////console.log("query2", query2)
                 request.query(query2, function (err, set) {
                     if (err) {
-                        //console.log("err", err)
+                        ////console.log("err", err)
                         res.status(400)
                         res.json({
                             success: false,
@@ -155,7 +155,7 @@ router.get("/GetDashboardDetails", function (req, res) {
 
                     } else {
                         let previousresult = set.recordset.length
-                        let query3 = `Select * from EnergyConsumption`
+                        let query3 = `Select * from EnergyConsumptionFromJob`
 
                         if (req.query.Startdate && req.query.Enddate) {
                             query3 = `${query3} where created_On between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
@@ -163,7 +163,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                         if (req.query.Startdate && !req.query.Enddate) {
                             query3 = `${query3} where created_On between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
                         }
-                        //console.log("query3", query3)
+                        ////console.log("query3", query3)
                         request.query(query3, function (err, set) {
                             if (err) {
                                 res.json({
@@ -174,8 +174,8 @@ router.get("/GetDashboardDetails", function (req, res) {
                             else {
                                 let energyconsumption = set.recordset
 
-                                let query4 = `Select * from EnergyConsumption where created_On between  '${new Date(previousdate).toISOString()}' and '${moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString()}'`
-                                //console.log("query4", query4)
+                                let query4 = `Select * from EnergyConsumptionFromJob where created_On between  '${new Date(previousdate).toISOString()}' and '${moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString()}'`
+                                ////console.log("query4", query4)
                                 request.query(query4, function (err, set) {
                                     if (err) {
                                         res.json({
@@ -196,7 +196,7 @@ router.get("/GetDashboardDetails", function (req, res) {
 
                                         query5 = query5 + ` and isFromWeb <> '1'`
 
-                                        //console.log("query5", query5)
+                                        ////console.log("query5", query5)
                                         request.query(query5, function (err, set) {
                                             if (err) {
                                                 res.json({
@@ -207,7 +207,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                                             else {
                                                 let customerList = set.recordset.length
                                                 query6 = `Select * from dbo.Customer_New where CreatedOn between  '${new Date(previousdate).toISOString()}' and '${moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString()}' and isFromWeb <> '1'`
-                                                //console.log("query6", query6)
+                                                ////console.log("query6", query6)
                                                 request.query(query6, function (err, set) {
                                                     if (err) {
                                                         res.json({
@@ -227,7 +227,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                                                         if (req.query.Startdate && !req.query.Enddate) {
                                                             query5 = `${query5} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}' `
                                                         }
-                                                        //console.log("query5", query5)
+                                                        ////console.log("query5", query5)
                                                         request.query(query5, function (err, set) {
                                                             if (err) {
                                                                 res.json({
@@ -256,7 +256,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                                                                             previousSalescount = previousSalescount + Number(e.OrderTotal)
                                                                         });
                                                                         res.status(200)
-                                                                        console.log('previousresult', salescount, previousSalescount)
+                                                                        //console.log('previousresult', salescount, previousSalescount)
 
 
 
@@ -392,12 +392,12 @@ router.get("/GetOrdersList", function (req, res) {
         query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
     }
     if (req.query.OrderType) {
-        //console.log("comming 1")
+        ////console.log("comming 1")
         if (req.query.Startdate) {
             query = `${query} and OrderType ='${req.query.OrderType}' `
         }
         else {
-            //console.log("comming 2")
+            ////console.log("comming 2")
             query = `${query} where OrderType ='${req.query.OrderType}' `
         }
 
@@ -410,13 +410,13 @@ router.get("/GetOrdersList", function (req, res) {
             query = `${query} where OrderStatus ='${req.query.OrderStatus}' `
         }
     }
-    console.log(query)
+    //console.log(query)
     query = query + ' ' + 'ORDER BY OrderDate DESC;'
 
 
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -481,12 +481,12 @@ router.get("/ExportOrdersList", function (req, res) {
         query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
     }
     if (req.query.OrderType) {
-        //console.log("comming 1")
+        ////console.log("comming 1")
         if (req.query.Startdate) {
             query = `${query} and OrderType ='${req.query.OrderType}' `
         }
         else {
-            //console.log("comming 2")
+            ////console.log("comming 2")
             query = `${query} where OrderType ='${req.query.OrderType}' `
         }
 
@@ -499,11 +499,11 @@ router.get("/ExportOrdersList", function (req, res) {
             query = `${query} where OrderStatus ='${req.query.OrderStatus}' `
         }
     }
-    //console.log(query)
+    ////console.log(query)
 
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -560,10 +560,10 @@ router.get("/GetOrdersOverviewTopCount", function (req, res) {
     if (req.query.Startdate && !req.query.Enddate) {
         query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
     }
-    //console.log(query)
+    ////console.log(query)
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -621,12 +621,12 @@ router.get("/GetCustomerList", function (req, res) {
         query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
     }
     if (req.query.CustomerType) {
-        //console.log("comming 1")
+        ////console.log("comming 1")
         if (req.query.Startdate) {
             query = `${query} and CustomerType ='${req.query.CustomerType}' `
         }
         else {
-            //console.log("comming 2")
+            ////console.log("comming 2")
             query = `${query} where CustomerType ='${req.query.CustomerType}' `
         }
 
@@ -640,15 +640,15 @@ router.get("/GetCustomerList", function (req, res) {
         }
     }
 
-    console.log(query)
+    //console.log(query)
     query = query + ` and isFromWeb <> '1'`
     query = query + ' ' + 'ORDER BY createdOn DESC;'
 
-    console.log("query", query)
+    //console.log("query", query)
 
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -721,12 +721,12 @@ router.get("/ExportCustomerList", function (req, res) {
         query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
     }
     if (req.query.CustomerType) {
-        //console.log("comming 1")
+        ////console.log("comming 1")
         if (req.query.Startdate) {
             query = `${query} and CustomerType ='${req.query.CustomerType}' `
         }
         else {
-            //console.log("comming 2")
+            ////console.log("comming 2")
             query = `${query} where CustomerType ='${req.query.CustomerType}' `
         }
 
@@ -743,11 +743,11 @@ router.get("/ExportCustomerList", function (req, res) {
     query = query + ` and isFromWeb <> '1'`
 
 
-    console.log(query)
+    //console.log(query)
 
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -805,10 +805,10 @@ router.get("/GetCustomerOverviewTopCount", function (req, res) {
         query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
     }
     query = query + ` and isFromWeb <> '1'`
-    //console.log(query)
+    ////console.log(query)
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -862,7 +862,7 @@ router.get('/ProductCategory', function (req, res) {
     let query = `Select * from ProductCategory`
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -892,7 +892,7 @@ router.post("/AddProductDetails", upload,
 
             let data = JSON.parse(req.body.data)
             let cPath = ''
-            console.log("files", req.files.length)
+            //console.log("files", req.files.length)
             if (req.files.length) {
 
                 req.files.forEach(element => {
@@ -942,11 +942,11 @@ router.post("/AddProductDetails", upload,
                 '${cPath}',
                 '${data.ModelNo}'
                 ) SELECT SCOPE_IDENTITY() as id`
-            // console.log(query)
+            // //console.log(query)
             request.query(query, function (err, set) {
                 if (err) {
 
-                    // console.log("err", err)
+                    // //console.log("err", err)
                     res.status(400)
                     res.json({
                         success: false,
@@ -974,7 +974,7 @@ router.post("/AddProductDetails", upload,
                                 message: "Product Added successfully"
                             })
                         }).catch(err => {
-                            console.log("err", err)
+                            //console.log("err", err)
                             res.json({
                                 success: false,
                                 message: "Error in adding product",
@@ -986,7 +986,7 @@ router.post("/AddProductDetails", upload,
             })
         } catch (err) {
 
-            console.log("body", err)
+            //console.log("body", err)
 
         }
 
@@ -999,13 +999,13 @@ function addProducts(element, req, ID) {
         if (req.files.length) {
 
             req.files.forEach(elementImage => {
-                console.log("(elementImage.fieldname", elementImage.fieldname, element.FCUName)
+                //console.log("(elementImage.fieldname", elementImage.fieldname, element.FCUName)
                 if (elementImage.fieldname == element.FCUName) {
                     imagePath = elementImage.destination + '/' + elementImage.filename
                 }
             })
         }
-        console.log("imagePath", imagePath)
+        //console.log("imagePath", imagePath)
         let query2 = `INSERT INTO [dbo].[FCU_New]
                             ([FCUCode]
                             ,[FCUName]
@@ -1039,10 +1039,10 @@ function addProducts(element, req, ID) {
                             '${element.Rating ? element.Rating : "NULL"}',
                             '${imagePath ? imagePath : 'NULL'}',
                             '${ID}') SELECT SCOPE_IDENTITY() as id`
-        // console.log("query", query2)
+        // //console.log("query", query2)
         request.query(query2, function (err, set) {
             if (err) {
-                console.log("error", err)
+                //console.log("error", err)
                 resolve(false)
             } else {
 
@@ -1059,14 +1059,14 @@ function addProducts(element, req, ID) {
 
 router.post('/uploadEfficiencyProfile', function (req, res) {
 
-    //console.log("req.body.data",req.body)
+    ////console.log("req.body.data",req.body)
     uploadEff(req, res, function (err) {
 
         if (err) {
-            //console.log("error",err)
+            ////console.log("error",err)
             return res.send("Error uploading file.");
         } else {
-            //console.log("req", req.file)
+            ////console.log("req", req.file)
             const csvFilePath = req.file.path
             const csv = require('csvtojson')
             csv()
@@ -1100,12 +1100,12 @@ router.get("/GetProductDetails", function (req, res) {
     //     query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
     // }
     if (req.query.ProductName) {
-        // //console.log("comming 1")
+        // ////console.log("comming 1")
         if (req.query.Startdate) {
             query = `${query} and ProductName ='${req.query.ProductName}' `
         }
         else {
-            // //console.log("comming 2")
+            // ////console.log("comming 2")
             query = `${query} where ProductName ='${req.query.ProductName}' `
         }
 
@@ -1127,13 +1127,13 @@ router.get("/GetProductDetails", function (req, res) {
         }
     }
 
-    //console.log(query)
+    ////console.log(query)
 
     query = query + ' ' + 'ORDER BY createdOn DESC;'
 
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -1189,12 +1189,12 @@ router.get("/ExportProductDetails", function (req, res) {
         query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
     }
     if (req.query.ProductName) {
-        // //console.log("comming 1")
+        // ////console.log("comming 1")
         if (req.query.Startdate) {
             query = `${query} and ProductName ='${req.query.ProductName}' `
         }
         else {
-            // //console.log("comming 2")
+            // ////console.log("comming 2")
             query = `${query} where ProductName ='${req.query.ProductName}' `
         }
 
@@ -1216,11 +1216,11 @@ router.get("/ExportProductDetails", function (req, res) {
         }
     }
 
-    //console.log(query)
+    ////console.log(query)
 
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -1266,7 +1266,7 @@ router.get("/getOrderChart", function (req, res) {
             // }
             let obj = { Day: day, SubCount: 0, OneCount: 0 }
             array.push(obj)
-            //console.log("i", i)
+            ////console.log("i", i)
             i = moment(i).add(1, "days").format("YYYY-MM-DD")
 
         }
@@ -1275,7 +1275,7 @@ router.get("/getOrderChart", function (req, res) {
 
         request.query(query, function (err, set) {
             if (err) {
-                //console.log("err", err)
+                ////console.log("err", err)
                 res.status(400)
                 res.json({
                     success: false,
@@ -1371,7 +1371,7 @@ router.get("/getCustomerChart", function (req, res) {
     }
 
     let query = `Select * from dbo.Customer_New where CreatedOn between '${new Date(Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}' and isFromWeb <> '1'`
-    console.log("custoemr chart query", query)
+    //console.log("custoemr chart query", query)
     if (Startdate) {
         let i = moment(new Date(Startdate)).format("YYYY-MM-DD")
         let array = []
@@ -1383,17 +1383,17 @@ router.get("/getCustomerChart", function (req, res) {
             // }
             let obj = { Day: day, Count: 0 }
             array.push(obj)
-            //console.log("i", i)
+            ////console.log("i", i)
             i = moment(i).add(1, "days").format("YYYY-MM-DD")
 
         }
         while (i <= moment(Enddate).format("YYYY-MM-DD"));
 
-        console.log("array", array)
+        //console.log("array", array)
 
         request.query(query, function (err, set) {
             if (err) {
-                //console.log("err", err)
+                ////console.log("err", err)
                 res.status(400)
                 res.json({
                     success: false,
@@ -1429,7 +1429,7 @@ router.get("/getCustomerChart", function (req, res) {
                 if (Enddate) {
                     previous_datecount = Math.ceil((new Date(Enddate) - new Date(Startdate)) / (1000 * 60 * 60 * 24))
                 }
-                //console.log(previous_datecount)
+                ////console.log(previous_datecount)
                 let previousdate = moment(new Date(req.query.Startdate)).subtract(previous_datecount, 'days').toISOString()
 
                 let j = moment(new Date(Startdate)).subtract(previous_datecount, 'days').format("YYYY-MM-DD")
@@ -1470,10 +1470,10 @@ router.get("/getCustomerChart", function (req, res) {
                     ["Subscription Withdrawn"]: !isNaN((100 * SusW.length / result.length).toFixed(2)) ? (100 * SusW.length / result.length).toFixed(2) : 0,
                 }
                 let query2 = `Select * from dbo.Customer_New where CreatedOn between '${previousdate}'  and  '${moment(new Date(req.query.Startdate)).subtract(1, 'day').toISOString()}' and isFromWeb <> '1'`
-                console.log("Query is", query2)
+                //console.log("Query is", query2)
                 request.query(query2, function (err, set) {
                     if (err) {
-                        //console.log("err", err)
+                        ////console.log("err", err)
                         res.status(400)
                         res.json({
                             success: false,
@@ -1526,7 +1526,7 @@ router.get("/BrandSegment", function (req, res) {
     GROUP BY ProductName`
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -1554,7 +1554,7 @@ router.get("/productBrandSegment", function (req, res) {
     GROUP BY ProductName`
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -1609,7 +1609,7 @@ router.get("/getDashBoardChart", function (req, res) {
             let obj = { Day: day, Count: 0, amount: 0 }
             array.push(obj)
 
-            console.log("i", i)
+            //console.log("i", i)
             i = moment(i).add(1, "days").format("YYYY-MM-DD")
 
         }
@@ -1618,7 +1618,7 @@ router.get("/getDashBoardChart", function (req, res) {
 
         request.query(query, function (err, set) {
             if (err) {
-                //console.log("err", err)
+                ////console.log("err", err)
                 res.status(400)
                 res.json({
                     success: false,
@@ -1652,7 +1652,7 @@ router.get("/getDashBoardChart", function (req, res) {
                 if (Enddate) {
                     previous_datecount = Math.ceil((new Date(Enddate) - new Date(Startdate)) / (1000 * 60 * 60 * 24))
                 }
-                //console.log(previous_datecount)
+                ////console.log(previous_datecount)
                 let previousdate = moment(new Date(req.query.Startdate)).subtract(previous_datecount, 'days').toISOString()
 
                 let j = moment(new Date(Startdate)).subtract(previous_datecount, 'days').format("YYYY-MM-DD")
@@ -1672,9 +1672,9 @@ router.get("/getDashBoardChart", function (req, res) {
 
 
                 let query2 = `Select * from OrderList where OrderDate between '${previousdate}'  and  '${moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString()}' `
-                request.query(query2, function (err, set) {
+                request.query(query2, async function (err, set) {
                     if (err) {
-                        //console.log("err", err)
+                        ////console.log("err", err)
                         res.status(400)
                         res.json({
                             success: false,
@@ -1698,119 +1698,28 @@ router.get("/getDashBoardChart", function (req, res) {
                             });
 
                         })
-                        let query3 = `Select * from EnergyConsumption where created_On between  '${new Date(Startdate).toISOString()}' and '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
-                        console.log("query 3", query3)
-                        request.query(query3, function (err, set) {
-                            if (err) {
-                                //console.log("err", err)
-                                res.status(400)
-                                res.json({
-                                    success: false,
-                                    message: err.originalError.info.message
-                                })
-                            }
-                            else {
-                                let result3 = set.recordset
-                                let E1 = moment(Startdate).format("YYYY-MM-DD")
 
-                                let array3 = []
+                        let array3 = await getEnergyDetails(req.query.Startdate, req.query.Enddate)
+                        let array4 = await getEnergyDetails(previousdate, moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString())
 
-                                do {
-                                    let day = moment(E1).format('DD/M')
-                                    if (day == moment(new Date()).format('DD/M')) {
-                                        day = 'Today'
-                                    }
-                                    let obj = { Day: day, Energy: 0 }
-                                    array3.push(obj)
-
-
-                                    E1 = moment(E1).add(1, "days").format("YYYY-MM-DD")
-
-                                }
-                                while (E1 <= moment(Enddate).format("YYYY-MM-DD"));
-                                console.log(array3)
-                                array3.forEach((arr, i) => {
-                                    result3.forEach((element, j) => {
-
-
-                                        if (arr.Day == moment(element.created_On).format("DD/M")) {
-
-                                            array3[i].Energy = array3[i].Energy + Number(result3[j].energy)
-
-                                            console.log("day2", arr.Day, Number(result3[j].energy), array3[i].Energy)
-
-                                        }
-                                    });
-                                });
-                                let query4 = `Select * from EnergyConsumption where created_On between  '${previousdate}' and '${moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString()}'`
-                                console.log(query4)
-                                request.query(query4, function (err, set) {
-                                    if (err) {
-                                        console.log("err", err)
-                                        res.status(400)
-                                        res.json({
-                                            success: false,
-                                            message: err.originalError.info.message
-                                        })
-                                    }
-                                    else {
-                                        let result4 = set.recordset
-
-                                        let E2 = moment(previousdate).format("YYYY-MM-DD")
-
-                                        let array4 = []
-                                        let date1 = moment(new Date(req.query.Startdate)).subtract(1, 'day').toISOString()
-                                        do {
-                                            let day = moment(E2).format('DD/M')
-                                            if (day == moment(new Date()).format('DD/M')) {
-                                                day = 'Today'
-                                            }
-                                            let obj = { Day: day, Energy: 0 }
-                                            array4.push(obj)
-
-
-                                            E2 = moment(E2).add(1, "days").format("YYYY-MM-DD")
-
-                                        }
-                                        while (E2 <= moment(date1).format("YYYY-MM-DD"));
-                                        array4.forEach((arr, i) => {
-                                            result4.forEach((element, j) => {
-
-
-                                                if (arr.Day == moment(element.created_On).format("DD/M")) {
-
-                                                    array4[i].Energy = array4[i].Energy + Number(result4[j].energy)
-                                                    console.log("day", arr.Day, Number(result4[j].energy), array4[i].Energy)
-
-
-                                                }
-                                            });
-                                        });
-                                        array.forEach(element => {
-                                            if (element.Day == moment(new Date()).format('DD/M')) {
-                                                element.Day = "Today"
-                                            }
-                                        })
-
-                                        let tempArray = []
-
-                                        array.forEach(element => {
-
-                                            tempArray.push({
-                                                Day: element.Day,
-                                                Count: element.Count != 0 ? Number(element.amount) / Number(element.Count).toFixed(2) : 0
-                                            })
-
-                                        })
-                                        res.json({ success: true, sales: tempArray, previoussales: array2, energyconsumption: array3, previousEnegryConsumption: array4 })
-                                    }
-
-                                })
-
-
-
+                        array.forEach(element => {
+                            if (element.Day == moment(new Date()).format('DD/M')) {
+                                element.Day = "Today"
                             }
                         })
+
+                        let tempArray = []
+
+                        array.forEach(element => {
+
+                            tempArray.push({
+                                Day: element.Day,
+                                Count: element.Count != 0 ? Number(element.amount) / Number(element.Count).toFixed(2) : 0
+                            })
+
+                        })
+                        res.json({ success: true, sales: tempArray, previoussales: array2, energyconsumption: array3, previousEnegryConsumption: array4 })
+
 
 
                     }
@@ -1827,14 +1736,109 @@ router.get("/getDashBoardChart", function (req, res) {
         res.json({ success: false, msg: "Startdate Required" })
     }
 })
+function getEnergyDetails(startDate, endDate) {
+
+
+    return new Promise((resolve, reject) => {
+
+        let query
+
+        query = `Select * from [EnergyConsumptionFromJob] order by updatedOn `
+
+        //console.log('start, ends', startDate, endDate)
+
+
+
+        request.query(query, function (err, set) {
+            if (err) {
+                console.log("err", err)
+
+            } else {
+
+
+
+                let result = set.recordsets[0]
+
+
+                result.forEach((element, index) => {
+
+                    element.updatedOn = moment(element.updatedOn).format('MM/DD/YYYY')
+
+                })
+
+
+
+
+                let resultFinal = groupBy(result, 'updatedOn')
+
+                let groupedData = []
+
+                Object.keys(resultFinal).forEach(element => {
+
+                    groupedData.push(resultFinal[element][resultFinal[element].length - 1])
+
+                })
+
+                result = groupedData
+
+
+
+                let ab = moment(startDate).format('YYYY-MM-DD')
+                let bb = moment(endDate).format('YYYY-MM-DD')
+
+                let final = []
+                for (var m = moment(ab); m.diff(bb, 'days') <= 0; m.add(1, 'days')) {
+
+                    // console.log("mmm", m.day())
+                    let isAvailable = false
+                    result.forEach(element => {
+
+
+                        // console.log("elemen", element)
+
+                        if (moment(element.updatedOn).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
+                            final.push({
+                                Day: m.format('DD/M'),
+                                Energy: element.EnergyConsumed.toString(),
+
+                            })
+
+
+                            isAvailable = true
+
+                        }
+
+                    })
+                    if (!isAvailable) {
+                        final.push({
+                            day: m.format('DD/M'),
+                            Energy: "0",
+
+                        })
+                    }
+                }
+
+                resolve(final)
+
+
+
+            }
+        })
+    })
+
+
+
+
+
+}
 router.get("/TopProductdetails", function (req, res) {
     let query = `select CondensorList.Quantity, OrderList.ProductId, OrderList.OrderTotal, CondensorList.productName from OrderList inner join CondensorList on OrderList.ProductId = CondensorList.Id and OrderList.OrderStatus='CO' and 
    OrderList.OrderDate between  '${new Date(req.query.Startdate).toISOString()}' and '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
 
-    console.log("query topprodcust", query)
+    //console.log("query topprodcust", query)
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -1892,10 +1896,10 @@ router.get("/GetMapdetails", function (req, res) {
     if (Startdate) {
         query = `${query}and created_on between '${new Date(Startdate).toISOString()}' and '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
-    // console.log("query",query)
+    // //console.log("query",query)
     request.query(query, function (err, set) {
         if (err) {
-            console.log("err", err)
+            //console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -1909,18 +1913,18 @@ router.get("/GetMapdetails", function (req, res) {
             let energy = []
 
             Object.keys(result).forEach(function (i) {
-                // console.log(i)
+                // //console.log(i)
                 let obj = {}
                 let energy1 = 0
                 result[i].forEach(ele => {
 
 
                     energy1 = energy1 + Number(ele.energy)
-                    //    console.log(energy1)
+                    //    //console.log(energy1)
                     let location = ele.ServiceLocation
                     obj.value = Number(energy1).toFixed(2)
                     var loc = location.split(",")
-                    console.log("loc", loc)
+                    //console.log("loc", loc)
                     if (loc.length > 1) {
                         obj.lat = loc[0]
                         obj.long = loc[1].trim()
@@ -1931,7 +1935,7 @@ router.get("/GetMapdetails", function (req, res) {
 
                     obj.CreatedOn = ele.created_On
                 })
-                //   console.log(obj)
+                //   //console.log(obj)
                 energy.push(obj)
             })
             let query1 = `SELECT OrderList.orderTotal,	OrderList.OrderDate,Customer_New.ServiceLocation,Customer_New.Id,OrderList.OrderStatus
@@ -1944,7 +1948,7 @@ router.get("/GetMapdetails", function (req, res) {
             }
             request.query(query1, function (err, set) {
                 if (err) {
-                    console.log("err", err)
+                    //console.log("err", err)
                     res.status(400)
                     res.json({
                         success: false,
@@ -1957,7 +1961,7 @@ router.get("/GetMapdetails", function (req, res) {
                     let sales = []
 
                     Object.keys(result2).forEach(function (i) {
-                        // console.log(i)
+                        // //console.log(i)
 
                         let obj = {}
 
@@ -1966,7 +1970,7 @@ router.get("/GetMapdetails", function (req, res) {
 
 
                             OrderTotal = OrderTotal + Number(ele.orderTotal)
-                            //    console.log(energy1)
+                            //    //console.log(energy1)
                             let location = ele.ServiceLocation
                             obj.value = "$" + Number(OrderTotal).toFixed(2)
                             var loc = location.split(",")
@@ -1997,7 +2001,7 @@ router.get("/GetMapdetails", function (req, res) {
                     }
                     request.query(query2, function (err, set) {
                         if (err) {
-                            console.log("err", err)
+                            //console.log("err", err)
                             res.status(400)
                             res.json({
                                 success: false,
@@ -2008,7 +2012,7 @@ router.get("/GetMapdetails", function (req, res) {
                             mainreq = []
                             result3 = groupBy(set.recordset, "ServiceLocation")
                             Object.keys(result3).forEach(function (i) {
-                                // console.log(i)
+                                // //console.log(i)
 
 
                                 let obj2 = {}
@@ -2060,7 +2064,7 @@ router.get("/GetProductSaleDetails", function (req, res) {
 
     request.query(query, function (err, set) {
         if (err) {
-            //console.log("err", err)
+            ////console.log("err", err)
             res.status(400)
             res.json({
                 success: false,
@@ -2126,7 +2130,7 @@ router.get("/GetProductSaleDetails", function (req, res) {
             // })
             request.query(queryFCU, function (err, set) {
                 if (err) {
-                    //console.log("err", err)
+                    ////console.log("err", err)
                     res.status(400)
                     res.json({
                         success: false,
@@ -2224,12 +2228,12 @@ router.get('/slots', function (req, res) {
 function getOrderID(id) {
 
     return new Promise((resolve, reject) => {
-        // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
+        // //console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
         request.query(`select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
 
-            console.log("err", err)
+            //console.log("err", err)
             if (recordset.recordset.length) {
-                console.log("res", id)
+                //console.log("res", id)
 
                 resolve(recordset.recordset[0].Id)
 
@@ -2253,14 +2257,14 @@ router.post('/updateSiteVisitDateByUser',
         if (orderID != '') {
             request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
 
-                console.log("err", err, recordset)
+                //console.log("err", err, recordset)
 
                 if (recordset.recordsets[0].length) {
                     let query = `Update SubscriptionManagement
        
         set visitDay = '${JSON.stringify(req.body.visitDay)}' where userID =  ${req.decoded.id} and orderID = ${orderID}`
 
-                    console.log("query", query)
+                    //console.log("query", query)
 
                     request.query(query, function (err, response) {
 
@@ -2271,7 +2275,7 @@ router.post('/updateSiteVisitDateByUser',
                                 date: new Date()
                             })
                         } else {
-                            console.log("err", err)
+                            //console.log("err", err)
                             res.json({
                                 success: false,
                                 message: "Error updating status"
@@ -2290,7 +2294,7 @@ router.post('/updateSiteVisitDateByUser',
         ('${JSON.stringify(req.body.visitDay)}',
         1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}',${orderID})`
 
-                    console.log("query", query)
+                    //console.log("query", query)
 
                     request.query(query, function (err, response) {
 
@@ -2301,7 +2305,7 @@ router.post('/updateSiteVisitDateByUser',
                                 date: new Date()
                             })
                         } else {
-                            console.log("err", err)
+                            //console.log("err", err)
                             res.json({
                                 success: false,
                                 message: "Error updating status"
@@ -2339,7 +2343,7 @@ router.post('/updateSiteVisitDateByAdmin/:userID/:orderID',
                     message: "Successfully updated",
                 })
             } else {
-                console.log("err", err)
+                //console.log("err", err)
                 res.json({
                     success: false,
                     message: "Error updating status"
@@ -2359,14 +2363,14 @@ router.post('/updateInstallationDateByUser',
         if (orderID != '') {
             request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
 
-                console.log("err", err, recordset)
+                //console.log("err", err, recordset)
 
                 if (recordset.recordsets[0].length) {
                     let query = `Update SubscriptionManagement
        
         set installationDay = '${JSON.stringify(req.body.installationDay)}', installationStatus = '1'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
 
-                    console.log("query", query)
+                    //console.log("query", query)
 
                     request.query(query, function (err, response) {
 
@@ -2377,7 +2381,7 @@ router.post('/updateInstallationDateByUser',
                                 date: new Date()
                             })
                         } else {
-                            console.log("err", err)
+                            //console.log("err", err)
                             res.json({
                                 success: false,
                                 message: "Error updating status"
@@ -2396,7 +2400,7 @@ router.post('/updateInstallationDateByUser',
         ('${JSON.stringify(req.body.installationDay)}',
         1,${req.decoded.id},'${new Date().toISOString()}','${new Date().toISOString()}',${orderID})`
 
-                    console.log("query", query)
+                    //console.log("query", query)
 
                     request.query(query, function (err, response) {
 
@@ -2407,7 +2411,7 @@ router.post('/updateInstallationDateByUser',
                                 date: new Date()
                             })
                         } else {
-                            console.log("err", err)
+                            //console.log("err", err)
                             res.json({
                                 success: false,
                                 message: "Error updating status"
@@ -2446,7 +2450,7 @@ router.post('/updateinstallationDateByAdmin/:userID/:orderID',
                     message: "Successfully updated",
                 })
             } else {
-                console.log("err", err)
+                //console.log("err", err)
                 res.json({
                     success: false,
                     message: "Error updating status"
@@ -2460,10 +2464,10 @@ router.post('/updateinstallationDateByAdmin/:userID/:orderID',
 router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
     let orderID = await getOrderID(req.params.id)
-    console.log("orderID", orderID)
+    //console.log("orderID", orderID)
 
     if (orderID != '') {
-        console.log("orderID", orderID)
+        //console.log("orderID", orderID)
 
         let query = `Select sm.*, p.propertySize, p.totalRooms, c.product_Id as productDetails, c.total as totalAmount, c.subcription_Type, c.isSubscription  From SubscriptionManagement as sm
         inner join Cart as c on c.orderID = ${orderID}
@@ -2479,7 +2483,7 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
         where sm.userID = ${req.params.id} and sm.orderID  = ${orderID}
         
         `
-        console.log("order", query)
+        //console.log("order", query)
 
         request.query(query, function (err, recordset) {
 
@@ -2536,7 +2540,7 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
         request.query(`update OrderList set orderFlow = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, recordset) {
 
             request.query(`update OrderList set orderStatus = 'PE' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
-            console.log('err', err)
+            //console.log('err', err)
             if (!err) {
                 res.json({
                     success: true,
@@ -2550,7 +2554,7 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
         request.query(`update OrderList set orderFlow = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, recordset) {
 
             request.query(`update OrderList set orderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
-            console.log('err', err)
+            //console.log('err', err)
             if (!err) {
                 res.json({
                     success: true,
