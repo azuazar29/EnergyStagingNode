@@ -771,6 +771,24 @@ router.post('/getEnergyConsumptionByCO2', function (req, res) {
 
 })
 
+router.post('/updateDeviceID/:deviceID/:orderID/:userID', function (req, res) {
+
+    let query = `update OrderList set deviceID='${req.params.deviceID}' where Id = ${req.params.orderID} and UserId = ${req.params.userID}`
+
+    request.query(query, function (err, recordset) {
+
+        if (!err) {
+            res.json({
+                success: true
+            })
+        } else {
+            console.log("err", err)
+        }
+
+    })
+
+})
+
 
 
 

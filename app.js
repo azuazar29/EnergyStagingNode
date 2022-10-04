@@ -32,7 +32,7 @@ const httpMethod = 'GET'
 //var accessToken=""
 var device_id = config.device_id
 var nonce = config.nonce
-const path = '/v1.0/devices/' + device_id + '/statistics/total?code=add_ele';
+const path = '/v1.0/devices/' + device_id + '/statistics/days?code=add_ele';
 
 var tuyo = require('./routes/tuyo')
 
