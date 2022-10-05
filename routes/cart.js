@@ -165,14 +165,22 @@ router.post("/setproductId/:type", middleware.authenticate, async (req, res) => 
     },
   ];
 
+  let propertySize = 0
+
+  req.body.product.display_installed_rooms.forEach(element => {
+
+    propertySize = propertySize + element.roomSize
+
+  })
+
   let query = `INSERT INTO Cart
-  (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery],[savings],[user_Id]) VALUES ('${JSON.stringify(
+  (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery],[savings],[user_Id],totalRooms,PropertySize) VALUES ('${JSON.stringify(
     FinalOutput
   )}','${new Date().toISOString()}','${req.params.type}','${JSON.stringify(
     AddOnDetails
   )}','7','54','${JSON.stringify(
     accessories
-  )}','20','500','${req.decoded.id}') SELECT SCOPE_IDENTITY() as id`;
+  )}','20','500','${req.decoded.id}','${req.body.product.display_installed_rooms.length}','${propertySize}') SELECT SCOPE_IDENTITY() as id`;
 
   console.log("query", query);
 
