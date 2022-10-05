@@ -169,7 +169,7 @@ router.post("/setproductId/:type", middleware.authenticate, async (req, res) => 
 
   req.body.product.display_installed_rooms.forEach(element => {
 
-    propertySize = propertySize + element.roomSize
+    propertySize = Number(propertySize) + Number(element.roomSize)
 
   })
 
