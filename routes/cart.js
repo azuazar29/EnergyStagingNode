@@ -462,6 +462,7 @@ router.get(
 
 router.post(
   "/deliveryAddress",
+  middleware.authenticate,
   [
     check("name").exists(),
     check("contactNumber").exists(),
@@ -475,7 +476,7 @@ router.post(
     try {
       validationResult(req).throw();
 
-      let query = `Select * From DeliveryAddress Where userID = '1'`;
+      let query = `Select * From DeliveryAddress Where userID = '${req.decoded.id}'`;
 
       request.query(query, function (err, set) {
         if (err) {
