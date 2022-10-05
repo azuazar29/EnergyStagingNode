@@ -494,7 +494,7 @@ router.post(
               address1 = '${req.body.address1}', address2 = '${req.body.address2
               }',additionalInfo = '${req.body.additionalInfo
               }', updatedOn = '${new Date().toISOString()}', isPrimary = '${req.body.isBilling ? req.body.isBilling : '0'}', bAddress1 =  '${req.body.bAddress1 ? req.body.bAddress1 : ''}'
-            , bAddress2 =  '${req.body.bAddress2 ? req.body.bAddress2 : ''}', bAddress3 =  '${req.body.bAddress3 ? req.body.bAddress3 : ''}'  Where userId = '1' `;
+            , bAddress2 =  '${req.body.bAddress2 ? req.body.bAddress2 : ''}', bAddress3 =  '${req.body.bAddress3 ? req.body.bAddress3 : ''}'  Where userId = '${req.decoded.id}' `;
 
             console.log("query", query);
             request.query(query, function (err, set) {
@@ -517,7 +517,7 @@ router.post(
             let query = `Insert into DeliveryAddress values( '${req.body.name
               }', '${req.body.contactNumber}', '${req.body.email}',
               '${req.body.address1
-              }', '1', '${new Date().toISOString()}', '${new Date().toISOString()}', '${req.body.isBilling ? req.body.isBilling : '0'}','${req.body.additionalInfo
+              }', '${req.decoded.id}', '${new Date().toISOString()}', '${new Date().toISOString()}', '${req.body.isBilling ? req.body.isBilling : '0'}','${req.body.additionalInfo
               }','${req.body.address2}','${req.body.baddress1 ? req.body.bAddress1 : ''}','${req.body.bAddress2 ? req.body.bAddress2 : ''}'
             ,'${req.body.bAddress3 ? req.body.bAddress3 : ''}' )`;
 
