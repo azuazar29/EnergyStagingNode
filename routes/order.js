@@ -383,10 +383,10 @@ router.get("/GetOrderParticularDetails", (req, res) => {
 router.get("/GetOrdersList", function (req, res) {
 
     let query = `Select OrderList.*,sm.installationDate,sm.InstallationDay,sm.installationSlot,sm.installationStatus,sm.visitDate,
-    sm.visitDay,sm.visitSlot,sm.visitStatus,sm.orderID as smOrderID, DeliveryAddress.Id as deliveryID from dbo.OrderList
+    sm.visitDay,sm.visitSlot,sm.visitStatus,sm.orderID as smOrderID, da.address1,da.address2,da.bAddress1,da.bAddress2,da.bAddress3,da.contactNumber,da.email,da.isPrimary,da.name,cart.* from dbo.OrderList    
         inner join Cart on dbo.OrderList.Id = Cart.orderID
         inner join subscriptionmanagement as sm on  sm.orderID = dbo.OrderList.Id    
-        left join DeliveryAddress on OrderList.UserId = DeliveryAddress.userID`
+        left join DeliveryAddress as da on OrderList.UserId = da.userID`
     if (req.query.Startdate && req.query.Enddate) {
         query = `${query} where OrderDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
