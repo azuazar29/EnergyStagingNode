@@ -65,719 +65,821 @@ function getColor(value, min, factor) {
 
 }
 
-router.post('/getEnergyConsumption', function (req, res) {
-
-
-    let startDate, endDate
-    let query
-    if (req.body.filter == 'today') {
-        startDate = moment(new Date()).startOf('day').toISOString()
-        endDate = moment(new Date()).endOf('day').toISOString()
-        query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
-    } else if (req.body.filter == 'week') {
-        startDate = moment(new Date()).startOf('week').toISOString()
-        endDate = moment(new Date()).endOf('week').toISOString()
-        query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
-    } else if (req.body.filter == 'month') {
-        startDate = moment(new Date()).startOf('month').toISOString()
-        endDate = moment(new Date()).endOf('month').toISOString()
-        query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
-    } else {
-        query = `Select * from [EnergyConsumptionFromJob] where Device_ID = 'bf664ad3a1ff7085d7pyvr' order by updatedOn `
-    }
-    //console.log('start, ends', startDate, endDate)
+router.post('/getEnergyConsumption', middleware.authenticate, async function (req, res) {
 
 
 
-    request.query(query, function (err, set) {
-        if (err) {
-            //console.log(err)
 
-            res.status(400)
-            res.json({
-                success: false,
-                message: "Something bad has happened"
-            })
+    let deviceID = await new Promise((resolve, reject) => {
 
+        let query = `Select deviceID,orderID from deviceMapping where userID = '${req.decoded.id}'`
+
+        console.log("query device mapping", query)
+
+        request.query(query, function (err, recordset) {
+
+            console.log("recordset.recordset", recordset.recordset)
+
+            if (recordset.recordset.length) {
+
+
+                request.query(`Select installationDate from subscriptionManagement where userID = ${req.decoded.id} and orderID = ${recordset.recordset[0].orderID}`, function (err, record) {
+
+
+                    if (record.recordset[0].installationDate != null) {
+                        resolve({ deviceID: recordset.recordset[0].deviceID, installationDate: moment(record.recordset[0].installationDate).format('DD-MM-YYYY') })
+
+                    }
+                })
+            } else {
+                resolve({ deviceID: '', installationDate: '' })
+            }
+
+
+
+        })
+
+
+    })
+
+    console.log("device", deviceID)
+    if (deviceID.deviceID != '') {
+        let startDate, endDate
+        let query
+        if (req.body.filter == 'today') {
+            startDate = moment(new Date()).startOf('day').toISOString()
+            endDate = moment(new Date()).endOf('day').toISOString()
+            query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
+        } else if (req.body.filter == 'week') {
+            startDate = moment(new Date()).startOf('week').toISOString()
+            endDate = moment(new Date()).endOf('week').toISOString()
+            query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
+        } else if (req.body.filter == 'month') {
+            startDate = moment(new Date()).startOf('month').toISOString()
+            endDate = moment(new Date()).endOf('month').toISOString()
+            query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
         } else {
-            // //console.log("sucess",set)
-            let finalResult = []
-            // let result = set.recordsets[0]
-
-
-            let endDate = new Date().toISOString()
+            query = `Select * from [EnergyConsumptionFromJob] where Device_ID = '${deviceID.deviceID}' order by updatedOn `
+        }
 
 
 
+        request.query(query, function (err, set) {
+            if (err) {
 
+                res.status(400)
+                res.json({
+                    success: false,
+                    message: "Something bad has happened"
+                })
 
-            //console.log("sucess")
-            let result = set.recordsets[0]
-            let days = []
-            let energyConsumed = "0"
+            } else {
+                let finalResult = []
+                let result = set.recordsets[0]
 
-            result.forEach((element, index) => {
+                result.forEach((element, index) => {
 
-                element.updatedOn = moment(element.updatedOn).format('MM/DD/YYYY')
+                    element.updatedOn = moment(element.updatedOn).format('MM/DD/YYYY')
 
-            })
+                })
 
+                let resultFinal = groupBy(result, 'updatedOn')
 
+                let groupedData = []
 
+                Object.keys(resultFinal).forEach(element => {
 
-            let resultFinal = groupBy(result, 'updatedOn')
+                    groupedData.push(resultFinal[element][resultFinal[element].length - 1])
 
-            let groupedData = []
+                })
 
-            Object.keys(resultFinal).forEach(element => {
+                result = groupedData
 
-                groupedData.push(resultFinal[element][resultFinal[element].length - 1])
+                let maxdayenergy = 0
 
-            })
-
-            result = groupedData
-
-            let maxdayenergy = 0
-
-            result.forEach(element => {
-                maxdayenergy = Number(maxdayenergy) + Number(element.EnergyConsumed)
-            })
-
-            let ab = moment(new Date()).subtract('6', 'days').format('YYYY-MM-DD')
-            let bb = moment(new Date()).format('YYYY-MM-DD')
-
-            console.log('bb', bb)
-            console.log('ab', ab)
-
-            let todaysenergy = 0
-            let final = []
-            for (var m = moment(ab); m.diff(bb, 'days') <= 0; m.add(1, 'days')) {
-
-                // console.log("mmm", m.day())
-                let isAvailable = false
                 result.forEach(element => {
+                    maxdayenergy = Number(maxdayenergy) + Number(element.EnergyConsumed)
+                })
+
+                let ab = moment(new Date()).subtract('6', 'days').format('YYYY-MM-DD')
+                let bb = moment(new Date()).format('YYYY-MM-DD')
+
+                console.log('bb', bb)
+                console.log('ab', ab)
+
+                let todaysenergy = 0
+                let final = []
+                for (var m = moment(ab); m.diff(bb, 'days') <= 0; m.add(1, 'days')) {
+
+                    // console.log("mmm", m.day())
+                    let isAvailable = false
+                    result.forEach(element => {
 
 
-                    // console.log("elemen", element)
+                        // console.log("elemen", element)
 
-                    if (moment(element.updatedOn).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
-                        final.push({
-                            day: m.format('dddd'),
-                            energyConsumed: element.EnergyConsumed.toString(),
-                            color: ''
-                        })
-                        if (moment(new Date()).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
-                            todaysenergy = (Number(todaysenergy) + Number(element.EnergyConsumed)).toFixed(2)
+                        if (moment(element.updatedOn).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
+                            final.push({
+                                day: m.format('dddd'),
+                                energyConsumed: element.EnergyConsumed.toString(),
+                                color: ''
+                            })
+                            if (moment(new Date()).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
+                                todaysenergy = (Number(todaysenergy) + Number(element.EnergyConsumed)).toFixed(2)
+                            }
+
+                            isAvailable = true
+
                         }
 
-                        isAvailable = true
-
-                    }
-
-                })
-                if (!isAvailable) {
-                    final.push({
-                        day: m.format('dddd'),
-                        energyConsumed: "0",
-                        color: ''
                     })
-                }
-            }
-
-
-            let total = 0
-            final.forEach(element => {
-
-                total = total + Number(element.energyConsumed)
-
-            })
-
-
-
-            let startDate1 = moment(new Date()).startOf('month').toDate()
-            let endDate1 = moment(new Date()).endOf('month').toDate()
-
-            var a = moment(moment(startDate1).format('YYYY-MM-DD'));
-            var b = moment(moment(endDate1).format('YYYY-MM-DD'));
-
-            for (var m = moment(a); m.diff(b, 'days') <= 0; m.add(1, 'days')) {
-
-                let isAvailable = false
-
-
-                result.forEach(element => {
-                    // //console.log(moment(element.updatedOn).date())
-                    if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
-                        finalResult.push({
-                            day: m.date().toString(),
-                            energyConsumed: element.EnergyConsumed,
+                    if (!isAvailable) {
+                        final.push({
+                            day: m.format('dddd'),
+                            energyConsumed: "0",
                             color: ''
                         })
-                        isAvailable = true
                     }
+                }
+
+
+                let total = 0
+                final.forEach(element => {
+
+                    total = total + Number(element.energyConsumed)
+
                 })
-                if (!isAvailable) {
-                    finalResult.push({
-                        day: m.date().toString(),
-                        energyConsumed: 0,
-                        color: ''
+
+
+
+                let startDate1 = moment(new Date()).startOf('month').toDate()
+                let endDate1 = moment(new Date()).endOf('month').toDate()
+
+                var a = moment(moment(startDate1).format('YYYY-MM-DD'));
+                var b = moment(moment(endDate1).format('YYYY-MM-DD'));
+
+                for (var m = moment(a); m.diff(b, 'days') <= 0; m.add(1, 'days')) {
+
+                    let isAvailable = false
+
+
+                    result.forEach(element => {
+                        // //console.log(moment(element.updatedOn).date())
+                        if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
+                            finalResult.push({
+                                day: m.date().toString(),
+                                energyConsumed: element.EnergyConsumed,
+                                color: ''
+                            })
+                            isAvailable = true
+                        }
                     })
+                    if (!isAvailable) {
+                        finalResult.push({
+                            day: m.date().toString(),
+                            energyConsumed: 0,
+                            color: ''
+                        })
+                    }
                 }
-            }
 
-            let finalResult1 = []
-            finalResult.forEach(element => {
-                element.energyConsumed = Number(element.energyConsumed).toFixed(2)
-                finalResult1.push(element)
-            })
-
-
-
-            // //console.log("finalResult", finalResult1)
-            let totalMonthly = 0
-            finalResult1.forEach(element => {
-
-                totalMonthly = totalMonthly + Number(element.energyConsumed)
-
-
-            })
-
-            // 
+                let finalResult1 = []
+                finalResult.forEach(element => {
+                    element.energyConsumed = Number(element.energyConsumed).toFixed(2)
+                    finalResult1.push(element)
+                })
 
 
 
-            let monthArray = []
+                // //console.log("finalResult", finalResult1)
+                let totalMonthly = 0
+                finalResult1.forEach(element => {
 
-            let month = Number(req.body.month)
-            for (let i = 0; i < month; i++) {
-                monthArray.push(moment(new Date()).subtract(i, 'month').format("MMM"))
-            }
+                    totalMonthly = totalMonthly + Number(element.energyConsumed)
 
-            let temp = []
-            let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            if (req.body.month && Number(req.body.month) < 12) {
-                months = monthArray
-            }
+
+                })
+
+                // 
 
 
 
-            months.forEach((month, i) => {
-                temp[i] = {
-                    "month": month,
-                    "energyConsumed": "0"
+                let monthArray = []
+
+                let month = Number(req.body.month)
+                for (let i = 0; i < month; i++) {
+                    monthArray.push(moment(new Date()).subtract(i, 'month').format("MMM"))
                 }
-                result.forEach((element) => {
-                    if (moment(element.created_On).format("MMM") == month) {
-                        temp[i].energyConsumed = (Number(temp[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
 
+                let temp = []
+                let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                if (req.body.month && Number(req.body.month) < 12) {
+                    months = monthArray
+                }
+
+
+
+                months.forEach((month, i) => {
+                    temp[i] = {
+                        "month": month,
+                        "energyConsumed": "0"
+                    }
+                    result.forEach((element) => {
+                        if (moment(element.created_On).format("MMM") == month) {
+                            temp[i].energyConsumed = (Number(temp[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
+
+                        }
+                    })
+                })
+
+                let totalTrend = 0
+                temp.forEach(element => {
+
+                    totalTrend = totalTrend + Number(element.energyConsumed)
+
+                })
+
+
+
+                let weeklyMax = 0, weeklyMin = 0
+                final.forEach(element => {
+                    //console.log("max", element.energyConsumed)
+                    if (weeklyMax < element.energyConsumed) {
+                        weeklyMax = element.energyConsumed
                     }
                 })
-            })
+                let MinArrayWeek = []
 
-            let totalTrend = 0
-            temp.forEach(element => {
+                finalResult1.forEach(element => {
+                    if (element.energyConsumed != 0)
+                        MinArrayWeek.push(element)
+                })
 
-                totalTrend = totalTrend + Number(element.energyConsumed)
+                weeklyMin = MinArrayWeek.reduce(function (prev, curr) {
+                    return prev.energyConsumed < curr.energyConsumed ? prev : curr;
+                });
+                weeklyMin = weeklyMin.energyConsumed
+                // console.log("min", monthlyMin.energyConsumed)
 
-            })
+                let factor = (weeklyMax - weeklyMin) / 3
 
+                final.forEach(element => {
 
+                    let color = getColor(element.energyConsumed, weeklyMin, factor)
+                    // //console.log("color", color)
+                    element.color = color
 
-            let weeklyMax = 0, weeklyMin = 0
-            final.forEach(element => {
-                //console.log("max", element.energyConsumed)
-                if (weeklyMax < element.energyConsumed) {
-                    weeklyMax = element.energyConsumed
-                }
-            })
-            let MinArrayWeek = []
+                })
 
-            finalResult1.forEach(element => {
-                if (element.energyConsumed != 0)
-                    MinArrayWeek.push(element)
-            })
+                let monthlyMax = 0, monthlyMin = 0
+                finalResult1.forEach(element => {
+                    // //console.log("max", element.energyConsumed)
+                    if (monthlyMax < element.energyConsumed) {
+                        monthlyMax = element.energyConsumed
+                    }
+                })
+                let index11 = 0
 
-            weeklyMin = MinArrayWeek.reduce(function (prev, curr) {
-                return prev.energyConsumed < curr.energyConsumed ? prev : curr;
-            });
-            weeklyMin = weeklyMin.energyConsumed
-            // console.log("min", monthlyMin.energyConsumed)
+                MinArray = []
 
-            let factor = (weeklyMax - weeklyMin) / 3
+                finalResult1.forEach(element => {
+                    if (element.energyConsumed != 0)
+                        MinArray.push(element)
+                })
 
-            final.forEach(element => {
+                monthlyMin = MinArray.reduce(function (prev, curr) {
+                    return prev.energyConsumed < curr.energyConsumed ? prev : curr;
+                });
+                monthlyMin = monthlyMin.energyConsumed
+                console.log("min", monthlyMin.energyConsumed)
+                // finalResult1.forEach((element, index) => {
+                //     if (element.energyConsumed != 0) {
 
-                let color = getColor(element.energyConsumed, weeklyMin, factor)
-                // //console.log("color", color)
-                element.color = color
+                //         index11 = index
 
-            })
+                //         if (index == index11)
+                //             monthlyMin = element.energyConsumed
 
-            let monthlyMax = 0, monthlyMin = 0
-            finalResult1.forEach(element => {
-                // //console.log("max", element.energyConsumed)
-                if (monthlyMax < element.energyConsumed) {
-                    monthlyMax = element.energyConsumed
-                }
-            })
-            let index11 = 0
-
-            MinArray = []
-
-            finalResult1.forEach(element => {
-                if (element.energyConsumed != 0)
-                    MinArray.push(element)
-            })
-
-            monthlyMin = MinArray.reduce(function (prev, curr) {
-                return prev.energyConsumed < curr.energyConsumed ? prev : curr;
-            });
-            monthlyMin = monthlyMin.energyConsumed
-            console.log("min", monthlyMin.energyConsumed)
-            // finalResult1.forEach((element, index) => {
-            //     if (element.energyConsumed != 0) {
-
-            //         index11 = index
-
-            //         if (index == index11)
-            //             monthlyMin = element.energyConsumed
-
-            //         if (monthlyMin < element.energyConsumed) {
-            //             monthlyMin = element.energyConsumed
-            //         }
+                //         if (monthlyMin < element.energyConsumed) {
+                //             monthlyMin = element.energyConsumed
+                //         }
 
 
 
-            //     }
+                //     }
 
-            // })
+                // })
 
-            console.log("monthlyMax - monthlyMin", monthlyMax, monthlyMin)
+                console.log("monthlyMax - monthlyMin", monthlyMax, monthlyMin)
 
-            let factorMonthly = (monthlyMax - monthlyMin) / 3
+                let factorMonthly = (monthlyMax - monthlyMin) / 3
 
-            finalResult1.forEach(element => {
+                finalResult1.forEach(element => {
 
-                let color = getColor(element.energyConsumed, monthlyMin, factorMonthly)
-                //console.log("color", color)
-                element.color = color
+                    let color = getColor(element.energyConsumed, monthlyMin, factorMonthly)
+                    //console.log("color", color)
+                    element.color = color
 
-            })
+                })
 
-            final.forEach(element => {
+                final.forEach(element => {
 
-                if (element.day == moment(new Date()).format("dddd")) {
+                    if (element.day == moment(new Date()).format("dddd")) {
 
-                    element.day = 'Today'
+                        element.day = 'Today'
 
-                }
+                    }
 
-            })
+                })
 
 
 
-            res.status(200)
-            res.json({
-                success: true,
-                MonthlyResult: finalResult1,
-                message: "Consumption Details",
-                TotalEnergySpendMonthly: Number(total).toFixed(2),
-                TotalMoneySpendMonthly: ((Number(total)) * .023).toFixed(2),
-                ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly))) * 30).toFixed(2),
-                WeeklyResult: final,
-                TotalEnergySpendWeekle: total.toFixed(2),
-                TotalMoneySpendWeekly: ((Number(total)) * .23).toFixed(2),
-                ThresholdWeekly: ((Number(factor) + (Number(weeklyMin) + Number(factor))) * 7).toFixed(2),
-                TrendResult: temp.reverse(),
-                TotalEnergySpendTrend: Number(total).toFixed(2),
-                TotalMoneySpendTrend: ((Number(total)) * .023).toFixed(2),
-                ThresholdTrend: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly))) * (30 * Number(req.body.month))).toFixed(2),
-                TotalEnergySpendToday: todaysenergy.toString(),
-                TotalMoneySpendToday: ((Number(todaysenergy)) * .23).toFixed(2),
-                TotalMoneySpendmax: ((Number(maxdayenergy)) * .23).toFixed(2),
-                TotalEnergySpendmax: maxdayenergy.toString(),
-                installationDate: '28-09-2022'
-            })
+                res.status(200)
+                res.json({
+                    success: true,
+                    MonthlyResult: finalResult1,
+                    message: "Consumption Details",
+                    TotalEnergySpendMonthly: Number(total).toFixed(2),
+                    TotalMoneySpendMonthly: ((Number(total)) * .023).toFixed(2),
+                    ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly))) * 30).toFixed(2),
+                    WeeklyResult: final,
+                    TotalEnergySpendWeekle: total.toFixed(2),
+                    TotalMoneySpendWeekly: ((Number(total)) * .23).toFixed(2),
+                    ThresholdWeekly: ((Number(factor) + (Number(weeklyMin) + Number(factor))) * 7).toFixed(2),
+                    TrendResult: temp.reverse(),
+                    TotalEnergySpendTrend: Number(total).toFixed(2),
+                    TotalMoneySpendTrend: ((Number(total)) * .023).toFixed(2),
+                    ThresholdTrend: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly))) * (30 * Number(req.body.month))).toFixed(2),
+                    TotalEnergySpendToday: todaysenergy.toString(),
+                    TotalMoneySpendToday: ((Number(todaysenergy)) * .23).toFixed(2),
+                    TotalMoneySpendmax: ((Number(maxdayenergy)) * .23).toFixed(2),
+                    TotalEnergySpendmax: maxdayenergy.toString(),
+                    installationDate: deviceID.installationDate
+                })
 
 
 
 
-            // res.status(200)
-            // res.json({
-            //     success: true,
-            //     result: {
-            //         energyConsumed: Number(energyConsumed).toFixed(2),
-            //         moneySpent: (Number(energyConsumed) * .23).toFixed(2)
-            //     },
-            //     message: "Filtered Successfully",
+                // res.status(200)
+                // res.json({
+                //     success: true,
+                //     result: {
+                //         energyConsumed: Number(energyConsumed).toFixed(2),
+                //         moneySpent: (Number(energyConsumed) * .23).toFixed(2)
+                //     },
+                //     message: "Filtered Successfully",
 
-            // })
+                // })
 
 
-            // res.send(finalResult1)
-        }
-    })
+                // res.send(finalResult1)
+            }
+        })
+    } else {
+
+        res.status(200)
+        res.json({
+            success: true,
+            MonthlyResult: [],
+            message: "Consumption Details",
+            TotalEnergySpendMonthly: 0.00,
+            TotalMoneySpendMonthly: 0.00,
+            ThresholdMonthly: 0.00,
+            WeeklyResult: [],
+            TotalEnergySpendWeekle: 0.00,
+            TotalMoneySpendWeekly: 0.00,
+            ThresholdWeekly: 0.00,
+            TrendResult: [],
+            TotalEnergySpendTrend: 0.00,
+            TotalMoneySpendTrend: 0.00,
+            ThresholdTrend: 0.00,
+            TotalEnergySpendToday: "0.00",
+            TotalMoneySpendToday: 0.00,
+            TotalMoneySpendmax: 0.00,
+            TotalEnergySpendmax: "0.00",
+            installationDate: deviceID.installationDate
+        })
+
+    }
+
+
+
 
 
 })
 
-router.post('/getEnergyConsumptionByCO2', function (req, res) {
+router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async function (req, res) {
 
+    let deviceID = await new Promise((resolve, reject) => {
 
-    let startDate, endDate
-    let query
-    if (req.body.filter == 'today') {
-        startDate = moment(new Date()).startOf('day').toISOString()
-        endDate = moment(new Date()).endOf('day').toISOString()
-        query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
-    } else if (req.body.filter == 'week') {
-        startDate = moment(new Date()).startOf('week').toISOString()
-        endDate = moment(new Date()).endOf('week').toISOString()
-        query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
-    } else if (req.body.filter == 'month') {
-        startDate = moment(new Date()).startOf('month').toISOString()
-        endDate = moment(new Date()).endOf('month').toISOString()
-        query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
-    } else {
-        query = `Select * from [EnergyConsumptionFromJob] where Device_ID = 'bf664ad3a1ff7085d7pyvr' order by updatedOn `
-    }
-    //console.log('start, ends', startDate, endDate)
+        let query = `Select deviceID,orderID from deviceMapping where userID = '${req.decoded.id}'`
 
+        console.log("query device mapping", query)
 
+        request.query(query, function (err, recordset) {
 
-    request.query(query, function (err, set) {
-        if (err) {
-            //console.log(err)
+            console.log("recordset.recordset", recordset.recordset)
 
-            res.status(400)
-            res.json({
-                success: false,
-                message: "Something bad has happened"
-            })
+            if (recordset.recordset.length) {
 
-        } else {
-            // //console.log("sucess",set)
-            let finalResult = []
-            // let result = set.recordsets[0]
 
+                request.query(`Select installationDate from subscriptionManagement where userID = ${req.decoded.id} and orderID = ${recordset.recordset[0].orderID}`, function (err, record) {
 
-            let endDate = new Date().toISOString()
 
-
-
-
-
-            //console.log("sucess")
-            let result = set.recordsets[0]
-            let days = []
-            let energyConsumed = "0"
-
-            result.forEach((element, index) => {
-
-                element.updatedOn = moment(element.updatedOn).format('MM/DD/YYYY')
-                element.EnergyConsumed = element.EnergyConsumed * .408
-
-
-            })
-
-
-
-
-            let resultFinal = groupBy(result, 'updatedOn')
-
-            let groupedData = []
-
-            Object.keys(resultFinal).forEach(element => {
-
-                groupedData.push(resultFinal[element][resultFinal[element].length - 1])
-
-            })
-
-            result = groupedData
-
-            let maxdayenergy = 0
-
-            result.forEach(element => {
-                maxdayenergy = Number(maxdayenergy) + Number(element.EnergyConsumed)
-            })
-
-            let ab = moment(new Date()).subtract('6', 'days').format('YYYY-MM-DD')
-            let bb = moment(new Date()).format('YYYY-MM-DD')
-
-            console.log('bb', bb)
-            console.log('ab', ab)
-
-            let todaysenergy = 0
-            let final = []
-            for (var m = moment(ab); m.diff(bb, 'days') <= 0; m.add(1, 'days')) {
-
-                // console.log("mmm", m.day())
-                let isAvailable = false
-                result.forEach(element => {
-
-
-                    // console.log("elemen", element)
-
-                    if (moment(element.updatedOn).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
-                        final.push({
-                            day: m.format('dddd'),
-                            energyConsumed: element.EnergyConsumed.toString(),
-                            color: ''
-                        })
-                        if (moment(new Date()).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
-                            todaysenergy = (Number(todaysenergy) + Number(element.EnergyConsumed)).toFixed(2)
-                        }
-
-                        isAvailable = true
-
-                    }
-
-                })
-                if (!isAvailable) {
-                    final.push({
-                        day: m.format('dddd'),
-                        energyConsumed: "0",
-                        color: ''
-                    })
-                }
-            }
-
-
-            let total = 0
-            final.forEach(element => {
-
-                total = total + Number(element.energyConsumed)
-
-            })
-
-
-
-            let startDate1 = moment(new Date()).startOf('month').toDate()
-            let endDate1 = moment(new Date()).endOf('month').toDate()
-
-            var a = moment(moment(startDate1).format('YYYY-MM-DD'));
-            var b = moment(moment(endDate1).format('YYYY-MM-DD'));
-
-            for (var m = moment(a); m.diff(b, 'days') <= 0; m.add(1, 'days')) {
-
-                let isAvailable = false
-
-
-                result.forEach(element => {
-                    // //console.log(moment(element.updatedOn).date())
-                    if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
-                        finalResult.push({
-                            day: m.date().toString(),
-                            energyConsumed: element.EnergyConsumed,
-                            color: ''
-                        })
-                        isAvailable = true
-                    }
-                })
-                if (!isAvailable) {
-                    finalResult.push({
-                        day: m.date().toString(),
-                        energyConsumed: 0,
-                        color: ''
-                    })
-                }
-            }
-
-            let finalResult1 = []
-            finalResult.forEach(element => {
-                element.energyConsumed = Number(element.energyConsumed).toFixed(2)
-                finalResult1.push(element)
-            })
-
-
-
-            // //console.log("finalResult", finalResult1)
-            let totalMonthly = 0
-            finalResult1.forEach(element => {
-
-                totalMonthly = totalMonthly + Number(element.energyConsumed)
-
-
-            })
-
-            // 
-
-
-
-            let monthArray = []
-
-            let month = Number(req.body.month)
-            for (let i = 0; i < month; i++) {
-                monthArray.push(moment(new Date()).subtract(i, 'month').format("MMM"))
-            }
-
-            let temp = []
-            let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            if (req.body.month && Number(req.body.month) < 12) {
-                months = monthArray
-            }
-
-
-
-            months.forEach((month, i) => {
-                temp[i] = {
-                    "month": month,
-                    "energyConsumed": "0"
-                }
-                result.forEach((element) => {
-                    if (moment(element.created_On).format("MMM") == month) {
-                        temp[i].energyConsumed = (Number(temp[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
+                    if (record.recordset[0].installationDate != null) {
+                        resolve({ deviceID: recordset.recordset[0].deviceID, installationDate: moment(record.recordset[0].installationDate).format('DD-MM-YYYY') })
 
                     }
                 })
-            })
-
-            let totalTrend = 0
-            temp.forEach(element => {
-
-                totalTrend = totalTrend + Number(element.energyConsumed)
-
-            })
+            } else {
+                resolve({ deviceID: '', installationDate: '' })
+            }
 
 
 
-            let weeklyMax = 0, weeklyMin = 0
-            final.forEach(element => {
-                //console.log("max", element.energyConsumed)
-                if (weeklyMax < element.energyConsumed) {
-                    weeklyMax = element.energyConsumed
-                }
-            })
-            let MinArrayWeek = []
-
-            finalResult1.forEach(element => {
-                if (element.energyConsumed != 0)
-                    MinArrayWeek.push(element)
-            })
-
-            weeklyMin = MinArrayWeek.reduce(function (prev, curr) {
-                return prev.energyConsumed < curr.energyConsumed ? prev : curr;
-            });
-            weeklyMin = weeklyMin.energyConsumed
-            // console.log("min", monthlyMin.energyConsumed)
-
-            let factor = (weeklyMax - weeklyMin) / 3
-
-            final.forEach(element => {
-
-                let color = getColor(element.energyConsumed, weeklyMin, factor)
-                // //console.log("color", color)
-                element.color = color
-
-            })
-
-            let monthlyMax = 0, monthlyMin = 0
-            finalResult1.forEach(element => {
-                // //console.log("max", element.energyConsumed)
-                if (monthlyMax < element.energyConsumed) {
-                    monthlyMax = element.energyConsumed
-                }
-            })
-            let index11 = 0
-
-            MinArray = []
-
-            finalResult1.forEach(element => {
-                if (element.energyConsumed != 0)
-                    MinArray.push(element)
-            })
-
-            monthlyMin = MinArray.reduce(function (prev, curr) {
-                return prev.energyConsumed < curr.energyConsumed ? prev : curr;
-            });
-            monthlyMin = monthlyMin.energyConsumed
-            console.log("min", monthlyMin.energyConsumed)
-            // finalResult1.forEach((element, index) => {
-            //     if (element.energyConsumed != 0) {
-
-            //         index11 = index
-
-            //         if (index == index11)
-            //             monthlyMin = element.energyConsumed
-
-            //         if (monthlyMin < element.energyConsumed) {
-            //             monthlyMin = element.energyConsumed
-            //         }
+        })
 
 
-
-            //     }
-
-            // })
-
-            console.log("monthlyMax - monthlyMin", monthlyMax, monthlyMin)
-
-            let factorMonthly = (monthlyMax - monthlyMin) / 3
-
-            finalResult1.forEach(element => {
-
-                let color = getColor(element.energyConsumed, monthlyMin, factorMonthly)
-                //console.log("color", color)
-                element.color = color
-
-            })
-
-            final.forEach(element => {
-
-                if (element.day == moment(new Date()).format("dddd")) {
-
-                    element.day = 'Today'
-
-                }
-
-            })
-
-
-
-            res.status(200)
-            res.json({
-                success: true,
-                MonthlyResult: finalResult1,
-                message: "Consumption Details",
-                TotalEnergySpendMonthly: Number(total).toFixed(2),
-                TotalMoneySpendMonthly: ((Number(total) / .408) * .023).toFixed(2),
-                ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly))) * 30).toFixed(2),
-
-                WeeklyResult: final,
-                TotalEnergySpendWeekle: total.toFixed(2),
-                TotalMoneySpendWeekly: ((Number(total) / .408) * .23).toFixed(2),
-                ThresholdWeekly: ((Number(factor) + (Number(weeklyMin) + Number(factor))) * 7).toFixed(2),
-
-                TrendResult: temp.reverse(),
-                TotalEnergySpendTrend: Number(total).toFixed(2),
-                TotalMoneySpendTrend: ((Number(total) / .408) * .023).toFixed(2),
-                ThresholdTrend: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly))) * (30 * Number(req.body.month))).toFixed(2),
-                TotalEnergySpendToday: todaysenergy.toString(),
-                TotalMoneySpendToday: ((Number(todaysenergy) / .408) * .23).toFixed(2),
-                TotalMoneySpendmax: ((Number(maxdayenergy) / .408) * .23).toFixed(2),
-                TotalEnergySpendmax: maxdayenergy.toString(),
-                installationDate: '28-09-2022'
-            })
-
-
-
-
-            // res.status(200)
-            // res.json({
-            //     success: true,
-            //     result: {
-            //         energyConsumed: Number(energyConsumed).toFixed(2),
-            //         moneySpent: (Number(energyConsumed) * .23).toFixed(2)
-            //     },
-            //     message: "Filtered Successfully",
-
-            // })
-
-
-            // res.send(finalResult1)
-        }
     })
 
+    console.log("device", deviceID)
+    if (deviceID.deviceID != '') {
+        let startDate, endDate
+        let query
+        if (req.body.filter == 'today') {
+            startDate = moment(new Date()).startOf('day').toISOString()
+            endDate = moment(new Date()).endOf('day').toISOString()
+            query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
+        } else if (req.body.filter == 'week') {
+            startDate = moment(new Date()).startOf('week').toISOString()
+            endDate = moment(new Date()).endOf('week').toISOString()
+            query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
+        } else if (req.body.filter == 'month') {
+            startDate = moment(new Date()).startOf('month').toISOString()
+            endDate = moment(new Date()).endOf('month').toISOString()
+            query = `Select * from [EnergyConsumptionFromJob] Where updatedOn Between '${startDate}' AND '${endDate}'`
+        } else {
+            query = `Select * from [EnergyConsumptionFromJob] where Device_ID = '${deviceID.deviceID}' order by updatedOn `
+        }
+
+
+        request.query(query, function (err, set) {
+            if (err) {
+                //console.log(err)
+
+                res.status(400)
+                res.json({
+                    success: false,
+                    message: "Something bad has happened"
+                })
+
+            } else {
+                // //console.log("sucess",set)
+                let finalResult = []
+                // let result = set.recordsets[0]
+
+
+                let endDate = new Date().toISOString()
+
+
+
+
+
+                //console.log("sucess")
+                let result = set.recordsets[0]
+                let days = []
+                let energyConsumed = "0"
+
+                result.forEach((element, index) => {
+
+                    element.updatedOn = moment(element.updatedOn).format('MM/DD/YYYY')
+                    element.EnergyConsumed = element.EnergyConsumed * .408
+
+
+                })
+
+
+
+
+                let resultFinal = groupBy(result, 'updatedOn')
+
+                let groupedData = []
+
+                Object.keys(resultFinal).forEach(element => {
+
+                    groupedData.push(resultFinal[element][resultFinal[element].length - 1])
+
+                })
+
+                result = groupedData
+
+                let maxdayenergy = 0
+
+                result.forEach(element => {
+                    maxdayenergy = Number(maxdayenergy) + Number(element.EnergyConsumed)
+                })
+
+                let ab = moment(new Date()).subtract('6', 'days').format('YYYY-MM-DD')
+                let bb = moment(new Date()).format('YYYY-MM-DD')
+
+                console.log('bb', bb)
+                console.log('ab', ab)
+
+                let todaysenergy = 0
+                let final = []
+                for (var m = moment(ab); m.diff(bb, 'days') <= 0; m.add(1, 'days')) {
+
+                    // console.log("mmm", m.day())
+                    let isAvailable = false
+                    result.forEach(element => {
+
+
+                        // console.log("elemen", element)
+
+                        if (moment(element.updatedOn).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
+                            final.push({
+                                day: m.format('dddd'),
+                                energyConsumed: element.EnergyConsumed.toString(),
+                                color: ''
+                            })
+                            if (moment(new Date()).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
+                                todaysenergy = (Number(todaysenergy) + Number(element.EnergyConsumed)).toFixed(2)
+                            }
+
+                            isAvailable = true
+
+                        }
+
+                    })
+                    if (!isAvailable) {
+                        final.push({
+                            day: m.format('dddd'),
+                            energyConsumed: "0",
+                            color: ''
+                        })
+                    }
+                }
+
+
+                let total = 0
+                final.forEach(element => {
+
+                    total = total + Number(element.energyConsumed)
+
+                })
+
+
+
+                let startDate1 = moment(new Date()).startOf('month').toDate()
+                let endDate1 = moment(new Date()).endOf('month').toDate()
+
+                var a = moment(moment(startDate1).format('YYYY-MM-DD'));
+                var b = moment(moment(endDate1).format('YYYY-MM-DD'));
+
+                for (var m = moment(a); m.diff(b, 'days') <= 0; m.add(1, 'days')) {
+
+                    let isAvailable = false
+
+
+                    result.forEach(element => {
+                        // //console.log(moment(element.updatedOn).date())
+                        if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
+                            finalResult.push({
+                                day: m.date().toString(),
+                                energyConsumed: element.EnergyConsumed,
+                                color: ''
+                            })
+                            isAvailable = true
+                        }
+                    })
+                    if (!isAvailable) {
+                        finalResult.push({
+                            day: m.date().toString(),
+                            energyConsumed: 0,
+                            color: ''
+                        })
+                    }
+                }
+
+                let finalResult1 = []
+                finalResult.forEach(element => {
+                    element.energyConsumed = Number(element.energyConsumed).toFixed(2)
+                    finalResult1.push(element)
+                })
+
+
+
+                // //console.log("finalResult", finalResult1)
+                let totalMonthly = 0
+                finalResult1.forEach(element => {
+
+                    totalMonthly = totalMonthly + Number(element.energyConsumed)
+
+
+                })
+
+                // 
+
+
+
+                let monthArray = []
+
+                let month = Number(req.body.month)
+                for (let i = 0; i < month; i++) {
+                    monthArray.push(moment(new Date()).subtract(i, 'month').format("MMM"))
+                }
+
+                let temp = []
+                let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                if (req.body.month && Number(req.body.month) < 12) {
+                    months = monthArray
+                }
+
+
+
+                months.forEach((month, i) => {
+                    temp[i] = {
+                        "month": month,
+                        "energyConsumed": "0"
+                    }
+                    result.forEach((element) => {
+                        if (moment(element.created_On).format("MMM") == month) {
+                            temp[i].energyConsumed = (Number(temp[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
+
+                        }
+                    })
+                })
+
+                let totalTrend = 0
+                temp.forEach(element => {
+
+                    totalTrend = totalTrend + Number(element.energyConsumed)
+
+                })
+
+
+
+                let weeklyMax = 0, weeklyMin = 0
+                final.forEach(element => {
+                    //console.log("max", element.energyConsumed)
+                    if (weeklyMax < element.energyConsumed) {
+                        weeklyMax = element.energyConsumed
+                    }
+                })
+                let MinArrayWeek = []
+
+                finalResult1.forEach(element => {
+                    if (element.energyConsumed != 0)
+                        MinArrayWeek.push(element)
+                })
+
+                weeklyMin = MinArrayWeek.reduce(function (prev, curr) {
+                    return prev.energyConsumed < curr.energyConsumed ? prev : curr;
+                });
+                weeklyMin = weeklyMin.energyConsumed
+                // console.log("min", monthlyMin.energyConsumed)
+
+                let factor = (weeklyMax - weeklyMin) / 3
+
+                final.forEach(element => {
+
+                    let color = getColor(element.energyConsumed, weeklyMin, factor)
+                    // //console.log("color", color)
+                    element.color = color
+
+                })
+
+                let monthlyMax = 0, monthlyMin = 0
+                finalResult1.forEach(element => {
+                    // //console.log("max", element.energyConsumed)
+                    if (monthlyMax < element.energyConsumed) {
+                        monthlyMax = element.energyConsumed
+                    }
+                })
+                let index11 = 0
+
+                MinArray = []
+
+                finalResult1.forEach(element => {
+                    if (element.energyConsumed != 0)
+                        MinArray.push(element)
+                })
+
+                monthlyMin = MinArray.reduce(function (prev, curr) {
+                    return prev.energyConsumed < curr.energyConsumed ? prev : curr;
+                });
+                monthlyMin = monthlyMin.energyConsumed
+                console.log("min", monthlyMin.energyConsumed)
+                // finalResult1.forEach((element, index) => {
+                //     if (element.energyConsumed != 0) {
+
+                //         index11 = index
+
+                //         if (index == index11)
+                //             monthlyMin = element.energyConsumed
+
+                //         if (monthlyMin < element.energyConsumed) {
+                //             monthlyMin = element.energyConsumed
+                //         }
+
+
+
+                //     }
+
+                // })
+
+                console.log("monthlyMax - monthlyMin", monthlyMax, monthlyMin)
+
+                let factorMonthly = (monthlyMax - monthlyMin) / 3
+
+                finalResult1.forEach(element => {
+
+                    let color = getColor(element.energyConsumed, monthlyMin, factorMonthly)
+                    //console.log("color", color)
+                    element.color = color
+
+                })
+
+                final.forEach(element => {
+
+                    if (element.day == moment(new Date()).format("dddd")) {
+
+                        element.day = 'Today'
+
+                    }
+
+                })
+
+
+
+                res.status(200)
+                res.json({
+                    success: true,
+                    MonthlyResult: finalResult1,
+                    message: "Consumption Details",
+                    TotalEnergySpendMonthly: Number(total).toFixed(2),
+                    TotalMoneySpendMonthly: ((Number(total) / .408) * .023).toFixed(2),
+                    ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly))) * 30).toFixed(2),
+
+                    WeeklyResult: final,
+                    TotalEnergySpendWeekle: total.toFixed(2),
+                    TotalMoneySpendWeekly: ((Number(total) / .408) * .23).toFixed(2),
+                    ThresholdWeekly: ((Number(factor) + (Number(weeklyMin) + Number(factor))) * 7).toFixed(2),
+
+                    TrendResult: temp.reverse(),
+                    TotalEnergySpendTrend: Number(total).toFixed(2),
+                    TotalMoneySpendTrend: ((Number(total) / .408) * .023).toFixed(2),
+                    ThresholdTrend: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly))) * (30 * Number(req.body.month))).toFixed(2),
+                    TotalEnergySpendToday: todaysenergy.toString(),
+                    TotalMoneySpendToday: ((Number(todaysenergy) / .408) * .23).toFixed(2),
+                    TotalMoneySpendmax: ((Number(maxdayenergy) / .408) * .23).toFixed(2),
+                    TotalEnergySpendmax: maxdayenergy.toString(),
+                    installationDate: deviceID.installationDate
+                })
+
+
+
+
+                // res.status(200)
+                // res.json({
+                //     success: true,
+                //     result: {
+                //         energyConsumed: Number(energyConsumed).toFixed(2),
+                //         moneySpent: (Number(energyConsumed) * .23).toFixed(2)
+                //     },
+                //     message: "Filtered Successfully",
+
+                // })
+
+
+                // res.send(finalResult1)
+            }
+        })
+
+    } else {
+        res.status(200)
+        res.json({
+            success: true,
+            MonthlyResult: [],
+            message: "Consumption Details",
+            TotalEnergySpendMonthly: 0.00,
+            TotalMoneySpendMonthly: 0.00,
+            ThresholdMonthly: 0.00,
+            WeeklyResult: [],
+            TotalEnergySpendWeekle: 0.00,
+            TotalMoneySpendWeekly: 0.00,
+            ThresholdWeekly: 0.00,
+            TrendResult: [],
+            TotalEnergySpendTrend: 0.00,
+            TotalMoneySpendTrend: 0.00,
+            ThresholdTrend: 0.00,
+            TotalEnergySpendToday: "0.00",
+            TotalMoneySpendToday: 0.00,
+            TotalMoneySpendmax: 0.00,
+            TotalEnergySpendmax: "0.00",
+            installationDate: deviceID.installationDate
+        })
+    }
 
 })
 
@@ -785,17 +887,54 @@ router.post('/updateDeviceID/:deviceID/:orderID', function (req, res) {
 
     let query = `update OrderList set deviceID='${req.params.deviceID}' where OrderNo = '${req.params.orderID}' `
 
-    request.query(query, function (err, recordset) {
+    request.query(`Select * from orderList where OrderNo = '${req.params.orderID}'`, function (err, response) {
 
-        if (!err) {
-            res.json({
-                success: true
-            })
-        } else {
-            console.log("err", err)
-        }
+        console.log('if', err)
+
+        let userID = response.recordset[0].UserId
+        let orderID = response.recordset[0].Id
+        let deviceID = req.params.deviceID
+        let insertquery = `INSERT INTO [dbo].[DeviceMapping]
+    ([userID]
+    ,[orderID]
+    ,[deviceID]
+    ,[addedOn])
+VALUES
+    (${userID}
+    ,${orderID}
+    ,'${deviceID}'
+    ,'${new Date().toISOString()}')`
+        // console.log(insertquery)
+
+
+
+        request.query(insertquery, function (err, response) {
+
+            if (!err) {
+
+                request.query(query, function (err, recordset) {
+
+                    if (!err) {
+                        res.json({
+                            success: true
+                        })
+                    } else {
+                        console.log("err", err)
+                    }
+
+                })
+
+            }
+
+            console.log(err)
+
+        })
+
+
 
     })
+
+
 
 })
 
