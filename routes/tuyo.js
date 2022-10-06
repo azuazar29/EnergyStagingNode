@@ -41,11 +41,21 @@ router.get('/energyConsumption', function (req, res) {
 function getColor(value, min, factor) {
 
 
-    console.log(value, min, factor)
+    // console.log(value, min, factor)
+
+
+    min = Number(min)
+    value = Number(value)
+    factor = Number(factor)
+
+    // console.log(` value -  ${value} min+factor ${(min + factor)}, factor + min+ factor - ${(factor + (min + factor))}`)
+
 
     if (value >= min && value <= (min + factor)) {
         return green
     } else if (value > (min + factor) && value <= factor + (min + factor)) {
+        console.log('it came')
+
         return lightGreen
     } else if (value > factor + (min + factor)) {
         return red
