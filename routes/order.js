@@ -1859,6 +1859,8 @@ function getEnergyDetails(startDate, endDate) {
 
                 })
 
+                console.log("final array", finalArray)
+
                 let total = 0
 
                 finalArray.forEach((element, index) => {
@@ -1868,7 +1870,7 @@ function getEnergyDetails(startDate, endDate) {
                             total = element.Energy
 
                         } else {
-                            total = total + (Number(element.Energy) - Number(finalArray[index - 1].Energy))
+                            total = total + (Number(element.Energy))
 
                         }
 
