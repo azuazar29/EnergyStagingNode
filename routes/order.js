@@ -119,7 +119,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                 if (response.OrderStatus == "OM") {
                     OrderModification.push(response)
                 }
-                if (response.OrderStatus == "IN") {
+                if (response.orderFlow == "IN") {
                     Installation.push(response)
                 }
             });
