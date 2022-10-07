@@ -189,7 +189,7 @@ VALUES
 
 
 var job = new CronJob(
-  '* * * * *',
+  '*/15 * * * *',
   async function () {
     console.log('running a task every minute');
 
