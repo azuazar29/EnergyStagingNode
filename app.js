@@ -100,9 +100,9 @@ async function getTotalEnergy(device_id) {
 
       headers: { 'content-type': 'application/x-www-form-urlencoded', 'client_id': client_id, 'sign': sign, 't': timestamp, 'sign_method': 'HMAC-SHA256', 'access_token': access_token }
     }).then(function (response) {
-      console.log("reponse", response.data)
+      console.log("reponse", response.data.result.days[moment(new Date()).format("YYYYMMDD")])
 
-      resolve(response.data.result.total)
+      resolve(response.data.result.days[moment(new Date()).format("YYYYMMDD")])
       // resolve(response.data.result.total)
 
     }, err => {
@@ -189,7 +189,7 @@ VALUES
 
 
 var job = new CronJob(
-  '*/15 * * * *',
+  '* * * * *',
   async function () {
     console.log('running a task every minute');
 
