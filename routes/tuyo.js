@@ -624,7 +624,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                 let total = 0
                 final.forEach(element => {
 
-                    total = (total + Number(element.energyConsumed)).toFixed(2)
+                    total = (Number(total) + Number(element.energyConsumed)).toFixed(2)
 
                 })
 
@@ -673,7 +673,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                 let totalMonthly = 0
                 finalResult1.forEach(element => {
 
-                    totalMonthly = (totalMonthly + Number(element.energyConsumed)).toFixed(2)
+                    totalMonthly = (Number(totalMonthly) + Number(element.energyConsumed)).toFixed(2)
 
 
                 })
@@ -822,7 +822,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly))) * 30).toFixed(2),
 
                     WeeklyResult: final,
-                    TotalEnergySpendWeekle: total.toFixed(2),
+                    TotalEnergySpendWeekle: Number(total).toFixed(2),
                     TotalMoneySpendWeekly: ((Number(total) / .408) * .23).toFixed(2),
                     ThresholdWeekly: ((Number(factor) + (Number(weeklyMin) + Number(factor))) * 7).toFixed(2),
 
