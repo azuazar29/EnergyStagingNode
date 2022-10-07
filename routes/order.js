@@ -1867,7 +1867,7 @@ function getEnergyDetails(startDate, endDate) {
 
                     if (element.Energy != 0) {
                         if (index == 0) {
-                            total = element.Energy
+                            total = Number(element.Energy)
 
                         } else {
                             total = total + (Number(element.Energy))
