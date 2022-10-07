@@ -158,10 +158,10 @@ router.get("/GetDashboardDetails", function (req, res) {
                         let query3 = `Select * from EnergyConsumptionFromJob`
 
                         if (req.query.Startdate && req.query.Enddate) {
-                            query3 = `${query3} where created_On between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
+                            query3 = `${query3} where updatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
                         }
                         if (req.query.Startdate && !req.query.Enddate) {
-                            query3 = `${query3} where created_On between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
+                            query3 = `${query3} where updatedON between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
                         }
                         ////console.log("query3", query3)
                         request.query(query3, function (err, set) {
@@ -174,7 +174,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                             else {
                                 let energyconsumption = set.recordset
 
-                                let query4 = `Select * from EnergyConsumptionFromJob where created_On between  '${new Date(previousdate).toISOString()}' and '${moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString()}'`
+                                let query4 = `Select * from EnergyConsumptionFromJob where updatedOn between  '${new Date(previousdate).toISOString()}' and '${moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString()}'`
                                 ////console.log("query4", query4)
                                 request.query(query4, function (err, set) {
                                     if (err) {
