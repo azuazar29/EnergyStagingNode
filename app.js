@@ -27,7 +27,6 @@ const { calcSign, stringToSign } = require("./utils")
 const base_url = config.base_url
 const client_id = config.client_id
 const secret = config.secret
-var timestamp = new Date().getTime();
 const httpMethod = 'GET'
 //var accessToken=""
 var device_id = config.device_id
@@ -39,6 +38,9 @@ var tuyo = require('./routes/tuyo')
 
 const get_access_token = function () {
   return new Promise(function (resolve, reject) {
+
+    var timestamp = new Date().getTime();
+
 
     var signStr = stringToSign('/v1.0/token?grant_type=1', 'GET')
     var sign = calcSign(client_id, timestamp, nonce, signStr, secret);
@@ -69,6 +71,7 @@ async function getTotalEnergy(device_id) {
 
     let path = '/v1.0/devices/' + device_id + '/statistics/total?code=add_ele';
     var signStr = stringToSign(path, httpMethod)
+    var timestamp = new Date().getTime();
 
     let access_token = await get_access_token()
     var sign = calcSign(client_id, timestamp, nonce, signStr, secret, access_token);
