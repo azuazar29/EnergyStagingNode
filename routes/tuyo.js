@@ -553,7 +553,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                 result.forEach((element, index) => {
 
                     element.updatedOn = moment(element.updatedOn).format('MM/DD/YYYY')
-                    element.EnergyConsumed = element.EnergyConsumed * .408
+                    element.EnergyConsumed = (Number(element.EnergyConsumed) * .408).toFixed(2)
 
 
                 })
@@ -576,7 +576,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                 let maxdayenergy = 0
 
                 result.forEach(element => {
-                    maxdayenergy = Number(maxdayenergy) + Number(element.EnergyConsumed)
+                    maxdayenergy = (Number(maxdayenergy) + Number(element.EnergyConsumed)).toFixed(2)
                 })
 
                 let ab = moment(new Date()).subtract('6', 'days').format('YYYY-MM-DD')
@@ -624,7 +624,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                 let total = 0
                 final.forEach(element => {
 
-                    total = total + Number(element.energyConsumed)
+                    total = (total + Number(element.energyConsumed)).toFixed(2)
 
                 })
 
@@ -673,7 +673,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                 let totalMonthly = 0
                 finalResult1.forEach(element => {
 
-                    totalMonthly = totalMonthly + Number(element.energyConsumed)
+                    totalMonthly = (totalMonthly + Number(element.energyConsumed)).toFixed(2)
 
 
                 })
