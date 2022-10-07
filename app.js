@@ -69,7 +69,7 @@ async function getTotalEnergy(device_id) {
 
   return new Promise(async (resolve, reject) => {
 
-    let path = '/v1.0/devices/' + device_id + '/statistics/total?code=add_ele';
+    let path = '/v1.0/devices/' + device_id + '/statistics/days';
     var signStr = stringToSign(path, httpMethod)
     var timestamp = new Date().getTime();
 
