@@ -14,6 +14,8 @@ var CronJob = require('cron').CronJob;
 
 var sql = require("./database");
 var request = new sql.Request();
+const moment = require("moment");
+
 
 
 // tuya 
@@ -69,8 +71,20 @@ async function getTotalEnergy(device_id) {
 
   return new Promise(async (resolve, reject) => {
 
-    let path = '/v1.0/devices/' + device_id + '/statistics/days';
-    var signStr = stringToSign(path, httpMethod)
+    let path = '/v1.0/devices/' + device_id + `/statistics/days?code=add_ele&start_day=${moment(new Date()).format('YYYYMMDD')}&end_day=${moment(new Date()).format('YYYYMMDD')}`;
+    const query = { start_day: moment(new Date()).format('YYYYMMDD'), end_day: moment(new Date()).format('YYYYMMDD') }
+    const [uri, pathQuery] = path.split('?');
+    const queryMerged = Object.assign(query, qs.parse(pathQuery));
+    const sortedQuery = {};
+    Object.keys(queryMerged)
+      .sort()
+      .forEach((i) => (sortedQuery[i] = query[i]));
+
+    const querystring = decodeURIComponent(qs.stringify(sortedQuery));
+    const url = querystring ? `${uri}?${querystring}` : uri;
+    console.log('urlllll', url)
+
+    var signStr = stringToSign(url, httpMethod)
     var timestamp = new Date().getTime();
 
     let access_token = await get_access_token()
@@ -86,7 +100,7 @@ async function getTotalEnergy(device_id) {
 
       headers: { 'content-type': 'application/x-www-form-urlencoded', 'client_id': client_id, 'sign': sign, 't': timestamp, 'sign_method': 'HMAC-SHA256', 'access_token': access_token }
     }).then(function (response) {
-      // console.log("reponse", response.data)
+      console.log("reponse", response.data)
 
       resolve(response.data.result.total)
       // resolve(response.data.result.total)
@@ -175,7 +189,7 @@ VALUES
 
 
 var job = new CronJob(
-  '*/5 * * * *',
+  '* * * * *',
   async function () {
     console.log('running a task every minute');
 
