@@ -1324,7 +1324,7 @@ router.get("/getOrderChart", function (req, res) {
                     } if (res.OrderStatus == "DI") {
                         dispatched.push(res)
 
-                    } if (res.orderFtatus == "OR") {
+                    } if (res.orderFlow == "OR") {
                         pending.push(res)
 
                     } if (res.orderFlow == "SV") {
