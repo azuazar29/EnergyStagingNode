@@ -89,6 +89,8 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                     if (record.recordset[0].installationDate != null) {
                         resolve({ deviceID: recordset.recordset[0].deviceID, installationDate: moment(record.recordset[0].installationDate).format('DD-MM-YYYY') })
 
+                    } else {
+                        resolve({ deviceID: recordset.recordset[0].deviceID, installationDate: '' })
                     }
                 })
             } else {
