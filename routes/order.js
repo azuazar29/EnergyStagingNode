@@ -2626,14 +2626,18 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
 
 
 
-        request.query(`update OrderList set orderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
+        request.query(`update OrderList set orderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, response) {
+            if (!err) {
+                res.json({
+                    success: true,
+                    message: 'Successfully updated.'
+                })
+            }
+        })
         //console.log('err', err)
-        if (!err) {
-            res.json({
-                success: true,
-                message: 'Successfully updated.'
-            })
-        }
+
+
+
 
 
 
