@@ -2622,6 +2622,21 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
 
         })
 
+    } else if (status == 'CA') {
+
+
+
+        request.query(`update OrderList set orderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
+        //console.log('err', err)
+        if (!err) {
+            res.json({
+                success: true,
+                message: 'Successfully updated.'
+            })
+        }
+
+
+
     }
 
 })
