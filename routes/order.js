@@ -1318,17 +1318,17 @@ router.get("/getOrderChart", function (req, res) {
                     if (res.OrderStatus == "CO") {
                         complete.push(res)
 
-                    } if (res.OrderStatus == "IN") {
-                        install.push(res)
+                    } if (res.OrderFlow == "IN") {
+                        pending.push(res)
 
                     } if (res.OrderStatus == "DI") {
                         dispatched.push(res)
 
-                    } if (res.OrderStatus == "PE") {
+                    } if (res.OrderStatus == "OR") {
                         pending.push(res)
 
-                    } if (res.OrderStatus == "PR") {
-                        Processing.push(res)
+                    } if (res.OrderStatus == "SV") {
+                        pending.push(res)
 
                     }
                     if (res.OrderStatus == "OM") {
@@ -1339,9 +1339,6 @@ router.get("/getOrderChart", function (req, res) {
                 let OrderStatus = {
 
                     Pending: !isNaN((100 * pending.length / result.length).toFixed(2)) ? (100 * pending.length / result.length).toFixed(2) : 0,
-                    ["O&M Assigned"]: !isNaN((100 * install.length / result.length).toFixed(2)) ? (100 * install.length / result.length).toFixed(2) : 0,
-                    Dispatched: !isNaN((100 * dispatched.length / result.length).toFixed(2)) ? (100 * dispatched.length / result.length).toFixed(2) : 0,
-                    Installing: !isNaN((100 * install.length / result.length).toFixed(2)) ? (100 * install.length / result.length).toFixed(2) : 0,
                     Completed: !isNaN((100 * complete.length / result.length).toFixed(2)) ? (100 * complete.length / result.length).toFixed(2) : 0,
 
                     Cancelled: !isNaN((100 * cancel.length / result.length).toFixed(2)) ? (100 * cancel.length / result.length).toFixed(2) : 0,
