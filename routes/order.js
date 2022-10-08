@@ -1318,16 +1318,16 @@ router.get("/getOrderChart", function (req, res) {
                     if (res.OrderStatus == "CO") {
                         complete.push(res)
 
-                    } if (res.OrderFlow == "IN") {
+                    } if (res.orderFlow == "IN") {
                         pending.push(res)
 
                     } if (res.OrderStatus == "DI") {
                         dispatched.push(res)
 
-                    } if (res.OrderStatus == "OR") {
+                    } if (res.orderFtatus == "OR") {
                         pending.push(res)
 
-                    } if (res.OrderStatus == "SV") {
+                    } if (res.orderFlow == "SV") {
                         pending.push(res)
 
                     }
