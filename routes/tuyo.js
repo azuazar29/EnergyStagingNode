@@ -441,25 +441,8 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
 
         res.status(200)
         res.json({
-            success: true,
-            MonthlyResult: [],
-            message: "Consumption Details",
-            TotalEnergySpendMonthly: 0.00,
-            TotalMoneySpendMonthly: 0.00,
-            ThresholdMonthly: 0.00,
-            WeeklyResult: [],
-            TotalEnergySpendWeekle: 0.00,
-            TotalMoneySpendWeekly: 0.00,
-            ThresholdWeekly: 0.00,
-            TrendResult: [],
-            TotalEnergySpendTrend: 0.00,
-            TotalMoneySpendTrend: 0.00,
-            ThresholdTrend: 0.00,
-            TotalEnergySpendToday: "0.00",
-            TotalMoneySpendToday: 0.00,
-            TotalMoneySpendmax: 0.00,
-            TotalEnergySpendmax: "0.00",
-            installationDate: deviceID.installationDate
+            success: false,
+            message: "No Device ID is mapped with this user"
         })
 
     }
@@ -861,26 +844,10 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
     } else {
         res.status(200)
         res.json({
-            success: true,
-            MonthlyResult: [],
-            message: "Consumption Details",
-            TotalEnergySpendMonthly: 0.00,
-            TotalMoneySpendMonthly: 0.00,
-            ThresholdMonthly: 0.00,
-            WeeklyResult: [],
-            TotalEnergySpendWeekle: 0.00,
-            TotalMoneySpendWeekly: 0.00,
-            ThresholdWeekly: 0.00,
-            TrendResult: [],
-            TotalEnergySpendTrend: 0.00,
-            TotalMoneySpendTrend: 0.00,
-            ThresholdTrend: 0.00,
-            TotalEnergySpendToday: "0.00",
-            TotalMoneySpendToday: 0.00,
-            TotalMoneySpendmax: 0.00,
-            TotalEnergySpendmax: "0.00",
-            installationDate: deviceID.installationDate
+            success: false,
+            message: "No Device ID is mapped with this user"
         })
+
     }
 
 })
