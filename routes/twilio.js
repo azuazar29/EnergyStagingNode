@@ -121,9 +121,27 @@ function getOrderID(id) {
 
             console.log("err", err)
             if (recordset.recordset.length) {
-                console.log("res", id)
+                console.log("res", id, recordset.recordset)
 
-                resolve(true)
+                let query = `Select * From SubscriptionManagement where userID = '${id}' and orderID = '${recordset.recordset[0].Id}'`
+
+                console.log('query', query)
+                request.query(query, function (err, recordset1) {
+                    console.log('recordset1', recordset1)
+                    console.log('err', err)
+
+
+
+                    if (recordset1.recordset[0].installationStatus == 2) {
+                        resolve({ status: "4" })
+                    } else {
+                        resolve({ status: "3" })
+                    }
+
+
+                })
+
+
 
             } else {
                 resolve('')
@@ -199,8 +217,11 @@ router.post('/verify', async function (req, res, next) {
                             var token = jwt.sign(payload, secret);
 
                             let isOrder = await getOrderID(set.recordsets[0][0].Id)
+                            console.log("it came outer", isOrder)
+
                             if (isOrder) {
-                                set.recordset[0].status = '3'
+                                console.log("it came", isOrder)
+                                set.recordset[0].status = isOrder.status
                             }
 
 
