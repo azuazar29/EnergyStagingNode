@@ -174,13 +174,13 @@ router.post("/setproductId/:type", middleware.authenticate, async (req, res) => 
   })
 
   let query = `INSERT INTO Cart
-  (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery],[savings],[user_Id],totalRooms,PropertySize) VALUES ('${JSON.stringify(
+  (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery],[savings],[user_Id],totalRooms,PropertySize,[base_MonthlyRent]) VALUES ('${JSON.stringify(
     FinalOutput
   )}','${new Date().toISOString()}','${req.params.type}','${JSON.stringify(
     AddOnDetails
   )}','7','54','${JSON.stringify(
     accessories
-  )}','20','500','${req.decoded.id}','${req.body.product.display_installed_rooms.length}','${propertySize}') SELECT SCOPE_IDENTITY() as id`;
+  )}','20','500','${req.decoded.id}','${req.body.product.display_installed_rooms.length}','${propertySize}',${req.body.product.product_subscription_cost}) SELECT SCOPE_IDENTITY() as id`;
 
   console.log("query", query);
 
@@ -441,9 +441,9 @@ router.get(
 
           })
 
-          result.basic_cost = Math.round(totalCost / 36)
-          result.vale_cost = Math.round(totalCost / 60)
-          result.prime_cost = Math.round(totalCost / 84)
+          result.basic_cost = Number(result.base_MonthlyRent).toFixed(2)
+          result.vale_cost = Number(Number(result.base_MonthlyRent) / 2).toFixed(2)
+          result.prime_cost = Number(Math.round(totalCost / 84)).toFixed(2)
 
 
           result.AgreementDetails = AgreementDetails;

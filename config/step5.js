@@ -521,9 +521,9 @@ function start1(
       totalCCost = totalCCost + Number(element.price) * Number(element.count);
     });
 
-    subCost = Math.floor((Number(display_price) + totalCCost) / 36);
-    let subCost5 = Math.floor((Number(display_price) + totalCCost) / 60);
-    let subCost7 = Math.floor((Number(display_price) + totalCCost) / 84);
+    subCost = Math.floor((Number(display_price) + totalCCost) / 12);
+    let subCost5 = Math.floor((Number(display_price) + totalCCost) / 24);
+    let subCost7 = Math.floor((Number(display_price) + totalCCost) / 36);
     let newImage = []
 
 
