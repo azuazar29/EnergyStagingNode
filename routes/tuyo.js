@@ -863,6 +863,7 @@ router.post('/updateDeviceID/:deviceID/:orderID', function (req, res) {
         let userID = response.recordset[0].UserId
         let orderID = response.recordset[0].Id
         let deviceID = req.params.deviceID
+
         let insertquery = `INSERT INTO [dbo].[DeviceMapping]
     ([userID]
     ,[orderID]
@@ -873,31 +874,60 @@ VALUES
     ,${orderID}
     ,'${deviceID}'
     ,'${new Date().toISOString()}')`
+        let updateQuery = `update DeviceMapping set deviceID = '${deviceID}' where userID = ${userID} and orderID = ${orderID} `
         // console.log(insertquery)
 
-
-
-        request.query(insertquery, function (err, response) {
-
-            if (!err) {
-
-                request.query(query, function (err, recordset) {
+        request.query(`Select * From DeviceMapping where userID = ${userID} and orderID = ${orderID}`, function (err, responseM) {
+            if (responseM.recordset.length) {
+                request.query(updateQuery, function (err, response) {
 
                     if (!err) {
-                        res.json({
-                            success: true
+
+                        request.query(query, function (err, recordset) {
+
+                            if (!err) {
+                                res.json({
+                                    success: true
+                                })
+                            } else {
+                                console.log("err", err)
+                            }
+
                         })
-                    } else {
-                        console.log("err", err)
+
                     }
+
+                    console.log(err)
 
                 })
 
+            } else {
+                request.query(insertquery, function (err, response) {
+
+                    if (!err) {
+
+                        request.query(query, function (err, recordset) {
+
+                            if (!err) {
+                                res.json({
+                                    success: true
+                                })
+                            } else {
+                                console.log("err", err)
+                            }
+
+                        })
+
+                    }
+
+                    console.log(err)
+
+                })
             }
-
-            console.log(err)
-
         })
+
+
+
 
 
 
