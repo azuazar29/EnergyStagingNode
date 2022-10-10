@@ -521,9 +521,9 @@ function start1(
       totalCCost = totalCCost + Number(element.price) * Number(element.count);
     });
 
-    subCost = Math.floor((Number(display_price) + totalCCost) / 12);
-    let subCost5 = Math.floor((Number(display_price) + totalCCost) / 24);
-    let subCost7 = Math.floor((Number(display_price) + totalCCost) / 36);
+    subCost = Math.floor((Number(display_price)) / 12);
+    let subCost5 = Math.floor((Number(display_price)) / 24);
+    let subCost7 = Math.floor((Number(display_price)) / 36);
     let newImage = []
 
 
@@ -535,7 +535,7 @@ function start1(
       display_monthly_operating_power: (
         element.monthy_operating_power / 1000
       ).toFixed(2),
-      display_price: display_price.toString(),
+      display_price: (Number(display_price) + Number(totalCCost)).toString(),
       display_yearly_electricity_cost: element.yearly_electricity_cost
         .toFixed(2)
         .toString(),
