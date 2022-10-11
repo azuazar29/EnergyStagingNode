@@ -1725,7 +1725,8 @@ router.get("/getDashBoardChart", function (req, res) {
                             energyconsumption: array3.array,
                             previousEnegryConsumption: array4.array,
                             totalEnergyConsumption: Number(array3.total).toFixed(2),
-                            totalPreviousConsumption: Number(array4.total).toFixed(2)
+                            totalPreviousConsumption: getString(PlusorNot(Number(array3.total).toFixed(2), Number(array4.total).toFixed(2)) + (Number(array3.total).toFixed(2) > 0 ? Number((Number(array3.total).toFixed(2) - Number(array4.total).toFixed(2)) * 100 / Number(array3.total).toFixed(2)).toFixed(2) : 0) + "%")
+
                         })
 
 
