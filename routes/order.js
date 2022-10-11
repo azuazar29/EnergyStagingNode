@@ -124,6 +124,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                 }
             });
             let tempOrder = pendingOrder
+            tempOrder = tempOrder.sort(function (a, b) { return b.OrderDate - a.OrderDate });
 
             tempOrder.forEach(element => {
 
