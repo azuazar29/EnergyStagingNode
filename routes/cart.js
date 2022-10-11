@@ -172,6 +172,7 @@ router.post("/setproductId/:type", middleware.authenticate, async (req, res) => 
     propertySize = Number(propertySize) + Number(element.roomSize)
 
   })
+  console.log("{req.body.product.product_subscription_cost", req.body.product.product_subscription_cost)
 
   let query = `INSERT INTO Cart
   (product_Id,created_On,isSubscription,[add_On],[gst],[installion_Charges],[accessories],[delivery],[savings],[user_Id],totalRooms,PropertySize,[base_MonthlyRent]) VALUES ('${JSON.stringify(
@@ -443,7 +444,7 @@ router.get(
 
           result.basic_cost = Number(result.base_MonthlyRent).toFixed(2)
           result.vale_cost = Number(Number(result.base_MonthlyRent) / 2).toFixed(2)
-          result.prime_cost = Number(Math.round(totalCost / 84)).toFixed(2)
+          result.prime_cost = Number(Number(result.base_MonthlyRent) / 3).toFixed(2)
 
 
           result.AgreementDetails = AgreementDetails;
