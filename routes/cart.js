@@ -180,7 +180,7 @@ router.post("/setproductId/:type", middleware.authenticate, async (req, res) => 
     AddOnDetails
   )}','7','54','${JSON.stringify(
     accessories
-  )}','20','500','${req.decoded.id}','${req.body.product.display_installed_rooms.length}','${propertySize}',${req.body.product.product_subscription_cost}) SELECT SCOPE_IDENTITY() as id`;
+  )}','20','500','${req.decoded.id}','${req.body.product.display_installed_rooms.length}','${propertySize}','${req.body.product.product_subscription_cost}') SELECT SCOPE_IDENTITY() as id`;
 
   console.log("query", query);
 
