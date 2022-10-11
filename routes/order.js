@@ -266,6 +266,7 @@ router.get("/GetDashboardDetails", function (req, res) {
                                                                             message: "Successfully got form GetOrdersList",
                                                                             totalorder: result.length,
                                                                             pendingOrder: tempOrder.slice(0, 4),
+                                                                            pendingOrderslength: tempOrder.length,
                                                                             Installation: Installation.length,
                                                                             OrderModification: OrderModification.length,
                                                                             previousorderresult: getString(PlusorNot(result.length, previousresult) + (result.length > 0 ? Number((result.length - previousresult) * 100 / result.length).toFixed(2) : 0) + "%"),
