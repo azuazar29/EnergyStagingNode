@@ -526,6 +526,13 @@ function start1(
     let subCost7 = Math.floor((Number(display_price) + Number(totalCCost)) / 36);
     let newImage = []
 
+    let totalCostDisplay = Number(Number(display_price) + Number(totalCCost)).toFixed(2)
+
+    totalCostDisplay = ((totalCostDisplay / 100) * 7) + totalCostDisplay
+    subCost5 = ((subCost5 / 100) * 7) + subCost5
+    subCost = ((subCost / 100) * 7) + subCost
+    subCost7 = ((subCost7 / 100) * 7) + subCost7
+
 
     let obj = {
       display_installed_rooms: display_installed_rooms,
@@ -535,7 +542,7 @@ function start1(
       display_monthly_operating_power: (
         element.monthy_operating_power / 1000
       ).toFixed(2),
-      display_price: (Number(display_price) + Number(totalCCost)).toString(),
+      display_price: totalCostDisplay.toString(),
       display_yearly_electricity_cost: element.yearly_electricity_cost
         .toFixed(2)
         .toString(),
