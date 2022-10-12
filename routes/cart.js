@@ -305,7 +305,7 @@ router.post(
                VALUES
                      (
                        '${"OD" + getRandom(12)}'
-                     ,'${cart.subcription_Type == "OT" ? "O" : "S"}'
+                     ,'${cart.isSubscription == "0" ? "O" : "S"}'
                      ,'${new Date().toISOString()}'
                      ,null
                      ,null
