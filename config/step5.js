@@ -538,9 +538,9 @@ function start1(
     totalCostDisplay = Number(((totalCCost / 100) * 7) + Number(totalCCost)).toFixed(2)
 
 
-    subCost = Number(totalCostDisplay / 12)
-    let subCost5 = Number(totalCostDisplay / 24)
-    let subCost7 = Number(totalCostDisplay / 36)
+    subCost = Number(totalCostDisplay / 12).toFixed(2)
+    let subCost5 = Number(totalCostDisplay / 24).toFixed(2)
+    let subCost7 = Number(totalCostDisplay / 36).toFixed(2)
     let newImage = []
 
 
