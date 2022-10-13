@@ -415,7 +415,7 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                     TotalEnergySpendToday: todaysenergy.toString(),
                     TotalMoneySpendToday: ((Number(todaysenergy)) * .23).toFixed(2),
                     TotalMoneySpendmax: ((Number(maxdayenergy)) * .23).toFixed(2),
-                    TotalEnergySpendmax: maxdayenergy.toString(),
+                    TotalEnergySpendmax: Number(maxdayenergy).toFixed(2).toString(),
                     installationDate: deviceID.installationDate
                 })
 
@@ -818,7 +818,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     TotalEnergySpendToday: todaysenergy.toString(),
                     TotalMoneySpendToday: ((Number(todaysenergy) / .408) * .23).toFixed(2),
                     TotalMoneySpendmax: ((Number(maxdayenergy) / .408) * .23).toFixed(2),
-                    TotalEnergySpendmax: maxdayenergy.toString(),
+                    TotalEnergySpendmax: Number(maxdayenergy).toFixed(2).toString(),
                     installationDate: deviceID.installationDate
                 })
 
