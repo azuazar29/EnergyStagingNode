@@ -820,6 +820,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     TotalMoneySpendmax: ((Number(maxdayenergy) / .408) * .23).toFixed(2),
                     TotalEnergySpendmax: Number(maxdayenergy).toFixed(2).toString(),
                     installationDate: deviceID.installationDate
+
                 })
 
 
