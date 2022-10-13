@@ -442,7 +442,13 @@ router.get(
 
           })
 
+          result.Actualbasic_cost = Number(result.base_MonthlyRent).toFixed(2)
+          result.Actualvale_cost = Number(Number(result.base_MonthlyRent) / 2).toFixed(2)
+          result.Actualprime_cost = Number(Number(result.base_MonthlyRent) / 3).toFixed(2)
+
           result.base_MonthlyRent = Number(result.base_MonthlyRent) - Number((Number(result.base_MonthlyRent) * 7) / 100)
+
+
 
           result.basic_cost = Number(result.base_MonthlyRent).toFixed(2)
           result.vale_cost = Number(Number(result.base_MonthlyRent) / 2).toFixed(2)

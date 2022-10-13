@@ -95,7 +95,7 @@ function start1(
       }
       r = r + 1;
 
-      console.log("callit(am, pm)", callit(am, pm))
+      // console.log("callit(am, pm)", callit(am, pm))
       mon.push(callit(am, pm));
       mon_load.push(hs.mon_true_load(mon, r, true_load));
     }
@@ -235,7 +235,7 @@ function start1(
     }
   }
 
-  console.log("sunday load", sun_load)
+  // console.log("sunday load", sun_load)
 
   //hourly_operating_load
   var mon_opt_load = [],
@@ -330,7 +330,7 @@ function start1(
           }
         }
       }
-      console.log("inner", inner1)
+      // console.log("inner", inner1)
       outer1.push(inner1);
     }
     input1[i].hourly_cop = outer1;
@@ -402,7 +402,7 @@ function start1(
       1000;
   }
 
-  console.log("monthly operating power", input1[0].monthy_operating_power)
+  // console.log("monthly operating power", input1[0].monthy_operating_power)
 
   //monthly operating power
   for (var i = 0; i < input1.length; i++) {
@@ -515,23 +515,40 @@ function start1(
     let subCost = 0;
 
     let cNumber = getProductName(display_installed_rooms);
+    // console.log("======>", display_installed_rooms)
 
-    let totalCCost = 0;
-    cNumber.forEach((element) => {
-      totalCCost = totalCCost + Number(element.price) * Number(element.count);
-    });
+    let totalFcu = 0
+    display_installed_rooms.forEach(element => {
 
-    subCost = Math.floor((Number(display_price) + Number(totalCCost)) / 12);
-    let subCost5 = Math.floor((Number(display_price) + Number(totalCCost)) / 24);
-    let subCost7 = Math.floor((Number(display_price) + Number(totalCCost)) / 36);
+      element.products.forEach(element1 => {
+        // console.log("element1=== >", element1)
+        totalFcu = totalFcu + Number(element1.product[0].Price)
+      })
+
+    })
+    console.log('totalFcu', totalFcu)
+
+    let totalCCost = Number(totalFcu) + Number(display_price);
+    // cNumber.forEach((element) => {
+    //   totalCCost = totalCCost + Number(element.price) * Number(element.count);
+    // });
+
+    // console.log("totalCostDisplay", display_price, totalCCost)
+
+
+    subCost = Number(totalCCost / 12)
+    let subCost5 = Number(totalCCost / 24)
+    let subCost7 = Number(totalCCost / 36)
     let newImage = []
 
-    let totalCostDisplay = Number(Number(display_price) + Number(totalCCost)).toFixed(2)
 
-    totalCostDisplay = ((totalCostDisplay / 100) * 7) + totalCostDisplay
-    subCost5 = ((subCost5 / 100) * 7) + subCost5
-    subCost = ((subCost / 100) * 7) + subCost
-    subCost7 = ((subCost7 / 100) * 7) + subCost7
+    let totalCostDisplay = Number(Number(display_price) + Number(totalCCost))
+
+
+    totalCostDisplay = Number(((totalCCost / 100) * 7) + Number(totalCCost)).toFixed(2)
+    subCost5 = Number(((subCost5 / 100) * 7) + Number(subCost5)).toFixed(2)
+    subCost = Number(((subCost / 100) * 7) + Number(subCost)).toFixed(2)
+    subCost7 = Number(((subCost7 / 100) * 7) + Number(subCost7)).toFixed(2)
 
 
     let obj = {
