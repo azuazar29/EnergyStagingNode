@@ -546,9 +546,9 @@ function start1(
 
 
     totalCostDisplay = Number(((totalCCost / 100) * 7) + Number(totalCCost)).toFixed(2)
-    subCost5 = Number(((subCost5 / 100) * 7) + Number(subCost5)).toFixed(2)
-    subCost = Number(((subCost / 100) * 7) + Number(subCost)).toFixed(2)
-    subCost7 = Number(((subCost7 / 100) * 7) + Number(subCost7)).toFixed(2)
+    subCost5 = Number(((subCost5 * 7) / 100) + Number(subCost5)).toFixed(2)
+    subCost = Number(((subCost * 7) / 100) + Number(subCost)).toFixed(2)
+    subCost7 = Number(((subCost7 * 7) / 100) + Number(subCost7)).toFixed(2)
 
 
     let obj = {
