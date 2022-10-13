@@ -445,7 +445,9 @@ router.get("/GetOrdersList", function (req, res) {
                     prodDetails.CondensorDetails.forEach(elementC => {
                         price = price + Number(elementC.price)
                     })
-                    element.down_Payment = (Number(price) * 7 / 100).toFixed(2)
+                    element.down_Payment = ((Number(price) * 7 / 100) + Number(price)).toFixed(2)
+
+                    element.base_MonthlyRent = 0.00
                 }
 
                 if (element.OrderStatus == 'OM') {
