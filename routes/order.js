@@ -433,7 +433,7 @@ router.get("/GetOrdersList", function (req, res) {
 
             result.forEach(element => {
 
-                if (isSubscription == false) {
+                if (element.isSubscription == false) {
 
                     let price = 0
 
