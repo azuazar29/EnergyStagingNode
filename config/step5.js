@@ -534,21 +534,17 @@ function start1(
     // });
 
     // console.log("totalCostDisplay", display_price, totalCCost)
+    let totalCostDisplay = Number(Number(display_price) + Number(totalCCost))
+    totalCostDisplay = Number(((totalCCost / 100) * 7) + Number(totalCCost)).toFixed(2)
 
 
-    subCost = Number(totalCCost / 12)
-    let subCost5 = Number(totalCCost / 24)
-    let subCost7 = Number(totalCCost / 36)
+    subCost = Number(totalCostDisplay / 12)
+    let subCost5 = Number(totalCostDisplay / 24)
+    let subCost7 = Number(totalCostDisplay / 36)
     let newImage = []
 
 
-    let totalCostDisplay = Number(Number(display_price) + Number(totalCCost))
 
-
-    totalCostDisplay = Number(((totalCCost / 100) * 7) + Number(totalCCost)).toFixed(2)
-    subCost5 = Number(((subCost5 * 7) / 100) + Number(subCost5)).toFixed(2)
-    subCost = Number(((subCost * 7) / 100) + Number(subCost)).toFixed(2)
-    subCost7 = Number(((subCost7 * 7) / 100) + Number(subCost7)).toFixed(2)
 
 
     let obj = {
