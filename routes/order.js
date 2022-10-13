@@ -433,6 +433,21 @@ router.get("/GetOrdersList", function (req, res) {
 
             result.forEach(element => {
 
+                if (isSubscription == false) {
+
+                    let price = 0
+
+                    let prodDetails = JSON.parse(element.product_Id)
+
+                    prodDetails.FCUDetails.forEach(elementFCU => {
+                        price = price + Number(elementFCU.price)
+                    })
+                    prodDetails.CondensorDetails.forEach(elementC => {
+                        price = price + Number(elementC.price)
+                    })
+                    element.down_Payment = Number(price).toFixed(2)
+                }
+
                 if (element.OrderStatus == 'OM') {
                     element.OrderStatus = "Assigned to O&M"
                 } else if (element.OrderStatus == 'CO') {
