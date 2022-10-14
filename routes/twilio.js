@@ -89,7 +89,8 @@ router.post('/send-otp', async function (req, res) {
     let finalResult = {}
     if (req.body.phoneNumber && req.body.channel) {
 
-        req.body.channel = ["sms", "whatsapp"]
+        req.body.channel = ["whatsapp"]
+        // req.body.channel = ["sms", "whatsapp"]
 
         for (let i = 0; i < req.body.channel.length; i++) {
 
