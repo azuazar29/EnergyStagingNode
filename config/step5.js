@@ -457,7 +457,7 @@ function start1(
       display_product_img = imagePath;
       display_price = display_price + Number(elementinner.condenserid.Price);
       condenserImg.push(imagePath);
-      condenserIDs.push(elementinner.condenserid.id);
+      condenserIDs.push(elementinner.condenserid);
       let obj = {
         compressor: elementinner.condensername,
         productName: elementinner.condenserid.Brand,
