@@ -99,7 +99,7 @@ router.post('/send-otp', async function (req, res) {
         }
 
         res.json({
-            success: false,
+            success: true,
             message: "OTP has been sent successfully",
             result: finalResult
         })
