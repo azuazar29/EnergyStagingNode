@@ -623,4 +623,22 @@ function getRandom(length) {
   );
 }
 
+router.get('/test', function (req, res) {
+
+  var sms = require('../Model/SMS.js')
+
+  // console.log("sms", sms)
+
+  let delivered = []
+
+  sms.SMS.forEach(element => {
+    if (element.Status == 'delivered') {
+      delivered.push({ sid: element.Sid })
+    }
+  })
+
+  res.json({ Result: delivered })
+
+})
+
 module.exports = router;

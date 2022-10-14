@@ -230,6 +230,7 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                         if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
                             finalResult.push({
                                 day: m.date().toString(),
+                                dayString: m.format("dddd"),
                                 energyConsumed: element.EnergyConsumed,
                                 color: ''
                             })
@@ -239,6 +240,7 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                     if (!isAvailable) {
                         finalResult.push({
                             day: m.date().toString(),
+                            dayString: m.format('dddd'),
                             energyConsumed: 0,
                             color: ''
                         })
@@ -632,6 +634,8 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                             finalResult.push({
                                 day: m.date().toString(),
                                 energyConsumed: element.EnergyConsumed,
+                                dayString: m.format("dddd"),
+
                                 color: ''
                             })
                             isAvailable = true
@@ -640,6 +644,8 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     if (!isAvailable) {
                         finalResult.push({
                             day: m.date().toString(),
+                            dayString: m.format("dddd"),
+
                             energyConsumed: 0,
                             color: ''
                         })
