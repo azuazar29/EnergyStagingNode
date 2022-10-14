@@ -455,6 +455,8 @@ function start1(
       }
       tempName = elementinner.condensername;
       display_product_img = imagePath;
+
+      elementinner.condenserid.ImagePath = filePath.HostUrl1 + elementinner.condenserid.ImagePath
       display_price = display_price + Number(elementinner.condenserid.Price);
       condenserImg.push(imagePath);
       condenserIDs.push(elementinner.condenserid);
