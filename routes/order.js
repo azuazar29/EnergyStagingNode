@@ -685,8 +685,6 @@ router.get("/GetCustomerList", function (req, res) {
                     element.CustomerType = "Active"
                 } else if (element.CustomerType == 'OT') {
                     element.CustomerType = "One Time User"
-                } else if (element.CustomerType == 'SW') {
-                    element.CustomerType = "Subscription Withdrawn"
                 } else if (element.CustomerType == 'L') {
                     element.CustomerType = "Lead"
                 }
@@ -1482,10 +1480,10 @@ router.get("/getCustomerChart", function (req, res) {
                 })
                 let CustomerStatus = {
 
-                    ["Active Subscriber"]: !isNaN((100 * ActiveS.length / result.length).toFixed(2)) ? (100 * ActiveS.length / result.length).toFixed(2) : 0,
+                    ["Subscriber"]: !isNaN((100 * ActiveS.length / result.length).toFixed(2)) ? (100 * ActiveS.length / result.length).toFixed(2) : 0,
                     ["One-Time"]: !isNaN((100 * OneT.length / result.length).toFixed(2)) ? (100 * OneT.length / result.length).toFixed(2) : 0,
                     Leads: !isNaN((100 * Lead.length / result.length).toFixed(2)) ? (100 * Lead.length / result.length).toFixed(2) : 0,
-                    ["Subscription Withdrawn"]: !isNaN((100 * SusW.length / result.length).toFixed(2)) ? (100 * SusW.length / result.length).toFixed(2) : 0,
+
                 }
                 let query2 = `Select * from dbo.Customer_New where CreatedOn between '${previousdate}'  and  '${moment(new Date(req.query.Startdate)).subtract(1, 'day').toISOString()}' and isFromWeb <> '1'`
                 //console.log("Query is", query2)
