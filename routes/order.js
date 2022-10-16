@@ -905,6 +905,24 @@ router.get('/ProductCategory', function (req, res) {
 
 })
 
+router.get('/deleteProduct/:id', function (req, res) {
+
+    let query = `update CondensorList set deleted = '1' where id = ${req.params.id}`
+
+    request.query(query, function (err, result) {
+        if (!err) {
+            res.json({
+                success: true
+            })
+        } else {
+            res.json({
+                success: false
+            })
+        }
+    })
+
+})
+
 router.post("/AddProductDetails", upload,
     function (req, res) {
         try {
@@ -939,7 +957,7 @@ router.post("/AddProductDetails", upload,
                 ,[createdOn]       
                 ,[Tags]
                 ,[ImagePath]
-                ,[ModelNo])
+                ,[ModelNo],[deleted])
           VALUES
                 (
                 '${data.ProductName ? data.ProductName : ""}',
@@ -959,7 +977,7 @@ router.post("/AddProductDetails", upload,
                 '${new Date().toISOString()}', 
                 '${data.Tags ? JSON.stringify(data.Tags) : ""}',
                 '${cPath}',
-                '${data.ModelNo}'
+                '${data.ModelNo}','0'
                 ) SELECT SCOPE_IDENTITY() as id`
             // //console.log(query)
             request.query(query, function (err, set) {
@@ -1148,7 +1166,8 @@ router.get("/GetProductDetails", function (req, res) {
 
     ////console.log(query)
 
-    query = query + ' ' + 'ORDER BY createdOn DESC;'
+    query = query + `where deleted <> '1'` + 'ORDER BY createdOn DESC;'
+    console.log("query", query)
 
     request.query(query, function (err, set) {
         if (err) {
