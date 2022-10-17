@@ -608,7 +608,7 @@ router.get("/GetOrdersOverviewTopCount", function (req, res) {
 
                     pending_Status.push(res)
                 }
-                else if (res.OrderStatus == "OM") {
+                else if (res.OrderStatus == "CO") {
                     Assingnedto_OandM_Status.push(res)
                 }
                 else if (res.OrderStatus == "CA") {
