@@ -2634,7 +2634,7 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
     if (status == 'OR' || status == 'SV' || status == 'IN') {
         request.query(`update OrderList set orderFlow = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, recordset) {
 
-            request.query(`update OrderList set orderStatus = 'PE' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
+            request.query(`update OrderList set OrderStatus = 'PE' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
             //console.log('err', err)
             if (!err) {
                 res.json({
@@ -2648,7 +2648,7 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
 
         request.query(`update OrderList set orderFlow = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, recordset) {
 
-            request.query(`update OrderList set orderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
+            request.query(`update OrderList set OrderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
             //console.log('err', err)
             if (!err) {
                 res.json({
@@ -2663,7 +2663,7 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
 
 
 
-        request.query(`update OrderList set orderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, response) {
+        request.query(`update OrderList set OrderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, response) {
             if (!err) {
                 res.json({
                     success: true,
