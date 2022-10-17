@@ -2564,9 +2564,9 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
     if (orderID != '') {
         //console.log("orderID", orderID)
 
-        let query = `Select sm.*, p.propertySize, p.totalRooms, c.product_Id as productDetails, c.total as totalAmount, c.subcription_Type, c.isSubscription  From SubscriptionManagement as sm
+        let query = `Select o.OrderNo, sm.*, p.propertySize, p.totalRooms, c.product_Id as productDetails, c.total as totalAmount, c.subcription_Type, c.isSubscription  From SubscriptionManagement as sm
         inner join Cart as c on c.orderID = ${orderID}
-        
+        inner join OrderList as o on o.Id = ${orderID}
         LEFT JOIN UserConfiguration p ON (
                p.userID = ${req.params.id}
            AND NOT EXISTS (
