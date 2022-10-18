@@ -326,8 +326,8 @@ router.post(
                 request.query(`update Cart set orderID = ${responseOrder.recordset[0].id} where id = ${req.params.ID}`)
 
                 request.query(
-                  `update Customer_New set CustomerType = '${cart.subcription_Type == "OT" ? "OT" : "AS"
-                  }' where userID = '${cart.user_Id}'`,
+                  `update Customer_New set CustomerType = '${cart.isSubscription == '0' ? "OT" : "AS"
+                  }', paymentDate = '${new Date().toISOString()}', isPaymentDone = 'Y', PlanInfo = '${req.body.planType ? req.body.planType : ""}', paymentAmount = '${req.body.paymentAmount ? req.body.paymentAmount : ""}' where userID = '${cart.user_Id}'`,
                   async function (err, responseOrd) {
 
                     let querySUB = `INSERT INTO [dbo].[SubscriptionManagement]
