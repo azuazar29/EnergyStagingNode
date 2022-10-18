@@ -82,7 +82,8 @@ router.post('/signup',
                 res.status(400)
                 res.json({
                   success: false,
-                  message: err.originalError.info.message
+                  message: err.originalError.info.message,
+                  query: checkcon
                 })
 
               } else {
