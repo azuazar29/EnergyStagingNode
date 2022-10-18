@@ -73,7 +73,7 @@ router.post('/signup',
             let checkcon = `INSERT INTO Users VALUES ('${req.body.firstName}', 
   '${req.body.lastName ? req.body.lastName : ''}', '${req.body.email}', '${password}', 
   '${req.body.isSocialLogin}', '${req.body.isActive}', '${new Date().toISOString()}', '${new Date().toISOString()}', 
-  '${req.body.location ? req.body.location : ''}', '${req.body.phoneNumber ? req.body.phoneNumber : ''}') SELECT SCOPE_IDENTITY() as id`
+  '${req.body.location ? req.body.location : ''}', '${req.body.phoneNumber ? req.body.phoneNumber : ''}','0') SELECT SCOPE_IDENTITY() as id`
 
             request.query(checkcon, function (err, set) {
               if (err) {
