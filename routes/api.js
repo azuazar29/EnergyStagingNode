@@ -29,8 +29,7 @@ router.post('/signup',
   check("email").exists(),
   check("isSocialLogin").exists(),
   check("isActive").exists(),
-  check("phoneNumber").isLength({ min: 10, max: 10 }),
-  check("phoneNumber").isNumeric()],
+  ],
   async function (req, res) {
 
     try {
