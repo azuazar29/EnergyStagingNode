@@ -846,7 +846,7 @@ router.get("/GetCustomerOverviewTopCount", function (req, res) {
 
                     Subcribers.push(res)
                 } if (res.CustomerType) {
-                    if (res.CustomerType == "SO") {
+                    if (res.CustomerType == "OT") {
                         SubcriptionOverdue.push(res)
                     }
                     else if (res.CustomerType == "L") {
