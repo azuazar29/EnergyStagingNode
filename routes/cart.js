@@ -533,7 +533,7 @@ router.post(
               '${req.body.address1
               }', '${req.decoded.id}', '${new Date().toISOString()}', '${new Date().toISOString()}', '${req.body.isBilling ? req.body.isBilling : '0'}','${req.body.additionalInfo
               }','${req.body.address2}','${req.body.baddress1 ? req.body.bAddress1 : ''}','${req.body.bAddress2 ? req.body.bAddress2 : ''}'
-            ,'${req.body.bAddress3 ? req.body.bAddress3 : ''}' )`;
+            ,'${req.body.bAddress3 ? req.body.bAddress3 : ''}', '${req.body.mapAddress ? req.body.mapAddress : ""}' )`;
 
             console.log("insertquery");
             request.query(query, function (err, set) {
