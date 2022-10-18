@@ -508,7 +508,7 @@ router.post(
               address1 = '${req.body.address1}', address2 = '${req.body.address2
               }',additionalInfo = '${req.body.additionalInfo
               }', updatedOn = '${new Date().toISOString()}', isPrimary = '${req.body.isBilling ? req.body.isBilling : '0'}', bAddress1 =  '${req.body.bAddress1 ? req.body.bAddress1 : ''}'
-            , bAddress2 =  '${req.body.bAddress2 ? req.body.bAddress2 : ''}', bAddress3 =  '${req.body.bAddress3 ? req.body.bAddress3 : ''}'  Where userId = '${req.decoded.id}' `;
+            , bAddress2 =  '${req.body.bAddress2 ? req.body.bAddress2 : ''}', bAddress3 =  '${req.body.bAddress3 ? req.body.bAddress3 : ''}', mapAddress = '${req.body.mapAddress ? req.body.mapAddress : ''}'  Where userId = '${req.decoded.id}' `;
 
             console.log("query", query);
             request.query(query, function (err, set) {
