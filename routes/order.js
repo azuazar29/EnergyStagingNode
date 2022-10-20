@@ -916,7 +916,7 @@ router.get('/ProductCategory', function (req, res) {
 
 router.get('/deleteProduct/:id', function (req, res) {
 
-    let query = `update CondensorList set deleted = '1' where id = ${req.params.id}`
+    let query = `update CondensorList set deleted = '1',isActive = 'No' where id = ${req.params.id}`
 
     request.query(query, function (err, result) {
         if (!err) {
