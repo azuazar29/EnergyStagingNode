@@ -1228,7 +1228,7 @@ router.get("/GetProductDetails", function (req, res) {
 })
 router.get("/ExportProductDetails", function (req, res) {
 
-    let query = `Select * from dbo.ProductDetails`
+    let query = `Select * from dbo.CondensorList`
     if (req.query.Startdate && req.query.Enddate) {
         query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
     }
