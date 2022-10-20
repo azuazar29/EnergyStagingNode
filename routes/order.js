@@ -561,6 +561,15 @@ router.get("/ExportOrdersList", function (req, res) {
 
             })
 
+            result.forEach(element => {
+
+                delete element.AssignedOnDate
+                delete element.AssignedTo
+                delete element.Id
+                delete element.LastModifiedDate
+
+            })
+
             const csvString = json2csv(result);
             res.setHeader('Content-disposition', 'attachment; filename=Orders-report.csv');
             res.set('Content-Type', 'text/csv');
