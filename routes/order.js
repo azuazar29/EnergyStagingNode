@@ -1672,7 +1672,7 @@ router.get("/getDashBoardChart", function (req, res) {
                         if (arr.Day == moment(element.OrderDate).format("DD/M")) {
 
                             array[i].Count = array[i].Count + 1
-                            array[i].amount = array[i].amount + Number(element.OrderTotal)
+                            array[i].amount = Number(Number(array[i].amount) + Number(element.OrderTotal)).toFixed(2)
 
 
 
@@ -1687,23 +1687,25 @@ router.get("/getDashBoardChart", function (req, res) {
                 if (Enddate) {
                     previous_datecount = Math.ceil((new Date(Enddate) - new Date(Startdate)) / (1000 * 60 * 60 * 24))
                 }
-                ////console.log(previous_datecount)
+                console.log("previous_datecount", previous_datecount)
                 let previousdate = moment(new Date(req.query.Startdate)).subtract(previous_datecount, 'days').toISOString()
 
                 let j = moment(new Date(Startdate)).subtract(previous_datecount, 'days').format("YYYY-MM-DD")
                 let date1 = moment(new Date(req.query.Startdate)).subtract(1, 'day').toISOString()
                 do {
-                    let day = moment(i).format('DD/M')
+                    let day = moment(j).format('DD/M')
                     if (day == moment(new Date()).format('DD/M')) {
                         day = 'Today'
                     }
-                    let obj = { Day: day, Count: 0 }
+                    let obj = { Day: day, Count: 0, amount: 0 }
                     array2.push(obj)
 
                     j = moment(j).add(1, "days").format("YYYY-MM-DD")
 
                 }
                 while (j <= moment(date1).format("YYYY-MM-DD"));
+
+                console.log("array2", array2)
 
 
                 let query2 = `Select * from OrderList where OrderDate between '${previousdate}'  and  '${moment(new Date(req.query.Startdate)).subtract(1, 'days').toISOString()}' `
@@ -1722,13 +1724,9 @@ router.get("/getDashBoardChart", function (req, res) {
                             let count = 0
 
                             result2.forEach(element => {
-
                                 if (arr.Day == moment(element.OrderDate).format("DD/M")) {
-
                                     array2[i].Count = array2[i].Count + 1
-
-
-
+                                    array2[i].amount = Number(Number(array2[i].amount) + Number(element.OrderTotal)).toFixed(2)
                                 }
                             });
 
@@ -1743,16 +1741,16 @@ router.get("/getDashBoardChart", function (req, res) {
                             }
                         })
 
-                        let tempArray = []
+                        let tempArray = array
 
-                        array.forEach(element => {
+                        // array.forEach(element => {
 
-                            tempArray.push({
-                                Day: element.Day,
-                                Count: element.Count != 0 ? Number(element.amount) / Number(element.Count).toFixed(2) : 0
-                            })
+                        //     tempArray.push({
+                        //         Day: element.Day,
+                        //         Count: element.Count != 0 ? Number(element.amount) / Number(element.Count).toFixed(2) : 0
+                        //     })
 
-                        })
+                        // })
                         res.json({
                             success: true,
                             sales: tempArray,
