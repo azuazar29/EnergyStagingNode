@@ -1175,7 +1175,7 @@ router.get("/GetProductDetails", function (req, res) {
 
     ////console.log(query)
 
-    query = query + ` where deleted <> '1'` + 'ORDER BY createdOn DESC;'
+    query = query + 'ORDER BY createdOn DESC;'
     console.log("query", query)
 
     request.query(query, function (err, set) {
