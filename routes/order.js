@@ -2270,6 +2270,8 @@ router.get("/GetProductSaleDetails", function (req, res) {
 
 
             res.json({
+                success: true,
+                message: "Successfully got form GetProductList",
                 PopularProductsFCUList: finalFCU,
                 PopularProductsCondensorList: final
 
