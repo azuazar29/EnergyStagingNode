@@ -276,25 +276,28 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                 }
 
                 let temp = []
-                let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                if (req.body.month && Number(req.body.month) < 12) {
-                    months = monthArray
-                }
+                let months = []
+
+                let monthsCount = Number(req.body.month)
 
 
+                for (let i = 0; i < monthsCount; i++) {
 
-                months.forEach((month, i) => {
                     temp[i] = {
-                        "month": month,
+                        "month": moment(new Date()).subtract(i, 'month').format("MMM"),
+                        "Year": moment(new Date()).subtract(i, 'month').format("YYYY"),
                         "energyConsumed": "0"
                     }
                     result.forEach((element) => {
-                        if (moment(element.created_On).format("MMM") == month) {
+                        if (moment(element.created_On).format("MMM") == temp[i].month &&
+                            moment(element.created_On).format("YYYY") == temp[i].Year) {
                             temp[i].energyConsumed = (Number(temp[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
 
                         }
                     })
-                })
+
+                }
+
 
                 let totalTrend = 0
                 temp.forEach(element => {
@@ -410,7 +413,7 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                     TotalEnergySpendWeekle: total.toFixed(2),
                     TotalMoneySpendWeekly: ((Number(total)) * .23).toFixed(2),
                     ThresholdWeekly: ((Number(factor) + (Number(weeklyMin) + Number(factor)))).toFixed(2),
-                    TrendResult: temp.reverse(),
+                    TrendResult: temp,
                     TotalEnergySpendTrend: Number(totalTrend).toFixed(2),
                     TotalMoneySpendTrend: ((Number(totalTrend)) * .23).toFixed(2),
                     ThresholdTrend: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly)))).toFixed(2),
@@ -472,9 +475,14 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
 
                 request.query(`Select installationDate from subscriptionManagement where userID = ${req.decoded.id} and orderID = ${recordset.recordset[0].orderID}`, function (err, record) {
 
+                    console.log("err", err)
+                    console.log("record", record)
 
                     if (record.recordset[0].installationDate != null) {
                         resolve({ deviceID: recordset.recordset[0].deviceID, installationDate: moment(record.recordset[0].installationDate).format('DD-MM-YYYY') })
+
+                    } else {
+                        resolve({ deviceID: recordset.recordset[0].deviceID, installationDate: "" })
 
                     }
                 })
@@ -672,34 +680,27 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                 // 
 
 
-
-                let monthArray = []
-
-                let month = Number(req.body.month)
-                for (let i = 0; i < month; i++) {
-                    monthArray.push(moment(new Date()).subtract(i, 'month').format("MMM"))
-                }
-
                 let temp = []
-                let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                if (req.body.month && Number(req.body.month) < 12) {
-                    months = monthArray
-                }
+
+                let monthsCount = Number(req.body.month)
 
 
+                for (let i = 0; i < monthsCount; i++) {
 
-                months.forEach((month, i) => {
                     temp[i] = {
-                        "month": month,
+                        "month": moment(new Date()).subtract(i, 'month').format("MMM"),
+                        "Year": moment(new Date()).subtract(i, 'month').format("YYYY"),
                         "energyConsumed": "0"
                     }
                     result.forEach((element) => {
-                        if (moment(element.created_On).format("MMM") == month) {
+                        if (moment(element.created_On).format("MMM") == temp[i].month &&
+                            moment(element.created_On).format("YYYY") == temp[i].Year) {
                             temp[i].energyConsumed = (Number(temp[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
 
                         }
                     })
-                })
+
+                }
 
                 let totalTrend = 0
                 temp.forEach(element => {
@@ -817,7 +818,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     TotalMoneySpendWeekly: ((Number(total) / .408) * .23).toFixed(2),
                     ThresholdWeekly: ((Number(factor) + (Number(weeklyMin) + Number(factor)))).toFixed(2),
 
-                    TrendResult: temp.reverse(),
+                    TrendResult: temp,
                     TotalEnergySpendTrend: Number(totalTrend).toFixed(2),
                     TotalMoneySpendTrend: ((Number(totalTrend) / .408) * .23).toFixed(2),
                     ThresholdTrend: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly)))).toFixed(2),
