@@ -1,0 +1,10 @@
+"OrderNo","OrderType","OrderDate","LastModifiedDate","AssignedOnDate","AssignedTo","OrderStatus","OrderTotal","Customer","UserId","ProductId","Id","orderFlow","deviceID"
+"OD470726663247","S","20 Oct 2022","NA",,,"Pending","202.40","Monolisan P","3","101",1,"OR","bfbcd23d1b285a2391ul20"
+"OD868672193305","S","20 Oct 2022","NA",,,"Pending","240.92","Monolisan P","3","101",2,"OR","bfbcd23d1b285a2391ul20"
+"OD378757882986","S","20 Oct 2022","NA",,,"Cancelled","427.10","Nagendrababu M","1","101",3,"OR","bfc29c88239e88abfdfioi"
+"OD575880392293","S","20 Oct 2022","NA",,,"Cancelled","203.74","john doe","4","101",4,"OR",
+"OD960237929058","O","20 Oct 2022","NA",,,"Completed","2077.04","Willy Wonka","5","101",5,"CO","bfbcd23d1b285a2391ul20"
+"OD138037491891","S","20 Oct 2022","NA",,,"Cancelled","211.31","Natrayasamy D","6","101",6,"CO",
+"OD497417839206","S","20 Oct 2022","NA",,,"Completed","223.80","Sugunakar2 Ravula","9","101",9,"CO","bfc29c88239e88abfdfioi"
+"OD952308817318","O","20 Oct 2022","NA",,,"Completed","2695.50","Natrayasamy D","6","101",7,"CO",
+"OD167891572794","S","20 Oct 2022","NA",,,"Pending","223.80","Sugunakar Reddy Ravula","8","101",8,"OR","bfbcd23d1b285a2391ul20"

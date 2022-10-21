@@ -1,0 +1,2 @@
+"OrderNo","OrderType","OrderDate","LastModifiedDate","AssignedOnDate","AssignedTo","OrderStatus","OrderTotal","Customer","UserId","ProductId","Id","orderFlow","deviceID"
+"OD627609865636","S","06 Oct 2022","NA",,,"Pending","166.76","John Doe","73","101",1,"SV",

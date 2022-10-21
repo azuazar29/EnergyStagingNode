@@ -1011,7 +1011,8 @@ router.post("/AddProductDetails", upload,
                                ,[efficiencyDetails])
                          VALUES
                                ('${set.recordset[0].id}'
-                               ,'${data.EfficiencyProfile ? JSON.stringify(data.EfficiencyProfile) : ''}'`
+                               ,'${data.EfficiencyProfile ? JSON.stringify(data.EfficiencyProfile) : ''}'
+                               )`
 
                     request.query(query, function (err, responseeFF) {
 
@@ -1134,11 +1135,41 @@ router.post('/uploadEfficiencyProfile', function (req, res) {
             csv()
                 .fromFile(csvFilePath)
                 .then((jsonObj) => {
+                    console.log("json Obj", jsonObj)
+                    let isValid = false
+                    jsonObj.forEach((element, index) => {
 
-                    res.json({
-                        success: true,
-                        result: jsonObj
+
+
+                        if (index == 0) {
+
+                            Object.keys(element).forEach(key => {
+                                if (key == "Cooling_Capacity" || key == "Power_Input" || key == "COP") {
+                                    isValid = true
+                                } else {
+                                    isValid = false
+                                }
+                            })
+
+                        }
+
                     })
+
+                    console.log('isValid', isValid)
+
+                    if (isValid) {
+                        res.json({
+                            success: true,
+                            result: jsonObj
+                        })
+                    } else {
+                        res.json({
+                            success: false,
+                            result: "Invalid format. Please upload a efficiency profile with given format."
+                        })
+                    }
+
+
                 }).catch(err => {
                     res.json({
                         success: true,
