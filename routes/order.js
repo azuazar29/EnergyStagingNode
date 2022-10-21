@@ -2199,162 +2199,241 @@ router.get("/GetMapdetails", function (req, res) {
 
 })
 router.get("/GetProductSaleDetails", function (req, res) {
-    let query = `select CondensorList.Quantity, OrderList.ProductId, OrderList.OrderTotal, CondensorList.productName, CondensorList.Brand 
-    from OrderList 
-    inner join CondensorList 
-    on OrderList.ProductId = CondensorList.id and OrderList.OrderStatus='CO'`
 
-    let queryFCU = `select  OrderList.ProductId, OrderList.OrderTotal, FCU_New.FCUName, FCU_New.Price, CondensorList.Brand
-    from OrderList 
-    inner join FCU_New 
-    on OrderList.ProductId = FCU_New.CondenserId and OrderList.OrderStatus='CO'
-    inner join CondensorList on CondensorList.id = FCU_New.CondenserId`
+    let query = `Select * from cart where ISNULL(orderID, ' ') <> ' '`
+
+    request.query(query, function (err, recordset) {
+
+        let productsCU = []
+        let productsFCU = []
+
+        if (!err) {
+            recordset.recordsets[0].forEach(element => {
+                productsCU.push(JSON.parse(element.product_Id).CondensorDetails)
+                productsFCU.push(JSON.parse(element.product_Id).FCUDetails)
+            })
+
+            let derivedCU = []
+            let derivedFCU = []
+            productsCU.forEach(element => {
+                element.forEach(elementInner => {
+                    derivedCU.push(elementInner)
+                })
+            })
+            productsFCU.forEach(element => {
+                element.forEach(elementInner => {
+                    derivedFCU.push(elementInner)
+                })
+            })
+
+            derivedCU = groupBy(derivedCU, "name")
+            derivedFCU = groupBy(derivedFCU, "productName")
+
+            let final = []
+
+            Object.keys(derivedCU).forEach((key, index) => {
+
+                final[index] = ({
+                    productName: key,
+                    productPrice: 0,
+                    count: 0
+                })
+
+                derivedCU[key].forEach(element => {
+
+                    final[index].productPrice = Number(final[index].productPrice) + (Number(element.count) * Number(element.price))
+                    final[index].count = final[index].count + Number(element.count)
+                })
+
+            })
+            let finalFCU = []
+            Object.keys(derivedFCU).forEach((key, index) => {
+
+                finalFCU[index] = ({
+                    productName: key,
+                    productPrice: 0,
+                    count: 0
+                })
+
+                derivedFCU[key].forEach(element => {
+                    console.log("element", element)
+
+                    finalFCU[index].productPrice = Number(finalFCU[index].productPrice) + (Number(element.quantity) * Number(element.price))
+                    finalFCU[index].count = finalFCU[index].count + Number(element.quantity)
+                })
+
+            })
 
 
-    request.query(query, function (err, set) {
-        if (err) {
-            ////console.log("err", err)
-            res.status(400)
+
+
+
+
             res.json({
-                success: false,
-                message: err.originalError.info.message
+                PopularProductsFCUList: finalFCU,
+                PopularProductsCondensorList: final
+
             })
-
-        } else {
-
-            let result = set.recordsets[0]
-            let result2 = groupBy(result, "ProductId")
-            let result3 = groupBy(result, "Brand")
-            let array = [], arrayBrand = []
-            let tempArray = [], tempArrayBrand = []
-            Object.keys(result2).forEach(function (i) {
-                let obj = { "ProductName": result2[i][0].productName, "ProductId": result2[i][0].ProductId, "ProductSalesPercentage": Number(100 * result2[i].length / result.length), "ProductQuantity": result2[i][0].Quantity }
-                let amt = 0
-                if (result2[i].length > 1) {
-
-                    result2[i].forEach(element => {
-                        amt = amt + Number(element.OrderTotal)
-                    });
-                    obj = { "ProductName": result2[i][0].productName, "ProductId": result2[i][0].ProductId, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": amt, "ProductQuantity": result2[i][0].Quantity, "SaleCount": result2[i].length }
-                }
-                else {
-                    obj = { "ProductName": result2[i][0].productName, "ProductId": result2[i][0].ProductId, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": result2[i][0].OrderTotal, "ProductQuantity": result2[i][0].Quantity, "SaleCount": result2[i].length }
-                }
-
-                array.push(obj)
-                array.sort(dynamicSort("SaleCount"))
-
-                tempArray = array.sort(dynamicSort("SaleCount"))
-
-            });
-            Object.keys(result3).forEach(function (i) {
-                let obj = { "ProductName": result3[i][0].Brand, "ProductId": result3[i][0].ProductId, "ProductSalesPercentage": Number(100 * result3[i].length / result.length), "ProductQuantity": result3[i][0].Quantity }
-                let amt = 0
-                if (result3[i].length > 1) {
-
-                    result3[i].forEach(element => {
-                        amt = amt + Number(element.OrderTotal)
-                    });
-                    obj = { "ProductName": result3[i][0].Brand, "ProductId": result3[i][0].ProductId, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": amt, "ProductQuantity": result3[i][0].Quantity, "SaleCount": result3[i].length }
-                }
-                else {
-                    obj = { "ProductName": result3[i][0].Brand, "ProductId": result3[i][0].ProductId, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": result3[i][0].OrderTotal, "ProductQuantity": result3[i][0].Quantity, "SaleCount": result3[i].length }
-                }
-
-                arrayBrand.push(obj)
-
-                arrayBrand.sort(dynamicSort("SaleCount"))
-
-                tempArrayBrand = arrayBrand.sort(dynamicSort("SaleCount"))
-
-            });
-            let PopularProductsCondensor = tempArray
-            let BrandSegmentCondensor = tempArrayBrand
-            // res.status(200)
-            // res.json({
-            //     success: true,
-            //     message: "Successfully got form GetProductList",         
-
-            //     result:tempArray
-            // })
-            request.query(queryFCU, function (err, set) {
-                if (err) {
-                    ////console.log("err", err)
-                    res.status(400)
-                    res.json({
-                        success: false,
-                        message: err.originalError.info.message
-                    })
-
-                } else {
-
-                    let result = set.recordsets[0]
-                    let result2 = groupBy(result, "FCUName")
-                    let result3 = groupBy(result, "Brand")
-                    let array = [], arrayBrand = []
-                    let tempArray = [], tempArrayBrand = []
-                    Object.keys(result2).forEach(function (i) {
-                        let obj = { "ProductName": result2[i][0].FCUName, "ProductSalesPercentage": Number(100 * result2[i].length / result.length) }
-                        let amt = 0
-                        if (result2[i].length > 1) {
-
-                            result2[i].forEach(element => {
-                                amt = amt + Number(element.Price)
-                            });
-                            obj = { "ProductName": result2[i][0].FCUName, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": amt }
-                        }
-                        else {
-                            obj = { "ProductName": result2[i][0].FCUName, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": result2[i][0].Price }
-                        }
-
-                        array.push(obj)
-                        array.sort(dynamicSort("ProductSalesPercentage"))
-
-                        tempArray = array.sort(dynamicSort("ProductSalesPercentage"))
-
-                    });
-                    Object.keys(result3).forEach(function (i) {
-                        let obj = { "ProductName": result3[i][0].Brand, "ProductSalesPercentage": Number(100 * result3[i].length / result.length) }
-                        let amt = 0
-                        if (result3[i].length > 1) {
-
-                            result3[i].forEach(element => {
-                                amt = amt + Number(element.Price)
-                            });
-                            obj = { "ProductName": result3[i][0].Brand, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": Number(amt).toFixed(2) }
-                        }
-                        else {
-                            obj = { "ProductName": result3[i][0].Brand, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": Number(result3[i][0].Price).toFixed(2) }
-                        }
-
-                        arrayBrand.push(obj)
-                        arrayBrand.sort(dynamicSort("ProductSalesPercentage"))
-
-                        tempArrayBrand = arrayBrand.sort(dynamicSort("ProductSalesPercentage"))
-
-                    });
-
-                    let PopularProductsFCU = tempArray
-                    let BrandSegmentFCU = tempArrayBrand
-                    res.status(200)
-                    res.json({
-                        success: true,
-                        message: "Successfully got form GetProductList",
-
-                        result: {
-                            PopularProductsFCUList: PopularProductsFCU,
-                            PopularProductsCondensorList: PopularProductsCondensor,
-                            BrandSegmentationCondensor: BrandSegmentCondensor,
-                            BrandSegmentationFCU: BrandSegmentFCU
-
-                        }
-                    })
-
-                }
-            })
-
         }
+
     })
+
+    // let query = `select CondensorList.Quantity, OrderList.ProductId, OrderList.OrderTotal, CondensorList.productName, CondensorList.Brand 
+    // from OrderList 
+    // inner join CondensorList 
+    // on OrderList.ProductId = CondensorList.id and OrderList.OrderStatus='CO'`
+
+    // let queryFCU = `select  OrderList.ProductId, OrderList.OrderTotal, FCU_New.FCUName, FCU_New.Price, CondensorList.Brand
+    // from OrderList 
+    // inner join FCU_New 
+    // on OrderList.ProductId = FCU_New.CondenserId and OrderList.OrderStatus='CO'
+    // inner join CondensorList on CondensorList.id = FCU_New.CondenserId`
+
+
+    // request.query(query, function (err, set) {
+    //     if (err) {
+    //         ////console.log("err", err)
+    //         res.status(400)
+    //         res.json({
+    //             success: false,
+    //             message: err.originalError.info.message
+    //         })
+
+    //     } else {
+
+    //         let result = set.recordsets[0]
+    //         let result2 = groupBy(result, "ProductId")
+    //         let result3 = groupBy(result, "Brand")
+    //         let array = [], arrayBrand = []
+    //         let tempArray = [], tempArrayBrand = []
+    //         Object.keys(result2).forEach(function (i) {
+    //             let obj = { "ProductName": result2[i][0].productName, "ProductId": result2[i][0].ProductId, "ProductSalesPercentage": Number(100 * result2[i].length / result.length), "ProductQuantity": result2[i][0].Quantity }
+    //             let amt = 0
+    //             if (result2[i].length > 1) {
+
+    //                 result2[i].forEach(element => {
+    //                     amt = amt + Number(element.OrderTotal)
+    //                 });
+    //                 obj = { "ProductName": result2[i][0].productName, "ProductId": result2[i][0].ProductId, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": amt, "ProductQuantity": result2[i][0].Quantity, "SaleCount": result2[i].length }
+    //             }
+    //             else {
+    //                 obj = { "ProductName": result2[i][0].productName, "ProductId": result2[i][0].ProductId, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": result2[i][0].OrderTotal, "ProductQuantity": result2[i][0].Quantity, "SaleCount": result2[i].length }
+    //             }
+
+    //             array.push(obj)
+    //             array.sort(dynamicSort("SaleCount"))
+
+    //             tempArray = array.sort(dynamicSort("SaleCount"))
+
+    //         });
+    //         Object.keys(result3).forEach(function (i) {
+    //             let obj = { "ProductName": result3[i][0].Brand, "ProductId": result3[i][0].ProductId, "ProductSalesPercentage": Number(100 * result3[i].length / result.length), "ProductQuantity": result3[i][0].Quantity }
+    //             let amt = 0
+    //             if (result3[i].length > 1) {
+
+    //                 result3[i].forEach(element => {
+    //                     amt = amt + Number(element.OrderTotal)
+    //                 });
+    //                 obj = { "ProductName": result3[i][0].Brand, "ProductId": result3[i][0].ProductId, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": amt, "ProductQuantity": result3[i][0].Quantity, "SaleCount": result3[i].length }
+    //             }
+    //             else {
+    //                 obj = { "ProductName": result3[i][0].Brand, "ProductId": result3[i][0].ProductId, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": result3[i][0].OrderTotal, "ProductQuantity": result3[i][0].Quantity, "SaleCount": result3[i].length }
+    //             }
+
+    //             arrayBrand.push(obj)
+
+    //             arrayBrand.sort(dynamicSort("SaleCount"))
+
+    //             tempArrayBrand = arrayBrand.sort(dynamicSort("SaleCount"))
+
+    //         });
+    //         let PopularProductsCondensor = tempArray
+    //         let BrandSegmentCondensor = tempArrayBrand
+    //         // res.status(200)
+    //         // res.json({
+    //         //     success: true,
+    //         //     message: "Successfully got form GetProductList",         
+
+    //         //     result:tempArray
+    //         // })
+    //         request.query(queryFCU, function (err, set) {
+    //             if (err) {
+    //                 ////console.log("err", err)
+    //                 res.status(400)
+    //                 res.json({
+    //                     success: false,
+    //                     message: err.originalError.info.message
+    //                 })
+
+    //             } else {
+
+    //                 let result = set.recordsets[0]
+    //                 let result2 = groupBy(result, "FCUName")
+    //                 let result3 = groupBy(result, "Brand")
+    //                 let array = [], arrayBrand = []
+    //                 let tempArray = [], tempArrayBrand = []
+    //                 Object.keys(result2).forEach(function (i) {
+    //                     let obj = { "ProductName": result2[i][0].FCUName, "ProductSalesPercentage": Number(100 * result2[i].length / result.length) }
+    //                     let amt = 0
+    //                     if (result2[i].length > 1) {
+
+    //                         result2[i].forEach(element => {
+    //                             amt = amt + Number(element.Price)
+    //                         });
+    //                         obj = { "ProductName": result2[i][0].FCUName, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": amt }
+    //                     }
+    //                     else {
+    //                         obj = { "ProductName": result2[i][0].FCUName, "ProductSalesPercentage": Number(100 * result2[i].length / result.length).toFixed(2), "Sales": result2[i][0].Price }
+    //                     }
+
+    //                     array.push(obj)
+    //                     array.sort(dynamicSort("ProductSalesPercentage"))
+
+    //                     tempArray = array.sort(dynamicSort("ProductSalesPercentage"))
+
+    //                 });
+    //                 Object.keys(result3).forEach(function (i) {
+    //                     let obj = { "ProductName": result3[i][0].Brand, "ProductSalesPercentage": Number(100 * result3[i].length / result.length) }
+    //                     let amt = 0
+    //                     if (result3[i].length > 1) {
+
+    //                         result3[i].forEach(element => {
+    //                             amt = amt + Number(element.Price)
+    //                         });
+    //                         obj = { "ProductName": result3[i][0].Brand, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": Number(amt).toFixed(2) }
+    //                     }
+    //                     else {
+    //                         obj = { "ProductName": result3[i][0].Brand, "ProductSalesPercentage": Number(100 * result3[i].length / result.length).toFixed(2), "Sales": Number(result3[i][0].Price).toFixed(2) }
+    //                     }
+
+    //                     arrayBrand.push(obj)
+    //                     arrayBrand.sort(dynamicSort("ProductSalesPercentage"))
+
+    //                     tempArrayBrand = arrayBrand.sort(dynamicSort("ProductSalesPercentage"))
+
+    //                 });
+
+    //                 let PopularProductsFCU = tempArray
+    //                 let BrandSegmentFCU = tempArrayBrand
+    //                 res.status(200)
+    //                 res.json({
+    //                     success: true,
+    //                     message: "Successfully got form GetProductList",
+
+    //                     result: {
+    //                         PopularProductsFCUList: PopularProductsFCU,
+    //                         PopularProductsCondensorList: PopularProductsCondensor,
+    //                         BrandSegmentationCondensor: BrandSegmentCondensor,
+    //                         BrandSegmentationFCU: BrandSegmentFCU
+
+    //                     }
+    //                 })
+
+    //             }
+    //         })
+
+    //     }
+    // })
 })
 
 router.get('/slots', function (req, res) {
