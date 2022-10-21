@@ -992,6 +992,20 @@ router.post("/AddProductDetails", upload,
             request.query(query, function (err, set) {
                 if (err) {
 
+                    let query = `
+                    INSERT INTO [dbo].[efficiency_profile_new]
+                               ([condensorID]
+                               ,[efficiencyDetails])
+                         VALUES
+                               ('${set.recordset[0].id}'
+                               ,'${data.EfficiencyProfile ? JSON.stringify(data.EfficiencyProfile) : ''}'`
+
+                    request.query(query, function (err, responseeFF) {
+
+                        console.log(err, responseeFF)
+
+                    })
+
                     // //console.log("err", err)
                     res.status(400)
                     res.json({
@@ -1000,6 +1014,8 @@ router.post("/AddProductDetails", upload,
                     })
 
                 } else {
+
+
 
 
 
