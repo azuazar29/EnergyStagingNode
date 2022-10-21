@@ -992,6 +992,19 @@ router.post("/AddProductDetails", upload,
             request.query(query, function (err, set) {
                 if (err) {
 
+
+
+                    // //console.log("err", err)
+                    res.status(400)
+                    res.json({
+                        success: false,
+                        message: err.originalError.info.message
+                    })
+
+                } else {
+
+
+
                     let query = `
                     INSERT INTO [dbo].[efficiency_profile_new]
                                ([condensorID]
@@ -1005,19 +1018,6 @@ router.post("/AddProductDetails", upload,
                         console.log(err, responseeFF)
 
                     })
-
-                    // //console.log("err", err)
-                    res.status(400)
-                    res.json({
-                        success: false,
-                        message: err.originalError.info.message
-                    })
-
-                } else {
-
-
-
-
 
                     if (err) {
                         return res.send("Error uploading file.");
