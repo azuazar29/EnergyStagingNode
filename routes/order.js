@@ -2273,8 +2273,8 @@ router.get("/GetProductSaleDetails", function (req, res) {
                 success: true,
                 message: "Successfully got form GetProductList",
                 result: {
-                    PopularProductsFCUList: finalFCU,
-                    PopularProductsCondensorList: final
+                    PopularProductsFCUList: finalFCU.sort((a, b) => a - b),
+                    PopularProductsCondensorList: final.sort((a, b) => a - b)
                 }
 
             })
