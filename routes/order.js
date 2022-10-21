@@ -973,20 +973,20 @@ router.post("/AddProductDetails", upload,
                 '${data.ProductCategory ? data.ProductCategory : ""}',
               
                 '${data.Quantity ? data.Quantity : '1'}',
-                ${data.Price ? data.Price : 0},
-                ${data.ProductCode ? data.ProductCode : 0},
+                '${data.Price ? data.Price : "0.00"}',
+                '${data.ProductCode ? data.ProductCode : ""}',
                 '${data.Manufacturer ? data.Manufacturer : ''}',
-                ${data.ProductTax ? data.ProductTax : 0},
-                ${data.CoolingCapacity ? data.CoolingCapacity : 0},
-                ${data.PowerConsumption ? data.PowerConsumption : 0},
+                '${data.ProductTax ? data.ProductTax : ""}',
+                '${data.CoolingCapacity ? data.CoolingCapacity : ""}',
+                '${data.PowerConsumption ? data.PowerConsumption : ""}',
                 '${data.CurrentRating ? data.CurrentRating : ''}',
-                ${data.CoolingCapacity ? data.CoolingCapacity : 0},
+                '${data.CoolingCapacity ? data.CoolingCapacity : ""}',
                 '${data.EfficiencyProfile ? JSON.stringify(data.EfficiencyProfile) : ''}',               
                 1,
                 '${new Date().toISOString()}', 
                 '${data.Tags ? JSON.stringify(data.Tags) : ""}',
                 '${cPath}',
-                '${data.ModelNo}','0'
+                '${data.ModelNo}',''
                 ) SELECT SCOPE_IDENTITY() as id`
             console.log(query)
             request.query(query, function (err, set) {
