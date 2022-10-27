@@ -9,6 +9,7 @@ function start1(
   total_true_load,
   roomsArray
 ) {
+  ////console.log("Sum Fona;", total_true_load)
 
   var mon = [],
     tue = [],
@@ -95,7 +96,7 @@ function start1(
       }
       r = r + 1;
 
-      // console.log("callit(am, pm)", callit(am, pm))
+      // ////console.log("callit(am, pm)", callit(am, pm))
       mon.push(callit(am, pm));
       mon_load.push(hs.mon_true_load(mon, r, true_load));
     }
@@ -235,7 +236,7 @@ function start1(
     }
   }
 
-  // console.log("sunday load", sun_load)
+  // ////console.log("sunday load", sun_load)
 
   //hourly_operating_load
   var mon_opt_load = [],
@@ -246,6 +247,7 @@ function start1(
     sat_opt_load = [],
     sun_opt_load = [];
   var ty = [];
+  // ////console.log(input1)
   for (var i = 0; i < input1.length; i++) {
     let tot = [];
 
@@ -312,6 +314,27 @@ function start1(
     input1[i].hourly_operating_load = tot;
   }
 
+  function closest(num, arr) {
+    // ////console.log("arr[0]", arr[0])
+    arr = JSON.parse(arr)
+
+
+    var curr = Number(arr[0].Cooling_Capacity);
+    var diff = Math.abs(num - curr);
+    for (var val = 0; val < arr.length; val++) {
+      var newdiff = Math.abs(num - Number(arr[val].Cooling_Capacity));
+      if (newdiff < diff) {
+        diff = newdiff;
+        curr = Number(arr[val].Cooling_Capacity);
+      }
+    }
+    return curr;
+  }
+
+
+
+
+
   //hourly_cop
   var inner1 = [],
     outer1 = [];
@@ -320,21 +343,34 @@ function start1(
     for (var j = 0; j < input1[i].hourly_operating_load.length; j++) {
       inner1 = [];
       for (var k = 0; k < input1[i].hourly_operating_load[j].length; k++) {
+        let effFinal = JSON.parse(input1[i][0].condenserid.EfficiencyProfile)
 
-        for (var t = 0; t < eff.length; t++) {
-          if (
-            Number(input1[i].hourly_operating_load[j][k]) ===
-            Number(eff[t].hourly_operating_load)
+        let closestValue = closest((Number(input1[i].hourly_operating_load[j][k]) / 1000).toFixed(2), effFinal)
+
+        // ////console.log("Closest value", closestValue)
+        let againEff = JSON.parse(effFinal)
+        for (var t = 0; t < againEff.length; t++) {
+
+          // ////console.log("eff[yt{", againEff[t])
+          if
+            (Number(closestValue) ==
+            Number(againEff[t].Cooling_Capacity)
           ) {
-            inner1.push(eff[t].hourly_cop);
+            ////console.log("it came")
+            inner1.push(againEff[t].COP);
           }
         }
       }
-      // console.log("inner", inner1)
+      // ////console.log("inner", inner1)
       outer1.push(inner1);
     }
     input1[i].hourly_cop = outer1;
   }
+  // ////console.log("hourly cop", ...input1)
+
+  // ////console.log("hourly operatin", input1)
+
+
 
   //hourly_operating_power
   var inner1 = [],
@@ -349,17 +385,19 @@ function start1(
       return Number(obj.coolingcapacity);
     });
     var coolcap = li.reduce((a, b) => a + b, 0);
+    //console.log("coolcap", coolcap)
     // new Change
 
     for (var j = 0; j < input1[i].hourly_cop.length; j++) {
       inner1 = [];
       for (var k = 0; k < input1[i].hourly_cop[j].length; k++) {
-        inner1.push(Number(input1[i].hourly_cop[j][k]) * coolcap);
+        inner1.push(Number(input1[i].hourly_cop[j][k]) * (coolcap / 1000));
       }
       outer1.push(inner1);
     }
     input1[i].hourly_operating_power = outer1;
   }
+  //console.log(input1[0])
 
   var usage_adherence = Number(occ_patt[0].usageAdherence) / 10; //0.75; //(75%) get value from user
   //sum of weekday & sum of weekends
@@ -395,14 +433,15 @@ function start1(
 
   //monthly operating power
   for (var i = 0; i < input1.length; i++) {
+    ////console.log("Number((input1[i].weekdays.reduce((a, b) => a + b, 0))", Number((input1[i].weekdays.reduce((a, b) => a + b, 0))))
     input1[i].monthy_operating_power =
-      ((input1[i].weekdays.reduce((a, b) => a + b, 0) +
-        input1[i].weekends.reduce((a, b) => a + b, 0)) *
+      (Number((input1[i].weekdays.reduce((a, b) => a + b, 0)) +
+        Number(input1[i].weekends.reduce((a, b) => a + b, 0))) *
         4) /
       1000;
   }
 
-  // console.log("monthly operating power", input1[0].monthy_operating_power)
+  ////console.log("monthly operating power", input1[0])
 
   //monthly operating power
   for (var i = 0; i < input1.length; i++) {
@@ -459,6 +498,7 @@ function start1(
       elementinner.condenserid.ImagePath = filePath.HostUrl1 + elementinner.condenserid.ImagePath
       display_price = display_price + Number(elementinner.condenserid.Price);
       condenserImg.push(imagePath);
+      elementinner.condenserid.EfficiencyProfile = ""
       condenserIDs.push(elementinner.condenserid);
       let obj = {
         compressor: elementinner.condensername,
@@ -517,25 +557,25 @@ function start1(
     let subCost = 0;
 
     let cNumber = getProductName(display_installed_rooms);
-    // console.log("======>", display_installed_rooms)
+    // ////console.log("======>", display_installed_rooms)
 
     let totalFcu = 0
     display_installed_rooms.forEach(element => {
 
       element.products.forEach(element1 => {
-        // console.log("element1=== >", element1)
+        // ////console.log("element1=== >", element1)
         totalFcu = totalFcu + Number(element1.product[0].Price)
       })
 
     })
-    console.log('totalFcu', totalFcu)
+    // ////console.log('totalFcu', totalFcu)
 
     let totalCCost = Number(totalFcu) + Number(display_price);
     // cNumber.forEach((element) => {
     //   totalCCost = totalCCost + Number(element.price) * Number(element.count);
     // });
 
-    // console.log("totalCostDisplay", display_price, totalCCost)
+    // ////console.log("totalCostDisplay", display_price, totalCCost)
     let totalCostDisplay = Number(Number(display_price) + Number(totalCCost))
     totalCostDisplay = Number(((totalCCost / 100) * 7) + Number(totalCCost)).toFixed(2)
 
@@ -555,7 +595,7 @@ function start1(
       display_product_manufacturer1: getProductName(display_installed_rooms),
       display_product_img: condenserImg,
       display_monthly_operating_power: (
-        element.monthy_operating_power / 1000
+        element.monthy_operating_power
       ).toFixed(2),
       display_price: totalCostDisplay.toString(),
       display_yearly_electricity_cost: element.yearly_electricity_cost
@@ -622,11 +662,11 @@ function start1(
 
   function getProductName(display_installed_rooms) {
     let name = groupItem(display_installed_rooms);
-    // console.log("name", name);
+    // ////console.log("name", name);
     let nametoreturn = "";
     let namesArray = [];
     Object.keys(name).forEach((names, index) => {
-      // console.log("name", names);
+      // ////console.log("name", names);
 
       namesArray.push({
         name: names,
@@ -653,7 +693,7 @@ function start1(
   //   let name = groupItem(display_installed_rooms)
   //   let nametoreturn = ''
   //   Object.keys(name).forEach((names, index) => {
-  //     // ////console .log("name",names)
+  //     // ////////console .log("name",names)
 
   //     if (index == 0) {
   //       nametoreturn = names
