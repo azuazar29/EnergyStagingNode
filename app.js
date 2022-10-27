@@ -189,28 +189,23 @@ VALUES
 
 
 var job = new CronJob(
-  '*/15 * * * *',
+  // '*/15 * * * *',
+  '* * * * *',
   async function () {
     console.log('running a task every minute');
 
-    let device = [
-      {
-        devideId: 'bfc29c88239e88abfdfioi',
-        deviceName: 'smart plug 3',
-      },
-      {
-        devideId: 'bfbcd23d1b285a2391ul20',
-        deviceName: 'smart plug 2',
-      },
-      {
-        devideId: 'bf664ad3a1ff7085d7pyvr',
-        deviceName: 'smart plug',
-      }
-    ]
 
-    for (let i = 0; i < device.length; i++) {
-      await updateEnergyDetails(device[i].devideId, device[i].deviceName)
-    }
+    request.query(`SELECT DISTINCT deviceID FROM OrderList WHERE ISNULL(deviceID, ' ') <> ' '`, async function (err, res) {
+
+      if (!err) {
+
+        for (let i = 0; i < res.recordsets[0].length; i++) {
+          await updateEnergyDetails(res.recordsets[0][i].devideId, "")
+        }
+      }
+
+    })
+
   },
   null,
   true,
