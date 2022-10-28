@@ -541,6 +541,7 @@ function start1(
         elementinner.fcusname[indexRoom].ImagePath = imagePathFCU;
 
         elementinner.fcusname[indexRoom].OutdoorDimention = "None"
+        elementinner.fcusname[indexRoom].ImagePath = elementinner.fcusname[indexRoom].ImagePath != "NULL" ? elementinner.fcusname[indexRoom].ImagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png"
         let prodObj = {
           roomName: roomObj.roomName,
           roomTemperature: roomObj.idealRoomTemparature.toString(),
@@ -632,7 +633,7 @@ function start1(
       element.forEach((element1) => {
         finalProd.push(element1);
         price = price + Number(element1.product[0].Price);
-        newImage.push(element1.product[0].ImagePath)
+        newImage.push(element1.product[0].ImagePath ? element1.product[0].ImagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png")
 
       });
     });
@@ -640,9 +641,11 @@ function start1(
     obj.display_installed_rooms = finalProd;
 
     obj.display_product_manufacturer.forEach((element, index) => {
-      element.image = newImage[index]
+      // console.log("skjhdksjdhk", newImage[index])
+      element.image = newImage[index] != "NULL" ? newImage[index] : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png"
     })
-    console.log("newImage", newImage)
+
+    console.log("obj.display_product_manufacturer", obj.display_product_manufacturer)
 
     if (newImage[0] != "NULL") {
       newImage = newImage
@@ -677,11 +680,12 @@ function start1(
     let namesArray = [];
     Object.keys(name).forEach((names, index) => {
       // ////console.log("name", names);
+      console.log("tempImg[index]", tempImg[index])
 
       namesArray.push({
         name: names,
         count: name[names].length,
-        image: tempImg[index],
+        image: tempImg[index] ? tempImg[index] : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png",
         price: name[names][0].price,
       });
 
