@@ -495,6 +495,7 @@ function start1(
       tempName = elementinner.condensername;
       display_product_img = imagePath;
 
+      elementinner.Tags = "TAG"
       elementinner.condenserid.ImagePath = elementinner.condenserid.ImagePath ? filePath.HostUrl1 + elementinner.condenserid.ImagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png"
       display_price = display_price + Number(elementinner.condenserid.Price);
       condenserImg.push(imagePath);
