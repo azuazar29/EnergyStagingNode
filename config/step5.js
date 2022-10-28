@@ -499,7 +499,7 @@ function start1(
       elementinner.condenserid.ImagePath = elementinner.condenserid.ImagePath ? filePath.HostUrl1 + elementinner.condenserid.ImagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png"
       display_price = display_price + Number(elementinner.condenserid.Price);
       condenserImg.push(imagePath ? imagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png");
-      elementinner.condenserid.EfficiencyProfile = ""
+      elementinner.condenserid.EfficiencyProfile = "0.8"
       condenserIDs.push(elementinner.condenserid);
       let obj = {
         compressor: elementinner.condensername,
