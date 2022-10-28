@@ -541,6 +541,7 @@ function start1(
         elementinner.fcusname[indexRoom].ImagePath = imagePathFCU;
 
         elementinner.fcusname[indexRoom].OutdoorDimention = "None"
+        elementinner.fcusname[indexRoom].Proce = "0"
         elementinner.fcusname[indexRoom].ModelNo = elementinner.fcusname[indexRoom].Model
         elementinner.fcusname[indexRoom].ImagePath = elementinner.fcusname[indexRoom].ImagePath != "NULL" ? elementinner.fcusname[indexRoom].ImagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png"
         let prodObj = {
