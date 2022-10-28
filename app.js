@@ -198,6 +198,7 @@ var job = new CronJob(
     request.query(`SELECT DISTINCT deviceID FROM OrderList WHERE ISNULL(deviceID, ' ') <> ' '`, async function (err, res) {
 
       if (!err) {
+
         for (let i = 0; i < res.recordsets[0].length; i++) {
           await updateEnergyDetails(res.recordsets[0][i].devideId, "")
         }
