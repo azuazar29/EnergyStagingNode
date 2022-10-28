@@ -498,7 +498,7 @@ function start1(
       elementinner.condenserid.Tags = "TAG"
       elementinner.condenserid.ImagePath = elementinner.condenserid.ImagePath ? filePath.HostUrl1 + elementinner.condenserid.ImagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png"
       display_price = display_price + Number(elementinner.condenserid.Price);
-      condenserImg.push(imagePath);
+      condenserImg.push(imagePath ? imagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png");
       elementinner.condenserid.EfficiencyProfile = ""
       condenserIDs.push(elementinner.condenserid);
       let obj = {
