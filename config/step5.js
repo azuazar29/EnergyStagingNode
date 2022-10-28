@@ -540,6 +540,7 @@ function start1(
         });
         elementinner.fcusname[indexRoom].ImagePath = imagePathFCU;
 
+        elementinner.fcusname[indexRoom].OutdoorDimention = "None"
         let prodObj = {
           roomName: roomObj.roomName,
           roomTemperature: roomObj.idealRoomTemparature.toString(),
