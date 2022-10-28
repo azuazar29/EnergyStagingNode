@@ -258,17 +258,33 @@ module.exports = {
                       for (var l = 0; l < condenser.length; l++) {
                         var num = condenser[l].CurrentRating.replace(/\D/g, "");
 
+
+                        if (condenser[l].ProductName == "Panasonic Product") {
+                          console.log("allfcunames", num >= user_current_rating &&
+                            sum_of_all_true_loads >= min_true_load &&
+                            sum_of_all_true_loads <= max_true_load &&
+                            Number(condenser[l].CoolingCapacity) >= Number(sum) &&
+                            Number(condenser[l].FCUCapacity) >= Number(sum))
+
+                        }
+
+
                         if (
-                          num >= user_current_rating &&
+                          // num >= user_current_rating &&
                           sum_of_all_true_loads >= min_true_load &&
                           sum_of_all_true_loads <= max_true_load &&
-                          condenser[l].CoolingCapacity >= sum &&
-                          condenser[l].FCUCapacity >= sum
+                          Number(condenser[l].CoolingCapacity) >= Number(sum) &&
+                          Number(condenser[l].FCUCapacity) >= Number(sum)
                         ) {
                           var allfcunames = [],
                             allfcus = [];
+                          console.log("condensor id", condenser[l].id)
+
+
+                          // console.log("fcu.length", fcu.length)
 
                           for (var i1 = 0; i1 < fcu.length; i1++) {
+
                             if (
                               condenser[l].id.toString() ===
                               fcu[i1].CondenserId.toString()
@@ -277,7 +293,6 @@ module.exports = {
                               allfcus.push(fcu[i1].FCU);
                             }
                           }
-
 
 
                           flag1 = 1;

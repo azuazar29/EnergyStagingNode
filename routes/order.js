@@ -1099,7 +1099,7 @@ function addProducts(element, req, ID) {
                             '${element.CondensorCoil ? element.CondensorCoil : 'NULL'}', 
                             '${element.IndoorDimention ? element.IndoorDimention : 'NULL'}', 
                             '${element.OutdoorDimention ? element.OutdoorDimention : 'NULL'}', 
-                            '${element.Rating ? element.Rating : "NULL"}',
+                            '${element.Rating ? element.Rating : "1"}',
                             '${imagePath ? imagePath : 'NULL'}',
                             '${ID}') SELECT SCOPE_IDENTITY() as id`
         // //console.log("query", query2)
