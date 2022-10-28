@@ -27,7 +27,7 @@ router.get('/energyConsumption', function (req, res) {
 
     request.query('Select * From energyconsumptionfromjob', function (err, response) {
 
-        let result = groupBy(response.recordsets[0], 'DeviceName')
+        let result = groupBy(response.recordsets[0], 'deviceID')
 
         res.json({
             success: true,
