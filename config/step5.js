@@ -643,7 +643,13 @@ function start1(
     })
     console.log("newImage", newImage)
 
-    obj.display_product_img = newImage[0] != "NULL" ? newImage : [filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png"]
+    if (newImage[0] != "NULL") {
+      newImage = newImage
+    } else {
+      newImage[0] = "filePath.HostUrl1" + "public/images/AC-Images/FCU-Mit-1.png"
+    }
+
+    obj.display_product_img = newImage
 
 
 
