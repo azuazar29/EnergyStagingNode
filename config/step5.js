@@ -495,7 +495,7 @@ function start1(
       tempName = elementinner.condensername;
       display_product_img = imagePath;
 
-      elementinner.condenserid.ImagePath = filePath.HostUrl1 + elementinner.condenserid.ImagePath
+      elementinner.condenserid.ImagePath = elementinner.condenserid.ImagePath ? filePath.HostUrl1 + elementinner.condenserid.ImagePath : null
       display_price = display_price + Number(elementinner.condenserid.Price);
       condenserImg.push(imagePath);
       elementinner.condenserid.EfficiencyProfile = ""
