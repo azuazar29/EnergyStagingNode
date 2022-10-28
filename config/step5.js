@@ -493,7 +493,7 @@ function start1(
         tempImg.push(imagePath);
       }
       tempName = elementinner.condensername;
-      display_product_img = imagePath;
+      display_product_img = imagePath ? imagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png";
 
       elementinner.condenserid.Tags = "TAG"
       elementinner.condenserid.ImagePath = elementinner.condenserid.ImagePath ? filePath.HostUrl1 + elementinner.condenserid.ImagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png"
