@@ -500,6 +500,7 @@ function start1(
       display_price = display_price + Number(elementinner.condenserid.Price);
       condenserImg.push(imagePath ? imagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png");
       elementinner.condenserid.EfficiencyProfile = "0.8"
+      elementinner.condenserid.ProductCategory = "Condenser"
       condenserIDs.push(elementinner.condenserid);
       let obj = {
         compressor: elementinner.condensername,
@@ -541,7 +542,7 @@ function start1(
         elementinner.fcusname[indexRoom].ImagePath = imagePathFCU;
 
         elementinner.fcusname[indexRoom].OutdoorDimention = "None"
-        elementinner.fcusname[indexRoom].ProductCategory = "Condenser"
+
         elementinner.fcusname[indexRoom].ProductName = elementinner.fcusname[indexRoom].FCUName
         elementinner.fcusname[indexRoom].Price = "0"
         elementinner.fcusname[indexRoom].ModelNo = elementinner.fcusname[indexRoom].Model
