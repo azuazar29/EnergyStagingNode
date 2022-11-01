@@ -72,7 +72,7 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
 
     let deviceID = await new Promise((resolve, reject) => {
 
-        let query = `Select deviceID,orderID from deviceMapping where userID = '${req.decoded.id}'`
+        let query = `Select deviceID,Id from orderList where userId = '${req.decoded.id}' and OrderStatus <> 'CA'`
 
         console.log("query device mapping", query)
 
@@ -83,7 +83,7 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
             if (recordset.recordset.length) {
 
 
-                request.query(`Select installationDate from subscriptionManagement where userID = ${req.decoded.id} and orderID = ${recordset.recordset[0].orderID}`, function (err, record) {
+                request.query(`Select installationDate from subscriptionManagement where userID = ${req.decoded.id} and orderID = ${recordset.recordset[0].Id}`, function (err, record) {
 
 
                     if (record.recordset[0].installationDate != null) {
