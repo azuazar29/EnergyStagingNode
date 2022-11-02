@@ -501,6 +501,7 @@ function start1(
       condenserImg.push(imagePath ? imagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png");
       elementinner.condenserid.EfficiencyProfile = "0.8"
       elementinner.condenserid.ProductCategory = "Condenser"
+      elementinner.condenserid.uniqueKey = 'Condenser'
       condenserIDs.push(elementinner.condenserid);
       let obj = {
         compressor: elementinner.condensername,
