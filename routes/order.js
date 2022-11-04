@@ -644,12 +644,24 @@ router.get("/GetOrdersOverviewTopCount", function (req, res) {
 router.get("/GetCustomerList", function (req, res) {
 
     let query = `Select * from dbo.Customer_New`
-    if (req.query.Startdate && req.query.Enddate) {
-        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
+
+    if (req.query.CustomerType == "L") {
+        if (req.query.Startdate && req.query.Enddate) {
+            query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
+        }
+        if (req.query.Startdate && !req.query.Enddate) {
+            query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
+        }
+    } else {
+        if (req.query.Startdate && req.query.Enddate) {
+            query = `${query} where paymentDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${moment(new Date(req.query.Enddate)).endOf('day').toISOString()}'`
+        }
+        if (req.query.Startdate && !req.query.Enddate) {
+            query = `${query} where paymentDate between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
+        }
     }
-    if (req.query.Startdate && !req.query.Enddate) {
-        query = `${query} where CreatedOn between '${new Date(req.query.Startdate).toISOString()}'  and  '${new Date().toISOString()}'`
-    }
+
+
     if (req.query.CustomerType) {
         ////console.log("comming 1")
         if (req.query.Startdate) {
@@ -672,7 +684,13 @@ router.get("/GetCustomerList", function (req, res) {
 
     //console.log(query)
     query = query + ` and isFromWeb <> '1'`
-    query = query + ' ' + 'ORDER BY createdOn DESC;'
+    if (req.query.CustomerType == "L") {
+        query = query + ' ' + 'ORDER BY createdOn DESC;'
+
+    } else {
+        query = query + ' ' + 'ORDER BY paymentDate DESC;'
+
+    }
 
     //console.log("query", query)
 
@@ -2457,6 +2475,57 @@ router.get('/slots', function (req, res) {
 
 })
 
+function getOrderIDForStatus(id) {
+
+    return new Promise((resolve, reject) => {
+        // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
+        request.query(`select Id,OrderStatus from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
+
+            console.log("err", err)
+            if (recordset.recordset.length) {
+                console.log("res", id, recordset.recordset)
+
+                if (recordset.recordset[0].OrderStatus == "CA") {
+
+                    resolve('')
+
+                } else {
+                    let query = `Select * From SubscriptionManagement where userID = '${id}' and orderID = '${recordset.recordset[0].Id}'`
+
+                    console.log('query', query)
+                    request.query(query, function (err, recordset1) {
+                        console.log('recordset1', recordset1)
+                        console.log('err', err)
+
+
+
+
+                        if (recordset1.recordset[0].installationStatus == 2) {
+                            resolve({ status: "4" })
+                        } else {
+                            resolve({ status: "3" })
+                        }
+
+
+                    })
+                }
+
+
+
+
+
+            } else {
+                resolve('')
+
+            }
+
+        })
+    })
+
+
+
+}
+
 function getOrderID(id) {
 
     return new Promise((resolve, reject) => {
@@ -2698,6 +2767,12 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
     let orderID = await getOrderID(req.params.id)
     //console.log("orderID", orderID)
 
+    let status = await getOrderID(req.params.id)
+
+    if (status == "") {
+        status = '2'
+    }
+
     if (orderID != '') {
         //console.log("orderID", orderID)
 
@@ -2733,13 +2808,15 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
                     res.json({
                         success: true,
                         response: recordset.recordset[0],
-                        message: "SubscriotionManagement details"
+                        message: "SubscriotionManagement details",
+                        status: status
                     })
                 } catch {
                     res.json({
                         success: true,
                         response: recordset.recordset[0],
-                        message: "SubscriotionManagement details"
+                        message: "SubscriotionManagement details",
+                        status: status
                     })
                 }
 
@@ -2747,7 +2824,8 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
             } else {
                 res.json({
                     success: false,
-                    message: err
+                    message: err,
+                    status: status
                 })
             }
 
@@ -2756,7 +2834,8 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
     } else {
         res.json({
             success: false,
-            message: "This user doesn't has any pending order to proceed."
+            message: "This user doesn't has any pending order to proceed.",
+            status: status
         })
     }
 

@@ -20,10 +20,61 @@ var groupBy = function (xs, key) {
 };
 
 
+function getOrderID(id) {
 
+    return new Promise((resolve, reject) => {
+        // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
+        request.query(`select Id,OrderStatus from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
+
+            console.log("err", err)
+            if (recordset.recordset.length) {
+                console.log("res", id, recordset.recordset)
+
+                if (recordset.recordset[0].OrderStatus == "CA") {
+
+                    resolve('')
+
+                } else {
+                    let query = `Select * From SubscriptionManagement where userID = '${id}' and orderID = '${recordset.recordset[0].Id}'`
+
+                    console.log('query', query)
+                    request.query(query, function (err, recordset1) {
+                        console.log('recordset1', recordset1)
+                        console.log('err', err)
+
+
+
+
+                        if (recordset1.recordset[0].installationStatus == 2) {
+                            resolve({ status: "4" })
+                        } else {
+                            resolve({ status: "3" })
+                        }
+
+
+                    })
+                }
+
+
+
+
+
+            } else {
+                resolve('')
+
+            }
+
+        })
+    })
+
+
+
+}
 
 
 router.get('/energyConsumption', function (req, res) {
+
+
 
     request.query('Select * From energyconsumptionfromjob', function (err, response) {
 
@@ -67,7 +118,11 @@ function getColor(value, min, factor) {
 
 router.post('/getEnergyConsumption', middleware.authenticate, async function (req, res) {
 
+    let status = await getOrderID(req.decoded.id)
 
+    if (status == "") {
+        status = '2'
+    }
 
 
     let deviceID = await new Promise((resolve, reject) => {
@@ -126,7 +181,7 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
 
 
 
-        request.query(query, function (err, set) {
+        request.query(query, async function (err, set) {
             if (err) {
 
                 res.status(400)
@@ -421,7 +476,8 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                     TotalMoneySpendToday: ((Number(todaysenergy)) * .23).toFixed(2),
                     TotalMoneySpendmax: ((Number(maxdayenergy)) * .23).toFixed(2),
                     TotalEnergySpendmax: Number(maxdayenergy).toFixed(2).toString(),
-                    installationDate: deviceID.installationDate
+                    installationDate: deviceID.installationDate,
+                    status: status
                 })
 
 
@@ -447,7 +503,8 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
         res.status(200)
         res.json({
             success: false,
-            message: "No Device ID is mapped with this user"
+            message: "No Device ID is mapped with this user",
+            status: status
         })
 
     }
@@ -459,6 +516,12 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
 })
 
 router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async function (req, res) {
+
+    let status = await getOrderID(req.decoded.id)
+
+    if (status == "") {
+        status = '2'
+    }
 
     let deviceID = await new Promise((resolve, reject) => {
 
@@ -826,7 +889,8 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     TotalMoneySpendToday: ((Number(todaysenergy) / .408) * .23).toFixed(2),
                     TotalMoneySpendmax: ((Number(maxdayenergy) / .408) * .23).toFixed(2),
                     TotalEnergySpendmax: Number(maxdayenergy).toFixed(2).toString(),
-                    installationDate: deviceID.installationDate
+                    installationDate: deviceID.installationDate,
+                    status: status
 
                 })
 
@@ -853,7 +917,8 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
         res.status(200)
         res.json({
             success: false,
-            message: "No Device ID is mapped with this user"
+            message: "No Device ID is mapped with this user",
+            status: status
         })
 
     }

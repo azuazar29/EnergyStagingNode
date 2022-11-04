@@ -9,7 +9,7 @@ function start1(
   total_true_load,
   roomsArray
 ) {
-  ////console.log("Sum Fona;", total_true_load)
+  ////////console.log("Sum Fona;", total_true_load)
 
   var mon = [],
     tue = [],
@@ -96,7 +96,7 @@ function start1(
       }
       r = r + 1;
 
-      // ////console.log("callit(am, pm)", callit(am, pm))
+      // ////////console.log("callit(am, pm)", callit(am, pm))
       mon.push(callit(am, pm));
       mon_load.push(hs.mon_true_load(mon, r, true_load));
     }
@@ -236,7 +236,7 @@ function start1(
     }
   }
 
-  // ////console.log("sunday load", sun_load)
+  // ////////console.log("sunday load", sun_load)
 
   //hourly_operating_load
   var mon_opt_load = [],
@@ -247,7 +247,7 @@ function start1(
     sat_opt_load = [],
     sun_opt_load = [];
   var ty = [];
-  // ////console.log(input1)
+  // ////////console.log(input1)
   for (var i = 0; i < input1.length; i++) {
     let tot = [];
 
@@ -314,8 +314,10 @@ function start1(
     input1[i].hourly_operating_load = tot;
   }
 
+  //console.log("input 1 ---->")
+
   function closest(num, arr) {
-    // ////console.log("arr[0]", arr[0])
+    // ////////console.log("arr[0]", arr[0])
     arr = JSON.parse(arr)
 
 
@@ -347,28 +349,28 @@ function start1(
 
         let closestValue = closest((Number(input1[i].hourly_operating_load[j][k]) / 1000).toFixed(2), effFinal)
 
-        // ////console.log("Closest value", closestValue)
+        // ////////console.log("Closest value", closestValue)
         let againEff = JSON.parse(effFinal)
         for (var t = 0; t < againEff.length; t++) {
 
-          // ////console.log("eff[yt{", againEff[t])
+          // ////////console.log("eff[yt{", againEff[t])
           if
             (Number(closestValue) ==
             Number(againEff[t].Cooling_Capacity)
           ) {
-            ////console.log("it came")
+            ////////console.log("it came")
             inner1.push(againEff[t].COP);
           }
         }
       }
-      // ////console.log("inner", inner1)
+      // ////////console.log("inner", inner1)
       outer1.push(inner1);
     }
     input1[i].hourly_cop = outer1;
   }
-  // ////console.log("hourly cop", ...input1)
+  // ////////console.log("hourly cop", ...input1)
 
-  // ////console.log("hourly operatin", input1)
+  // ////////console.log("hourly operatin", input1)
 
 
 
@@ -385,19 +387,20 @@ function start1(
       return Number(obj.coolingcapacity);
     });
     var coolcap = li.reduce((a, b) => a + b, 0);
-    //console.log("coolcap", coolcap)
+    //////console.log("coolcap", coolcap)
     // new Change
 
     for (var j = 0; j < input1[i].hourly_cop.length; j++) {
       inner1 = [];
       for (var k = 0; k < input1[i].hourly_cop[j].length; k++) {
-        inner1.push(Number(input1[i].hourly_cop[j][k]) * (coolcap / 1000));
+        // inner1.push(Number(input1[i].hourly_cop[j][k]) * (coolcap / 1000));
+        inner1.push(Number(input1[i].hourly_cop[j][k]) * (coolcap));
       }
       outer1.push(inner1);
     }
     input1[i].hourly_operating_power = outer1;
   }
-  //console.log(input1[0])
+  //////console.log(input1[0])
 
   var usage_adherence = Number(occ_patt[0].usageAdherence) / 10; //0.75; //(75%) get value from user
   //sum of weekday & sum of weekends
@@ -415,6 +418,7 @@ function start1(
         input1[i].hourly_operating_power[j].reduce((a, b) => a + b, 0)
       );
     }
+    console.log("inner1", inner1)
     if (usage_adherence != 10) {
       let use = [];
       let use2 = [];
@@ -433,7 +437,7 @@ function start1(
 
   //monthly operating power
   for (var i = 0; i < input1.length; i++) {
-    ////console.log("Number((input1[i].weekdays.reduce((a, b) => a + b, 0))", Number((input1[i].weekdays.reduce((a, b) => a + b, 0))))
+    ////////console.log("Number((input1[i].weekdays.reduce((a, b) => a + b, 0))", Number((input1[i].weekdays.reduce((a, b) => a + b, 0))))
     input1[i].monthy_operating_power =
       (Number((input1[i].weekdays.reduce((a, b) => a + b, 0)) +
         Number(input1[i].weekends.reduce((a, b) => a + b, 0))) *
@@ -441,7 +445,7 @@ function start1(
       1000;
   }
 
-  ////console.log("monthly operating power", input1[0])
+  ////////console.log("monthly operating power", input1[0])
 
   //monthly operating power
   for (var i = 0; i < input1.length; i++) {
@@ -500,7 +504,7 @@ function start1(
       display_price = display_price + Number(elementinner.condenserid.Price);
       condenserImg.push(imagePath ? imagePath : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png");
       elementinner.condenserid.EfficiencyProfile = "0.8"
-      elementinner.condenserid.ProductCategory = "Condenser"
+      // elementinner.condenserid.ProductCategory = "Condenser"
       elementinner.condenserid.uniqueKey = 'Condenser'
       condenserIDs.push(elementinner.condenserid);
       let obj = {
@@ -566,25 +570,25 @@ function start1(
     let subCost = 0;
 
     let cNumber = getProductName(display_installed_rooms);
-    // ////console.log("======>", display_installed_rooms)
+    // ////////console.log("======>", display_installed_rooms)
 
     let totalFcu = 0
     display_installed_rooms.forEach(element => {
 
       element.products.forEach(element1 => {
-        // ////console.log("element1=== >", element1)
+        // ////////console.log("element1=== >", element1)
         totalFcu = totalFcu + Number(element1.product[0].Price)
       })
 
     })
-    // ////console.log('totalFcu', totalFcu)
+    // ////////console.log('totalFcu', totalFcu)
 
     let totalCCost = Number(totalFcu) + Number(display_price);
     // cNumber.forEach((element) => {
     //   totalCCost = totalCCost + Number(element.price) * Number(element.count);
     // });
 
-    // ////console.log("totalCostDisplay", display_price, totalCCost)
+    // ////////console.log("totalCostDisplay", display_price, totalCCost)
     let totalCostDisplay = Number(Number(display_price) + Number(totalCCost))
     totalCostDisplay = Number(((totalCCost / 100) * 7) + Number(totalCCost)).toFixed(2)
 
@@ -596,7 +600,7 @@ function start1(
 
 
 
-    // console.log("condenserImg", condenserImg)
+    // ////console.log("condenserImg", condenserImg)
 
 
     let obj = {
@@ -647,11 +651,11 @@ function start1(
     obj.display_installed_rooms = finalProd;
 
     obj.display_product_manufacturer.forEach((element, index) => {
-      // console.log("skjhdksjdhk", newImage[index])
+      // ////console.log("skjhdksjdhk", newImage[index])
       element.image = newImage[index] != "NULL" ? newImage[index] : filePath.HostUrl1 + "public/images/AC-Images/FCU-Mit-1.png"
     })
 
-    console.log("obj.display_product_manufacturer", obj.display_product_manufacturer)
+    ////console.log("obj.display_product_manufacturer", obj.display_product_manufacturer)
 
     if (newImage[0] != "NULL") {
       newImage = newImage
@@ -681,12 +685,12 @@ function start1(
 
   function getProductName(display_installed_rooms) {
     let name = groupItem(display_installed_rooms);
-    // ////console.log("name", name);
+    // ////////console.log("name", name);
     let nametoreturn = "";
     let namesArray = [];
     Object.keys(name).forEach((names, index) => {
-      // ////console.log("name", names);
-      console.log("tempImg[index]", tempImg[index])
+      // ////////console.log("name", names);
+      ////console.log("tempImg[index]", tempImg[index])
 
       namesArray.push({
         name: names,
@@ -713,7 +717,7 @@ function start1(
   //   let name = groupItem(display_installed_rooms)
   //   let nametoreturn = ''
   //   Object.keys(name).forEach((names, index) => {
-  //     // ////////console .log("name",names)
+  //     // ////////////console .log("name",names)
 
   //     if (index == 0) {
   //       nametoreturn = names
