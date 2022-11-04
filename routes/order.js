@@ -2879,7 +2879,7 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
 
 
 
-        request.query(`update OrderList set OrderStatus = '${status}' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, response) {
+        request.query(`update OrderList set OrderStatus = '${status}', deviceID = '' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, response) {
             if (!err) {
                 res.json({
                     success: true,
