@@ -46,9 +46,9 @@ function getOrderID(id) {
 
 
                         if (recordset1.recordset[0].installationStatus == 2) {
-                            resolve({ status: "4" })
+                            resolve("4")
                         } else {
-                            resolve({ status: "3" })
+                            resolve("3")
                         }
 
 
