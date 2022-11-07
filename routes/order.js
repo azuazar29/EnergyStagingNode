@@ -2767,7 +2767,7 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
     let orderID = await getOrderID(req.params.id)
     //console.log("orderID", orderID)
 
-    let status = await getOrderID(req.params.id)
+    let status = await getOrderIDForStatus(req.params.id)
 
     if (status == "") {
         status = '2'
