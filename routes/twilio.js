@@ -118,7 +118,7 @@ function getOrderID(id) {
 
     return new Promise((resolve, reject) => {
         // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
-        request.query(`select Id,OrderStatus from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
+        request.query(`select Id,OrderStatus from orderList where UserId = '${id}'`, function (err, recordset) {
 
             console.log("err", err)
             if (recordset.recordset.length) {
@@ -136,15 +136,11 @@ function getOrderID(id) {
                         console.log('recordset1', recordset1)
                         console.log('err', err)
 
-
-
-
                         if (recordset1.recordset[0].installationStatus == 2) {
                             resolve({ status: "4" })
                         } else {
                             resolve({ status: "3" })
                         }
-
 
                     })
                 }

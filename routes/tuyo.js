@@ -160,7 +160,7 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
     })
 
     console.log("device", deviceID)
-    if (deviceID.deviceID != '') {
+    if (deviceID.deviceID) {
         let startDate, endDate
         let query
         if (req.body.filter == 'today') {
