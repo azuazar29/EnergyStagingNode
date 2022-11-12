@@ -2841,7 +2841,7 @@ router.post('/updateServiceRequestByAdmin/:userID/:orderID',
         request.query(query, function (err, response) {
 
 
-            request.query(`update OrderList set SRStatus='SI'  where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
+            request.query(`update OrderList set SRStatus='${req.body.status ? req.body.status : "SI"}'  where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
 
             if (!err) {
 
