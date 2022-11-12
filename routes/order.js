@@ -408,10 +408,21 @@ router.get("/GetOrdersList", function (req, res) {
     }
     if (req.query.OrderStatus) {
         if (req.query.Startdate || req.query.OrderType) {
-            query = `${query} and OrderStatus ='${req.query.OrderStatus}' `
+            if (req.query.OrderStatus == "SR") {
+
+                query = `${query} and SRStatus ='${req.query.OrderStatus}' `
+            } else {
+                query = `${query} and OrderStatus ='${req.query.OrderStatus}' `
+            }
+
         }
         else {
-            query = `${query} where OrderStatus ='${req.query.OrderStatus}' `
+            if (req.query.OrderStatus == "SR") {
+
+                query = `${query} where SRStatus ='${req.query.OrderStatus}' `
+            } else {
+                query = `${query} where OrderStatus ='${req.query.OrderStatus}' `
+            }
         }
     }
     //console.log(query)
