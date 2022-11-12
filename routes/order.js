@@ -2762,6 +2762,92 @@ router.post('/updateinstallationDateByAdmin/:userID/:orderID',
 
     })
 
+router.post('/updateServiceRequestByUser',
+    [check("serviceDay").exists()],
+    middleware.authenticate, async function (req, res) {
+
+        let orderID = await getOrderID(req.decoded.id)
+
+        if (orderID != '') {
+            request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
+
+                //console.log("err", err, recordset)
+
+                if (recordset.recordsets[0].length) {
+                    let query = `Update SubscriptionManagement       
+                    set serviceDay = '${JSON.stringify(req.body.installationDay)}', serviceStatus = '1'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
+
+                    //console.log("query", query)
+
+                    request.query(query, function (err, response) {
+
+
+
+                        if (!err) {
+                            request.query(`update OrderList set SRStatus='SR'  where UserId = '${req.decoded.id}' and Id = '${orderID}'`)
+
+                            res.json({
+                                success: true,
+                                message: "Successfully updated",
+                                date: new Date()
+                            })
+                        } else {
+                            //console.log("err", err)
+                            res.json({
+                                success: false,
+                                message: "Error updating status"
+                            })
+                        }
+
+                    })
+
+                } else {
+                    res.json({
+                        success: false,
+                        message: 'We cannot make service request for this order'
+                    })
+                }
+
+            })
+        } else {
+            res.json({
+                success: false,
+                message: 'No order found'
+            })
+        }
+
+
+
+
+
+    })
+router.post('/updateServiceRequestByAdmin/:userID/:orderID',
+    [check("serviceDate").exists(), check("serviceSlot").exists()],
+    function (req, res) {
+
+        let query = `update SubscriptionManagement set serviceDate = '${req.body.installationDate}',serviceSlot = ${req.body.installationSlot}, serviceStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
+
+        request.query(query, function (err, response) {
+
+
+
+            if (!err) {
+                res.json({
+                    success: true,
+                    message: "Successfully updated",
+                })
+            } else {
+                //console.log("err", err)
+                res.json({
+                    success: false,
+                    message: "Error updating status"
+                })
+            }
+
+        })
+
+    })
+
 router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
     let orderID = await getOrderID(req.params.id)
@@ -2880,6 +2966,25 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
 
 
         request.query(`update OrderList set OrderStatus = '${status}', deviceID = '' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, response) {
+            if (!err) {
+                res.json({
+                    success: true,
+                    message: 'Successfully updated.'
+                })
+            }
+        })
+        //console.log('err', err)
+
+
+
+
+
+
+    } else if (status == 'SI' || status == 'SC') {
+
+
+
+        request.query(`update OrderList set SRStatus='${status}'  where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, response) {
             if (!err) {
                 res.json({
                     success: true,
