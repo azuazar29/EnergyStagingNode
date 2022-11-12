@@ -2825,7 +2825,7 @@ router.post('/updateServiceRequestByAdmin/:userID/:orderID',
     [check("serviceDate").exists(), check("serviceSlot").exists()],
     function (req, res) {
 
-        let query = `update SubscriptionManagement set serviceDate = '${req.body.installationDate}',serviceSlot = ${req.body.installationSlot}, serviceStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
+        let query = `update SubscriptionManagement set serviceDate = '${req.body.serviceDate}',serviceSlot = ${req.body.serviceSlot}, serviceStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
 
         request.query(query, function (err, response) {
 
