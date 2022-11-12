@@ -410,7 +410,7 @@ router.get("/GetOrdersList", function (req, res) {
         if (req.query.Startdate || req.query.OrderType) {
             if (req.query.OrderStatus == "SR") {
 
-                query = `${query} and SRStatus ='${req.query.OrderStatus}' `
+                query = `${query} and SRStatus ='SR' or SRStatus ='SC' or SRStatus ='SI' `
             } else {
                 query = `${query} and OrderStatus ='${req.query.OrderStatus}' `
             }
@@ -419,7 +419,7 @@ router.get("/GetOrdersList", function (req, res) {
         else {
             if (req.query.OrderStatus == "SR") {
 
-                query = `${query} where SRStatus ='${req.query.OrderStatus}' `
+                query = `${query} where SRStatus ='SR' or SRStatus ='SC' or SRStatus ='SI' `
             } else {
                 query = `${query} where OrderStatus ='${req.query.OrderStatus}' `
             }
