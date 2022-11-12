@@ -1009,6 +1009,25 @@ VALUES
 
 
 })
+router.post('/updateBaselineValue/:baseValue/:orderID', function (req, res) {
+
+    let query = `update OrderList set baselineValue='${req.params.baseValue}' where OrderNo = '${req.params.orderID}' `
+
+    request.query(query, function (err, recordset) {
+
+        if (!err) {
+            res.json({
+                success: true
+            })
+        } else {
+            console.log("err", err)
+        }
+
+    })
+
+
+
+})
 
 
 
