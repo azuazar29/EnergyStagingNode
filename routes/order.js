@@ -2775,7 +2775,7 @@ router.post('/updateServiceRequestByUser',
 
                 if (recordset.recordsets[0].length) {
                     let query = `Update SubscriptionManagement       
-                    set serviceDay = '${JSON.stringify(req.body.installationDay)}', serviceStatus = '1'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
+                    set serviceDay = '${JSON.stringify(req.body.serviceDay)}', serviceStatus = '1'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
 
                     //console.log("query", query)
 
@@ -2789,7 +2789,7 @@ router.post('/updateServiceRequestByUser',
                             res.json({
                                 success: true,
                                 message: "Successfully updated",
-                                date: new Date()
+
                             })
                         } else {
                             //console.log("err", err)
