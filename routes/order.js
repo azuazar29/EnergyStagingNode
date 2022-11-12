@@ -384,7 +384,7 @@ router.get("/GetOrderParticularDetails", (req, res) => {
 
 router.get("/GetOrdersList", function (req, res) {
 
-    let query = `Select da.mapAddress, OrderList.*,sm.installationDate,sm.InstallationDay,sm.installationSlot,sm.installationStatus,sm.visitDate,
+    let query = `Select da.mapAddress, OrderList.*,sm.serviceDate,sm.serviceSlot,sm.installationDate,sm.InstallationDay,sm.installationSlot,sm.installationStatus,sm.visitDate,
     sm.visitDay,sm.visitSlot,sm.visitStatus,sm.orderID as smOrderID, da.address1,da.address2,da.bAddress1,da.bAddress2,da.bAddress3,da.contactNumber,da.email,da.isPrimary,da.name,cart.* from dbo.OrderList    
         inner join Cart on dbo.OrderList.Id = Cart.orderID
         inner join subscriptionmanagement as sm on  sm.orderID = dbo.OrderList.Id    
