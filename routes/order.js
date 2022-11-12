@@ -2833,31 +2833,61 @@ router.post('/updateServiceRequestByUser',
 
     })
 router.post('/updateServiceRequestByAdmin/:userID/:orderID',
-    [check("serviceDate").exists(), check("serviceSlot").exists()],
+
     function (req, res) {
 
-        let query = `update SubscriptionManagement set serviceDate = '${req.body.serviceDate}',serviceSlot = ${req.body.serviceSlot}, serviceStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
+        if (req.body.serviceDate) {
+            let query = `update SubscriptionManagement set serviceDate = '${req.body.serviceDate}',serviceSlot = ${req.body.serviceSlot}, serviceStatus = 2, updatedOn='${new Date().toISOString()}' where userID = ${req.params.userID} and orderID = ${req.params.orderID}`
 
-        request.query(query, function (err, response) {
+            request.query(query, function (err, response) {
 
 
-            request.query(`update OrderList set SRStatus='${req.body.status ? req.body.status : "SI"}'  where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`)
+                request.query(`update OrderList set SRStatus='${req.body.status ? req.body.status : "SI"}'  where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, resO) {
 
-            if (!err) {
+                    if (err) {
+                        console.log("err")
+                    } else {
+                        console.log("success")
+                    }
 
-                res.json({
-                    success: true,
-                    message: "Successfully updated",
                 })
-            } else {
-                //console.log("err", err)
-                res.json({
-                    success: false,
-                    message: "Error updating status"
-                })
-            }
 
-        })
+                if (!err) {
+
+                    res.json({
+                        success: true,
+                        message: "Successfully updated",
+                    })
+                } else {
+                    console.log("err", err)
+                    res.json({
+                        success: false,
+                        message: "Error updating status"
+                    })
+                }
+
+            })
+        } else {
+            request.query(`update OrderList set SRStatus='${req.body.status ? req.body.status : "SI"}'  where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, resO) {
+
+                if (err) {
+                    console.log("err")
+                    res.json({
+                        success: false,
+                        message: "Error updating status"
+                    })
+                } else {
+                    console.log("success")
+                    res.json({
+                        success: true,
+                        message: "Updated successfully"
+                    })
+                }
+
+            })
+        }
+
+
 
     })
 
