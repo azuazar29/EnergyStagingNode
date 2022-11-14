@@ -2777,55 +2777,68 @@ router.post('/updateServiceRequestByUser',
     [check("serviceDay").exists(), check("notes").exists()],
     middleware.authenticate, async function (req, res) {
 
-        let orderID = await getOrderID(req.decoded.id)
+        validationResult(req).throw();
 
-        if (orderID != '') {
-            request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
+        try {
+            let orderID = await getOrderID(req.decoded.id)
 
-                //console.log("err", err, recordset)
+            if (orderID != '') {
+                request.query(`select * from SubscriptionManagement where userID = ${req.decoded.id} and orderID = ${orderID}`, function (err, recordset) {
 
-                if (recordset.recordsets[0].length) {
-                    let query = `Update SubscriptionManagement       
-                    set serviceDay = '${JSON.stringify(req.body.serviceDay)}', serviceStatus = '1',notes='${req.body.notes}'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
+                    //console.log("err", err, recordset)
 
-                    //console.log("query", query)
+                    if (recordset.recordsets[0].length) {
+                        let query = `Update SubscriptionManagement       
+                        set serviceDay = '${JSON.stringify(req.body.serviceDay)}', serviceStatus = '1',notes='${req.body.notes}'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
 
-                    request.query(query, function (err, response) {
+                        //console.log("query", query)
+
+                        request.query(query, function (err, response) {
 
 
 
-                        if (!err) {
-                            request.query(`update OrderList set SRStatus='SR'  where UserId = '${req.decoded.id}' and Id = '${orderID}'`)
+                            if (!err) {
+                                request.query(`update OrderList set SRStatus='SR'  where UserId = '${req.decoded.id}' and Id = '${orderID}'`)
 
-                            res.json({
-                                success: true,
-                                message: "Successfully updated",
+                                res.json({
+                                    success: true,
+                                    message: "Successfully updated",
 
-                            })
-                        } else {
-                            //console.log("err", err)
-                            res.json({
-                                success: false,
-                                message: "Error updating status"
-                            })
-                        }
+                                })
+                            } else {
+                                //console.log("err", err)
+                                res.json({
+                                    success: false,
+                                    message: "Error updating status"
+                                })
+                            }
 
-                    })
+                        })
 
-                } else {
-                    res.json({
-                        success: false,
-                        message: 'We cannot make service request for this order'
-                    })
-                }
+                    } else {
+                        res.json({
+                            success: false,
+                            message: 'We cannot make service request for this order'
+                        })
+                    }
 
-            })
-        } else {
+                })
+            } else {
+                res.json({
+                    success: false,
+                    message: 'No order found'
+                })
+            }
+
+        }
+        catch (e) {
+            res.status(400);
             res.json({
                 success: false,
-                message: 'No order found'
-            })
+                message: e,
+            });
         }
+
 
 
 
@@ -2926,9 +2939,8 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
             if (!err) {
 
 
-                if (recordset.recordset[0].serviceDay) {
+                if (recordset.recordset[0].serviceDay && recordset.recordset[0].serviceDay != 'undefined') {
                     recordset.recordset[0].serviceDay = JSON.parse(recordset.recordset[0].serviceDay)
-
                 }
 
                 try {
