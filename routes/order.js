@@ -2774,7 +2774,7 @@ router.post('/updateinstallationDateByAdmin/:userID/:orderID',
     })
 
 router.post('/updateServiceRequestByUser',
-    [check("serviceDay").exists()],
+    [check("serviceDay").exists(), check("notes").exists()],
     middleware.authenticate, async function (req, res) {
 
         let orderID = await getOrderID(req.decoded.id)
@@ -2786,7 +2786,7 @@ router.post('/updateServiceRequestByUser',
 
                 if (recordset.recordsets[0].length) {
                     let query = `Update SubscriptionManagement       
-                    set serviceDay = '${JSON.stringify(req.body.serviceDay)}', serviceStatus = '1'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
+                    set serviceDay = '${JSON.stringify(req.body.serviceDay)}', serviceStatus = '1',notes='${req.body.notes}'  where userID =  ${req.decoded.id} and orderID = ${orderID}`
 
                     //console.log("query", query)
 
