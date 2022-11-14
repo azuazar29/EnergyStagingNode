@@ -2926,6 +2926,10 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
             if (!err) {
 
 
+                if (recordset.recordset[0].serviceDay) {
+                    recordset.recordset[0].serviceDay = JSON.parse(recordset.recordset[0].serviceDay)
+
+                }
 
                 try {
                     recordset.recordset[0].productDetails = JSON.parse(recordset.recordset[0].productDetails)
@@ -2934,6 +2938,7 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
                     recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
 
                     recordset.recordset[0].InstallationDay = JSON.parse(recordset.recordset[0].InstallationDay)
+
                     res.json({
                         success: true,
                         response: recordset.recordset[0],
