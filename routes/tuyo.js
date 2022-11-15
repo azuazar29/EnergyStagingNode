@@ -456,6 +456,36 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
 
                 })
 
+                let tempYear = []
+
+                let monthsCountYear = 12
+
+
+                for (let i = 0; i < monthsCountYear; i++) {
+
+                    tempYear[i] = {
+                        "month": moment(new Date()).subtract(i, 'month').format("MMM"),
+                        "Year": moment(new Date()).subtract(i, 'month').format("YYYY"),
+                        "energyConsumed": "0"
+                    }
+                    result.forEach((element) => {
+                        if (moment(element.created_On).format("MMM") == tempYear[i].month &&
+                            moment(element.created_On).format("YYYY") == tempYear[i].Year) {
+                            tempYear[i].energyConsumed = (Number(tempYear[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
+
+                        }
+                    })
+
+                }
+
+                let totalYear = 0
+                tempYear.forEach(element => {
+
+                    totalYear = totalYear + Number(element.energyConsumed)
+
+                })
+
+
 
 
                 res.status(200)
@@ -465,6 +495,11 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                     message: "Consumption Details",
                     TotalEnergySpendMonthly: Number(totalMonthly).toFixed(2),
                     TotalMoneySpendMonthly: ((Number(totalMonthly)) * .23).toFixed(2),
+
+                    TotalEnergySpendYearly: Number(totalYear).toFixed(2),
+                    TotalMoneySpendYearly: (Number(totalYear) * .23).toFixed(2),
+
+
                     ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly)))).toFixed(2),
                     WeeklyResult: final,
                     TotalEnergySpendWeekle: total.toFixed(2),
@@ -922,8 +957,12 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     success: true,
                     MonthlyResult: finalResult1,
                     message: "Consumption Details",
-                    TotalEnergySpendMonthly: Number((Number(baselineValue) - Number(totalMonthly).toFixed(2)) * .408).toFixed(2),
-                    TotalEnergySpendYearly: Number((Number(baselineValue) * 12 - Number(totalYear).toFixed(2)) * .408).toFixed(2),
+
+                    TotalEnergySpendMonthly: Number(Number(totalMonthly).toFixed(2) * .408 * .23).toFixed(2),
+                    TotalEnergySpendYearly: Number((Number(totalYear).toFixed(2)) * .408).toFixed(2),
+                    TotalMoneySpendYearly: Number((Number(totalYear).toFixed(2)) * .408 * .23).toFixed(2),
+                    CO2SavedMonthly: Number((Number(baselineValue) - Number(totalMonthly).toFixed(2)) * .408).toFixed(2),
+                    CO2SavedYearly: Number((Number(baselineValue) * 12 - Number(totalYear).toFixed(2)) * .408).toFixed(2),
 
                     TotalMoneySpendMonthly: ((Number(totalMonthly) / .408) * .23).toFixed(2),
                     ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly)))).toFixed(2),

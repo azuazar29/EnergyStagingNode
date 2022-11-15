@@ -2490,7 +2490,7 @@ function getOrderIDForStatus(id) {
 
     return new Promise((resolve, reject) => {
         // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
-        request.query(`select Id,OrderStatus from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
+        request.query(`select Id,OrderStatus from orderList where UserId = '${id}'`, function (err, recordset) {
 
             console.log("err", err)
             if (recordset.recordset.length) {
@@ -2541,7 +2541,7 @@ function getOrderID(id) {
 
     return new Promise((resolve, reject) => {
         // //console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
-        request.query(`select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`, function (err, recordset) {
+        request.query(`select Id from orderList where UserId = '${id}'`, function (err, recordset) {
 
             //console.log("err", err)
             if (recordset.recordset.length) {
@@ -2909,6 +2909,91 @@ router.post('/updateServiceRequestByAdmin/:userID/:orderID',
     })
 
 router.get('/subscriptionManagementDetails/:id', async function (req, res) {
+
+    let orderID = await getOrderID(req.params.id)
+    //console.log("orderID", orderID)
+
+    let status = await getOrderIDForStatus(req.params.id)
+
+    if (status == "") {
+        status = '2'
+    }
+
+    if (orderID != '') {
+        //console.log("orderID", orderID)
+
+        let query = `Select o.OrderNo, sm.*, p.propertySize, p.totalRooms, c.product_Id as productDetails, c.total as totalAmount, c.subcription_Type, c.isSubscription  From SubscriptionManagement as sm
+        inner join Cart as c on c.orderID = ${orderID}
+        inner join OrderList as o on o.Id = ${orderID}
+        LEFT JOIN UserConfiguration p ON (
+               p.userID = ${req.params.id}
+           AND NOT EXISTS (
+             SELECT 1 FROM UserConfiguration p1
+             WHERE p1.userID = ${req.params.id}
+             AND p1.id > p.id
+           )
+        )
+        where sm.userID = ${req.params.id} and sm.orderID  = ${orderID}
+        
+        `
+        //console.log("order", query)
+
+        request.query(query, function (err, recordset) {
+
+            if (!err) {
+
+
+                if (recordset.recordset[0].serviceDay && recordset.recordset[0].serviceDay != 'undefined') {
+                    recordset.recordset[0].serviceDay = JSON.parse(recordset.recordset[0].serviceDay)
+                }
+
+                try {
+                    recordset.recordset[0].productDetails = JSON.parse(recordset.recordset[0].productDetails)
+                    recordset.recordset[0].propertySize = Number(recordset.recordset[0].propertySize).toFixed(2)
+
+                    recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
+
+                    recordset.recordset[0].InstallationDay = JSON.parse(recordset.recordset[0].InstallationDay)
+
+                    res.json({
+                        success: true,
+                        response: recordset.recordset[0],
+                        message: "SubscriotionManagement details",
+                        status: status
+                    })
+                } catch {
+                    res.json({
+                        success: true,
+                        response: recordset.recordset[0],
+                        message: "SubscriotionManagement details",
+                        status: status
+                    })
+                }
+
+
+            } else {
+                res.json({
+                    success: false,
+                    message: err,
+                    status: status
+                })
+            }
+
+
+        })
+    } else {
+        res.json({
+            success: false,
+            message: "This user doesn't has any pending order to proceed.",
+            status: status
+        })
+    }
+
+
+
+})
+
+router.get('/serviceRequestDetails/:id', async function (req, res) {
 
     let orderID = await getOrderID(req.params.id)
     //console.log("orderID", orderID)
