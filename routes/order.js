@@ -2891,6 +2891,10 @@ router.post('/updateServiceRequestByAdmin/:userID/:orderID',
                     })
                 } else {
                     console.log("success")
+
+                    if (req.body.status == 'SC') {
+                        request.query(`update SubscriptionManagement set serviceStatus='3'  where userID = ${req.params.userID} and orderID = ${req.params.orderID}`)
+                    }
                     res.json({
                         success: true,
                         message: "Updated successfully"

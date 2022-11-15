@@ -107,9 +107,11 @@ function getColor(value, min, factor) {
     } else if (value > (min + factor) && value <= factor + (min + factor)) {
         console.log('it came')
 
-        return lightGreen
+        // return lightGreen
+        return green
     } else if (value > factor + (min + factor)) {
-        return red
+        return green
+        // return red
     } else if (value == 0) {
         return grey
     }
@@ -581,7 +583,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
         }
 
 
-        request.query(query, function (err, set) {
+        request.query(query, async function (err, set) {
             if (err) {
                 //console.log(err)
 
@@ -772,6 +774,35 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
 
                 })
 
+                let tempYear = []
+
+                let monthsCountYear = 12
+
+
+                for (let i = 0; i < monthsCountYear; i++) {
+
+                    tempYear[i] = {
+                        "month": moment(new Date()).subtract(i, 'month').format("MMM"),
+                        "Year": moment(new Date()).subtract(i, 'month').format("YYYY"),
+                        "energyConsumed": "0"
+                    }
+                    result.forEach((element) => {
+                        if (moment(element.created_On).format("MMM") == tempYear[i].month &&
+                            moment(element.created_On).format("YYYY") == tempYear[i].Year) {
+                            tempYear[i].energyConsumed = (Number(tempYear[i].energyConsumed) + Number(element.EnergyConsumed)).toFixed(2)
+
+                        }
+                    })
+
+                }
+
+                let totalYear = 0
+                tempYear.forEach(element => {
+
+                    totalYear = totalYear + Number(element.energyConsumed)
+
+                })
+
 
 
                 let weeklyMax = 0, weeklyMin = 0
@@ -865,6 +896,25 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
 
                 })
 
+                let baselineValue = await new Promise((resolve, reject) => {
+
+
+                    request.query(`select baselineValue from orderList where deviceID = '${deviceID.deviceID}' and UserId = '${req.decoded.id}'`, function (err, response) {
+
+                        console.log("response", response)
+
+                        if (!err) {
+                            if (response.recordset.length)
+                                resolve(response.recordset[0].baselineValue)
+                        } else {
+                            resolve('0')
+                        }
+                    })
+
+                })
+
+                console.log("baseline value", baselineValue)
+
 
 
                 res.status(200)
@@ -872,7 +922,9 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     success: true,
                     MonthlyResult: finalResult1,
                     message: "Consumption Details",
-                    TotalEnergySpendMonthly: Number(totalMonthly).toFixed(2),
+                    TotalEnergySpendMonthly: Number((Number(baselineValue) - Number(totalMonthly).toFixed(2)) * .408).toFixed(2),
+                    TotalEnergySpendYearly: Number((Number(baselineValue) * 12 - Number(totalYear).toFixed(2)) * .408).toFixed(2),
+
                     TotalMoneySpendMonthly: ((Number(totalMonthly) / .408) * .23).toFixed(2),
                     ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly)))).toFixed(2),
 
