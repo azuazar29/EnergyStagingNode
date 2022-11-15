@@ -45,7 +45,7 @@ function getOrderID(id) {
 
 
 
-                        if (recordset1.recordset[0].installationStatus == 2) {
+                        if (recordset1.recordset[0].installationStatus == 2 || recordset.recordset[0].OrderStatus == "CA") {
                             resolve("4")
                         } else {
                             resolve("3")
