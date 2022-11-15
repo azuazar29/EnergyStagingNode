@@ -2512,7 +2512,7 @@ function getOrderIDForStatus(id) {
 
 
 
-                        if (recordset1.recordset[0].installationStatus == 2 || recordset.recordset[0].OrderStatus == "CA") {
+                        if (recordset1.recordset[0].installationStatus == 2 || recordset.recordset[0].OrderStatus == "CO") {
                             resolve("4")
                         } else {
                             resolve("3")

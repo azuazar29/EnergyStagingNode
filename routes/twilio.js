@@ -136,7 +136,7 @@ function getOrderID(id) {
                         console.log('recordset1', recordset1)
                         console.log('err', err)
 
-                        if (recordset1.recordset[0].installationStatus == 2) {
+                        if (recordset1.recordset[0].installationStatus == 2 || recordset.recordset[0].OrderStatus == "CO") {
                             resolve({ status: "4" })
                         } else {
                             resolve({ status: "3" })
