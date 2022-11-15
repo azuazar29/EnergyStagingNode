@@ -2915,11 +2915,11 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
     let status = await getOrderIDForStatus(req.params.id)
 
-    if (status == "") {
-        status = '2'
-    }
+    // if (status == "") {
+    //     status = '2'
+    // }
 
-    if (orderID != '') {
+    if (status == "") {
         //console.log("orderID", orderID)
 
         let query = `Select o.OrderNo, sm.*, p.propertySize, p.totalRooms, c.product_Id as productDetails, c.total as totalAmount, c.subcription_Type, c.isSubscription  From SubscriptionManagement as sm
