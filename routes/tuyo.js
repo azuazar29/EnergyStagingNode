@@ -958,7 +958,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     MonthlyResult: finalResult1,
                     message: "Consumption Details",
 
-                    TotalEnergySpendMonthly: Number(Number(totalMonthly).toFixed(2) * .408 * .23).toFixed(2),
+                    TotalEnergySpendMonthly: Number(Number(totalMonthly).toFixed(2) * .408).toFixed(2),
                     TotalEnergySpendYearly: Number((Number(totalYear).toFixed(2)) * .408).toFixed(2),
                     TotalMoneySpendYearly: Number((Number(totalYear).toFixed(2)) * .408 * .23).toFixed(2),
                     CO2SavedMonthly: Number((Number(baselineValue) - Number(totalMonthly).toFixed(2)) * .408).toFixed(2),
