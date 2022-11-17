@@ -487,6 +487,60 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
 
 
 
+                //Last Month// 
+                let finalResultLastMonth = []
+                let endDate2 = moment(new Date()).startOf('month').subtract(2, 'hour').toDate()
+
+                let startDate2 = moment(endDate2).startOf('month').toDate()
+
+                var a = moment(moment(startDate2).format('YYYY-MM-DD'));
+                var b = moment(moment(endDate2).format('YYYY-MM-DD'));
+
+                for (var m = moment(a); m.diff(b, 'days') <= 0; m.add(1, 'days')) {
+
+                    let isAvailable = false
+
+
+                    result.forEach(element => {
+                        // //console.log(moment(element.updatedOn).date())
+                        if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
+                            finalResultLastMonth.push({
+                                day: m.date().toString(),
+                                energyConsumed: element.EnergyConsumed,
+                                dayString: m.format("dddd"),
+
+                                color: ''
+                            })
+                            isAvailable = true
+                        }
+                    })
+                    if (!isAvailable) {
+                        finalResultLastMonth.push({
+                            day: m.date().toString(),
+                            dayString: m.format("dddd"),
+
+                            energyConsumed: 0,
+                            color: ''
+                        })
+                    }
+                }
+
+                let finalResult1LastMonth = []
+                finalResultLastMonth.forEach(element => {
+                    element.energyConsumed = Number(element.energyConsumed).toFixed(2)
+                    finalResult1LastMonth.push(element)
+                })
+
+
+
+                // //console.log("finalResult", finalResult1)
+                let totalMonthlyLastMonth = 0
+                finalResult1LastMonth.forEach(element => {
+
+                    totalMonthlyLastMonth = (Number(totalMonthlyLastMonth) + Number(element.energyConsumed)).toFixed(2)
+
+
+                })
 
                 res.status(200)
                 res.json({
@@ -495,6 +549,9 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                     message: "Consumption Details",
                     TotalEnergySpendMonthly: Number(totalMonthly).toFixed(2),
                     TotalMoneySpendMonthly: ((Number(totalMonthly)) * .23).toFixed(2),
+
+                    TotalEnergySpendLastMonth: Number(Number(totalMonthlyLastMonth).toFixed(2)).toFixed(2),
+                    TotalMoneySpendLastMonth: ((Number(totalMonthlyLastMonth)) * .23).toFixed(2),
 
                     TotalEnergySpendYearly: Number(totalYear).toFixed(2),
                     TotalMoneySpendYearly: (Number(totalYear) * .23).toFixed(2),
@@ -777,7 +834,63 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
 
                 })
 
-                // 
+
+
+
+                //Last Month// 
+                let finalResultLastMonth = []
+                let endDate2 = moment(new Date()).startOf('month').subtract(2, 'hour').toDate()
+
+                let startDate2 = moment(endDate2).startOf('month').toDate()
+
+                var a = moment(moment(startDate2).format('YYYY-MM-DD'));
+                var b = moment(moment(endDate2).format('YYYY-MM-DD'));
+
+                for (var m = moment(a); m.diff(b, 'days') <= 0; m.add(1, 'days')) {
+
+                    let isAvailable = false
+
+
+                    result.forEach(element => {
+                        // //console.log(moment(element.updatedOn).date())
+                        if (moment(element.updatedOn).format("MM/DD/YYYY") == m.format("MM/DD/YYYY")) {
+                            finalResultLastMonth.push({
+                                day: m.date().toString(),
+                                energyConsumed: element.EnergyConsumed,
+                                dayString: m.format("dddd"),
+
+                                color: ''
+                            })
+                            isAvailable = true
+                        }
+                    })
+                    if (!isAvailable) {
+                        finalResultLastMonth.push({
+                            day: m.date().toString(),
+                            dayString: m.format("dddd"),
+
+                            energyConsumed: 0,
+                            color: ''
+                        })
+                    }
+                }
+
+                let finalResult1LastMonth = []
+                finalResultLastMonth.forEach(element => {
+                    element.energyConsumed = Number(element.energyConsumed).toFixed(2)
+                    finalResult1LastMonth.push(element)
+                })
+
+
+
+                // //console.log("finalResult", finalResult1)
+                let totalMonthlyLastMonth = 0
+                finalResult1LastMonth.forEach(element => {
+
+                    totalMonthlyLastMonth = (Number(totalMonthlyLastMonth) + Number(element.energyConsumed)).toFixed(2)
+
+
+                })
 
 
                 let temp = []
@@ -959,6 +1072,10 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     message: "Consumption Details",
 
                     TotalEnergySpendMonthly: Number(Number(totalMonthly).toFixed(2) * .408).toFixed(2),
+                    TotalEnergySpendLastMonth: Number(Number(totalMonthlyLastMonth).toFixed(2) * .408).toFixed(2),
+                    TotalMoneySpendLastMonth: ((Number(totalMonthlyLastMonth) / .408) * .23).toFixed(2),
+
+
                     TotalEnergySpendYearly: Number((Number(totalYear).toFixed(2)) * .408).toFixed(2),
                     TotalMoneySpendYearly: Number((Number(totalYear).toFixed(2)) * .408 * .23).toFixed(2),
                     CO2SavedMonthly: Number((Number(baselineValue) - Number(totalMonthly).toFixed(2)) * .408).toFixed(2),

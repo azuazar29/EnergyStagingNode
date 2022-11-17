@@ -2920,7 +2920,7 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
     //     status = '2'
     // }
 
-    if (status != "") {
+    if (status != "" && status != "4") {
         //console.log("orderID", orderID)
 
         let query = `Select o.OrderNo, sm.*, p.propertySize, p.totalRooms, c.product_Id as productDetails, c.total as totalAmount, c.subcription_Type, c.isSubscription  From SubscriptionManagement as sm
