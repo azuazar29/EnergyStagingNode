@@ -623,7 +623,7 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
 
                     LastWeekResult: finalLast,
                     TotalEnergySpendLastWeek: totalLast.toFixed(2),
-                    TotalEnergySpendLastWeek: ((Number(totalLast)) * electricity_tariff).toFixed(2),
+                    TotalMoneySpendLastWeek: ((Number(totalLast)) * electricity_tariff).toFixed(2),
 
                     TotalEnergySpendWeekle: total.toFixed(2),
                     TotalMoneySpendWeekly: ((Number(total)) * electricity_tariff).toFixed(2),
