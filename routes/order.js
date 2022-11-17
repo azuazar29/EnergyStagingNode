@@ -2975,7 +2975,7 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
             } else {
                 res.json({
                     success: false,
-                    message: err,
+                    message: "No subscription details",
                     status: status
                 })
             }
