@@ -23,6 +23,7 @@ let each_room_cooling_load = [];
 let each_room_load = [];
 var user_current_rating = 0;
 let fs = [];
+let configvalues = {}
 
 function step1(area, idealRoomTemparature, ceilingHeightMeter) {
   var basic_cooling_load = 0;
@@ -53,10 +54,10 @@ function step2(area, cl) {
 }
 
 function step3(sum_of_all_true_loads) {
-  var min_load_factor = 1;
-  var max_load_factor = 1.5;
+  var min_load_factor = Number(configvalues.MinLoadFactor);
+  var max_load_factor = Number(configvalues.MaxLoadFactor);
   var comp = 1;
-  var system_cooling_limit = 8510;
+  var system_cooling_limit = Number(configvalues.SystemCoolingLimit)
   localvar.min_true_load = min_load_factor * sum_of_all_true_loads;
   localvar.max_true_load = max_load_factor * sum_of_all_true_loads;
   localvar.compressor_needed = Math.ceil(
@@ -98,6 +99,7 @@ module.exports = {
       each_room_cooling_load = [];
       each_room_load = [];
       fs = [];
+      configvalues = {}
       let query1 = `Select * from CondensorList where deleted <> '1'`;
       let query2 = `Select * from FCU_New`;
       let query3 = `Select * from System33`;
@@ -116,375 +118,384 @@ module.exports = {
               dbobj = set.recordsets[0];
               request.query(query7, function (err, set) {
                 rocc = set.recordsets[0];
-                request.query(query8, function (err, set) {
-                  efficiency_profile = set.recordsets[0];
-                  req.body.rooms.forEach((element) => {
-                    let height;
-                    if (element.ceilingHeightFeet != "0") {
-                      height = element.ceilingHeightFeet;
-                    }
-                    if (element.ceilingHeightMeter != "0") {
-                      height = element.ceilingHeightMeter;
-                    }
-                    each_room_cooling_load.push(
-                      step1(
-                        element.roomSize,
-                        element.idealRoomTemparature,
-                        height
-                      )
-                    );
-                    response.locals.each_room_cooling_load =
-                      each_room_cooling_load;
-                  });
+                request.query(`Select * from configurationvalues`, function (err, set1) {
 
-                  req.body.rooms.forEach((element, i) => {
-                    each_room_load.push(
-                      step2(element.roomSize, each_room_cooling_load[i])
-                    );
-                    response.locals.each_room_load = each_room_load;
-                  });
+                  configvalues = set1.recordset[0]
 
-                  sum_of_all_true_loads = 0;
+                  load_rating_factor = Number(configvalues.LoadRatingFactor)
 
-                  Object.keys(each_room_load).forEach(function (i) {
-                    sum_of_all_true_loads =
-                      sum_of_all_true_loads + each_room_load[i];
-                  });
-
-                  step3(sum_of_all_true_loads);
-
-                  const { min_true_load, max_true_load, compressor_needed } =
-                    localvar;
-
-                  var totrooms1 = req.body.rooms.length;
-
-                  response.locals.sum_of_all_true_loads = sum_of_all_true_loads;
-                  response.locals.min_true_load = min_true_load;
-                  response.locals.max_true_load = max_true_load;
-                  response.locals.totrooms1 = totrooms1;
-                  response.locals.compressor_needed = compressor_needed;
-
-
-                  var arr = [];
-                  for (var g = 0; g < totrooms1; g++) {
-                    arr[g] = g + 1;
-                  }
-
-
-                  var output = [];
-                  var RoomPermutations = [];
-                  output = compressor_config.combineElements(totrooms1);
-
-                  RoomPermutations = room_permutations.permute(arr);
-
-
-                  var room_perm_for_each_config1 =
-                    room_perm_for_each_config.start(
-                      compressor_needed,
-                      output,
-                      RoomPermutations
-                    );
-                  console.log(
-                    "room_perm_for_each_config1",
-                    room_perm_for_each_config1
-                  );
-
-                  var roomid = [];
-                  var compressorno = [];
-                  var configno = [];
-
-                  for (var i = 0; i < room_perm_for_each_config1.length; i++) {
-                    for (
-                      var j = 0;
-                      j < room_perm_for_each_config1[i].length;
-                      j++
-                    ) {
-                      for (
-                        var k = 0;
-                        k < room_perm_for_each_config1[i][j].length;
-                        k++
-                      ) {
-                        roomid.push(room_perm_for_each_config1[i][j][k]);
-                        compressorno.push(j + 1);
-                        configno.push(i + 1);
+                  request.query(query8, function (err, set) {
+                    efficiency_profile = set.recordsets[0];
+                    req.body.rooms.forEach((element) => {
+                      let height;
+                      if (element.ceilingHeightFeet != "0") {
+                        height = element.ceilingHeightFeet;
                       }
-                    }
-                  }
-
-                  response.locals.roomid = roomid;
-                  response.locals.compressorno = compressorno;
-                  response.locals.configno = configno;
-
-                  var p1 = [];
-                  installed_rooms1 = [];
-                  var products = [];
-                  var output1 = [];
-                  output1 = room_perm_for_each_config1;
-
-
-                  for (var i = 0; i < room_perm_for_each_config1.length; i++) {
-                    for (
-                      var j = 0;
-                      j < room_perm_for_each_config1[i].length;
-                      j++
-                    ) {
-                      var tot = 0,
-                        sum = 0,
-                        fcuarrays = [];
-                      for (
-                        var k = 0;
-                        k < room_perm_for_each_config1[i][j].length;
-                        k++
-                      ) {
-                        sum +=
-                          each_room_load[
-                          room_perm_for_each_config1[i][j][k] - 1
-                          ];
-                        fcuarrays.push(
-                          each_room_load[
-                          room_perm_for_each_config1[i][j][k] - 1
-                          ]
-                        );
-                        tot += 1;
+                      if (element.ceilingHeightMeter != "0") {
+                        height = element.ceilingHeightMeter;
                       }
-                      console.log("element fcu", fcuarrays)
-                      console.log("sum", sum)
-                      var status = "system" + tot;
-                      var listt = [];
-                      user_current_rating = Number(
-                        req.body.rooms[0].currentRating
+                      each_room_cooling_load.push(
+                        step1(
+                          element.roomSize,
+                          element.idealRoomTemparature,
+                          height
+                        )
                       );
-                      console.log(condenser.length)
-                      for (var l = 0; l < condenser.length; l++) {
-                        var num = condenser[l].CurrentRating.replace(/\D/g, "");
+                      response.locals.each_room_cooling_load =
+                        each_room_cooling_load;
+                    });
+
+                    req.body.rooms.forEach((element, i) => {
+                      each_room_load.push(
+                        step2(element.roomSize, each_room_cooling_load[i])
+                      );
+                      response.locals.each_room_load = each_room_load;
+                    });
+
+                    sum_of_all_true_loads = 0;
+
+                    Object.keys(each_room_load).forEach(function (i) {
+                      sum_of_all_true_loads =
+                        sum_of_all_true_loads + each_room_load[i];
+                    });
+
+                    step3(sum_of_all_true_loads);
+
+                    const { min_true_load, max_true_load, compressor_needed } =
+                      localvar;
+
+                    var totrooms1 = req.body.rooms.length;
+
+                    response.locals.sum_of_all_true_loads = sum_of_all_true_loads;
+                    response.locals.min_true_load = min_true_load;
+                    response.locals.max_true_load = max_true_load;
+                    response.locals.totrooms1 = totrooms1;
+                    response.locals.compressor_needed = compressor_needed;
 
 
-                        if (condenser[l].ProductName == "Panasonic Product") {
-                          console.log("allfcunames", num >= user_current_rating &&
+                    var arr = [];
+                    for (var g = 0; g < totrooms1; g++) {
+                      arr[g] = g + 1;
+                    }
+
+
+                    var output = [];
+                    var RoomPermutations = [];
+                    output = compressor_config.combineElements(totrooms1);
+
+                    RoomPermutations = room_permutations.permute(arr);
+
+
+                    var room_perm_for_each_config1 =
+                      room_perm_for_each_config.start(
+                        compressor_needed,
+                        output,
+                        RoomPermutations
+                      );
+                    console.log(
+                      "room_perm_for_each_config1",
+                      room_perm_for_each_config1
+                    );
+
+                    var roomid = [];
+                    var compressorno = [];
+                    var configno = [];
+
+                    for (var i = 0; i < room_perm_for_each_config1.length; i++) {
+                      for (
+                        var j = 0;
+                        j < room_perm_for_each_config1[i].length;
+                        j++
+                      ) {
+                        for (
+                          var k = 0;
+                          k < room_perm_for_each_config1[i][j].length;
+                          k++
+                        ) {
+                          roomid.push(room_perm_for_each_config1[i][j][k]);
+                          compressorno.push(j + 1);
+                          configno.push(i + 1);
+                        }
+                      }
+                    }
+
+                    response.locals.roomid = roomid;
+                    response.locals.compressorno = compressorno;
+                    response.locals.configno = configno;
+
+                    var p1 = [];
+                    installed_rooms1 = [];
+                    var products = [];
+                    var output1 = [];
+                    output1 = room_perm_for_each_config1;
+
+
+                    for (var i = 0; i < room_perm_for_each_config1.length; i++) {
+                      for (
+                        var j = 0;
+                        j < room_perm_for_each_config1[i].length;
+                        j++
+                      ) {
+                        var tot = 0,
+                          sum = 0,
+                          fcuarrays = [];
+                        for (
+                          var k = 0;
+                          k < room_perm_for_each_config1[i][j].length;
+                          k++
+                        ) {
+                          sum +=
+                            each_room_load[
+                            room_perm_for_each_config1[i][j][k] - 1
+                            ];
+                          fcuarrays.push(
+                            each_room_load[
+                            room_perm_for_each_config1[i][j][k] - 1
+                            ]
+                          );
+                          tot += 1;
+                        }
+                        console.log("element fcu", fcuarrays)
+                        console.log("sum", sum)
+                        var status = "system" + tot;
+                        var listt = [];
+                        user_current_rating = Number(
+                          req.body.rooms[0].currentRating
+                        );
+                        console.log(condenser.length)
+                        for (var l = 0; l < condenser.length; l++) {
+                          var num = condenser[l].CurrentRating.replace(/\D/g, "");
+
+
+                          if (condenser[l].ProductName == "Panasonic Product") {
+                            console.log("allfcunames", num >= user_current_rating &&
+                              sum_of_all_true_loads >= min_true_load &&
+                              sum_of_all_true_loads <= max_true_load &&
+                              Number(condenser[l].CoolingCapacity) >= Number(sum) &&
+                              Number(condenser[l].FCUCapacity) >= Number(sum))
+
+                          }
+
+
+                          if (
+                            // num >= user_current_rating &&
                             sum_of_all_true_loads >= min_true_load &&
                             sum_of_all_true_loads <= max_true_load &&
                             Number(condenser[l].CoolingCapacity) >= Number(sum) &&
-                            Number(condenser[l].FCUCapacity) >= Number(sum))
-
-                        }
-
-
-                        if (
-                          // num >= user_current_rating &&
-                          sum_of_all_true_loads >= min_true_load &&
-                          sum_of_all_true_loads <= max_true_load &&
-                          Number(condenser[l].CoolingCapacity) >= Number(sum) &&
-                          Number(condenser[l].FCUCapacity) >= Number(sum)
-                        ) {
-                          var allfcunames = [],
-                            allfcus = [];
-                          console.log("condensor id", condenser[l].id)
+                            Number(condenser[l].FCUCapacity) >= Number(sum)
+                          ) {
+                            var allfcunames = [],
+                              allfcus = [];
+                            console.log("condensor id", condenser[l].id)
 
 
-                          // console.log("fcu.length", fcu.length)
+                            // console.log("fcu.length", fcu.length)
 
-                          for (var i1 = 0; i1 < fcu.length; i1++) {
+                            for (var i1 = 0; i1 < fcu.length; i1++) {
 
-                            if (
-                              condenser[l].id.toString() ===
-                              fcu[i1].CondenserId.toString()
-                            ) {
-                              allfcunames.push(fcu[i1]);
-                              allfcus.push(fcu[i1].FCU);
-                            }
-                          }
-
-
-                          flag1 = 1;
-                          var count = 0;
-                          for (var i2 = 0; i2 < fcuarrays.length; i2++) {
-
-
-                            let isTrue = false
-                            allfcus.forEach(element => {
-
-                              if (fcuarrays[i2] <= element) {
-                                isTrue = true
-                              } else {
-                                isTrue = false
+                              if (
+                                condenser[l].id.toString() ===
+                                fcu[i1].CondenserId.toString()
+                              ) {
+                                allfcunames.push(fcu[i1]);
+                                allfcus.push(fcu[i1].FCU);
                               }
+                            }
 
-                            })
-                            if (isTrue)
-                              count++
 
+                            flag1 = 1;
+                            var count = 0;
+                            for (var i2 = 0; i2 < fcuarrays.length; i2++) {
+
+
+                              let isTrue = false
+                              allfcus.forEach(element => {
+
+                                if (fcuarrays[i2] <= element) {
+                                  isTrue = true
+                                } else {
+                                  isTrue = false
+                                }
+
+                              })
+                              if (isTrue)
+                                count++
+
+                            }
+                            if ((count === fcuarrays.length) && (count === allfcus.length)) {
+                              listt.push(
+                                `{"rooms":"${room_perm_for_each_config1[i][j]
+                                }","condensername":"${condenser[l].ProductName
+                                }","condenserid":${JSON.stringify(
+                                  condenser[l]
+                                )},"fcusname":${JSON.stringify(
+                                  allfcunames
+                                )},"fcus":"${allfcus}","coolingcapacity":"${condenser[l].CoolingCapacity
+                                }","price":"${condenser[l].Price
+                                }","currentrating":"${condenser[l].CurrentRating
+                                }"}`
+                              );
+                            } else {
+                            }
+
+                            allfcunames = [];
+                            allfcus = [];
                           }
-                          if ((count === fcuarrays.length) && (count === allfcus.length)) {
-                            listt.push(
-                              `{"rooms":"${room_perm_for_each_config1[i][j]
-                              }","condensername":"${condenser[l].ProductName
-                              }","condenserid":${JSON.stringify(
-                                condenser[l]
-                              )},"fcusname":${JSON.stringify(
-                                allfcunames
-                              )},"fcus":"${allfcus}","coolingcapacity":"${condenser[l].CoolingCapacity
-                              }","price":"${condenser[l].Price
-                              }","currentrating":"${condenser[l].CurrentRating
-                              }"}`
-                            );
-                          } else {
-                          }
+                        }
+                        productList.push(listt);
+                      }
+                    }
 
-                          allfcunames = [];
-                          allfcus = [];
+
+
+                    //grouping products with based on it's rooms
+                    var temporary = chunk(productList);
+                    function chunk(arr) {
+                      var i,
+                        j,
+                        tempor = [],
+                        chunk = compressor_needed;
+                      for (i = 0, j = arr.length; i < j; i += chunk) {
+                        tempor.push(arr.slice(i, i + chunk));
+                      }
+                      return tempor;
+                    }
+
+                    //removing unwanted products EX:like [1,3] will have no prod but [2,4] will have products
+                    var li = [],
+                      rtt = [];
+                    for (var i = 0; i < temporary.length; i++) {
+                      var flag = 0;
+                      for (var j = 0; j < temporary[i].length; j++) {
+                        if (temporary[i][j].length === 0) {
+                          flag = 1;
                         }
                       }
-                      productList.push(listt);
-                    }
-                  }
-
-
-
-                  //grouping products with based on it's rooms
-                  var temporary = chunk(productList);
-                  function chunk(arr) {
-                    var i,
-                      j,
-                      tempor = [],
-                      chunk = compressor_needed;
-                    for (i = 0, j = arr.length; i < j; i += chunk) {
-                      tempor.push(arr.slice(i, i + chunk));
-                    }
-                    return tempor;
-                  }
-
-                  //removing unwanted products EX:like [1,3] will have no prod but [2,4] will have products
-                  var li = [],
-                    rtt = [];
-                  for (var i = 0; i < temporary.length; i++) {
-                    var flag = 0;
-                    for (var j = 0; j < temporary[i].length; j++) {
-                      if (temporary[i][j].length === 0) {
-                        flag = 1;
-                      }
-                    }
-                    if (flag === 0) {
-                      li.push(temporary[i]);
-                    }
-                  }
-
-                  //even the products with same amount
-                  var val = [];
-                  var curr = 0;
-                  const allEqual = (arr) => arr.every((v) => v === arr[0]);
-                  function call(val, i1) {
-                    if (!allEqual(val)) {
-                      curr = val.indexOf(Math.min(...val));
-                      for (
-                        var k = 0;
-                        k < Math.max(...val) - Math.min(...val);
-                        k++
-                      ) {
-                        li[i1][curr].push(li[i1][curr][Math.min(...val) - 1]);
+                      if (flag === 0) {
+                        li.push(temporary[i]);
                       }
                     }
 
-                    val = [];
-                    for (var j = 0; j < li[i].length; j++) {
-                      val.push(li[i][j].length);
-                    }
-                    if (!allEqual(val)) {
-                      call(val, i1);
-                    }
-                  }
+                    //even the products with same amount
+                    var val = [];
+                    var curr = 0;
+                    const allEqual = (arr) => arr.every((v) => v === arr[0]);
+                    function call(val, i1) {
+                      if (!allEqual(val)) {
+                        curr = val.indexOf(Math.min(...val));
+                        for (
+                          var k = 0;
+                          k < Math.max(...val) - Math.min(...val);
+                          k++
+                        ) {
+                          li[i1][curr].push(li[i1][curr][Math.min(...val) - 1]);
+                        }
+                      }
 
-                  for (var i = 0; i < li.length; i++) {
-                    val = [];
-
-                    if (val.length != 1) {
-                      call(val, i);
+                      val = [];
+                      for (var j = 0; j < li[i].length; j++) {
+                        val.push(li[i][j].length);
+                      }
+                      if (!allEqual(val)) {
+                        call(val, i1);
+                      }
                     }
-                  }
 
-                  //combining the product datas based on index
-                  var res = [];
-                  for (var i = 0; i < li.length; i++) {
-                    res.push(
-                      li[i].reduce((a, b) => a.map((v, i) => v + "$" + b[i]))
+                    for (var i = 0; i < li.length; i++) {
+                      val = [];
+
+                      if (val.length != 1) {
+                        call(val, i);
+                      }
+                    }
+
+                    //combining the product datas based on index
+                    var res = [];
+                    for (var i = 0; i < li.length; i++) {
+                      res.push(
+                        li[i].reduce((a, b) => a.map((v, i) => v + "$" + b[i]))
+                      );
+                    }
+
+                    //splitting a string based on $
+                    var temp = [];
+                    for (var i = 0; i < res.length; i++) {
+                      for (var j = 0; j < res[i].length; j++) {
+                        temp.push(res[i][j].split("$"));
+                      }
+                    }
+
+                    //list view
+
+                    //converting list to meaningful obj
+                    let r = [],
+                      select_product_list = [];
+                    for (var i = 0; i < temp.length; i++) {
+                      r = [];
+                      for (var j = 0; j < temp[i].length; j++) {
+                        r.push(JSON.parse(temp[i][j]));
+                      }
+                      select_product_list.push(r);
+                    }
+
+                    var sum = 0;
+                    for (var i = 0; i < each_room_load.length; i++) {
+                      sum += each_room_load[i];
+                    }
+                    let responseFinal = step5.start1(
+                      select_product_list,
+                      rooms.length,
+                      rocc,
+                      each_room_load,
+                      efficiency_profile,
+                      sum,
+                      req.body.rooms, configvalues
+
                     );
-                  }
 
-                  //splitting a string based on $
-                  var temp = [];
-                  for (var i = 0; i < res.length; i++) {
-                    for (var j = 0; j < res[i].length; j++) {
-                      temp.push(res[i][j].split("$"));
-                    }
-                  }
+                    resolve({
+                      EnergyWise: responseFinal.energyWise,
+                      PriceWise: responseFinal.priceWise,
+                    });
 
-                  //list view
-
-                  //converting list to meaningful obj
-                  let r = [],
+                    rocc = [];
+                    sys1 = [];
+                    sys2 = [];
+                    sys3 = [];
+                    sys4 = [];
+                    efficiency_profile = [];
+                    totrooms1 = 0;
+                    rooms = [];
+                    load_rating_factor = Number(configvalues.LoadRatingFactor);
+                    sum_of_all_true_loads = 0;
+                    dbobj = [];
+                    db1obj = {};
+                    b1 = 0;
+                    var li1count = 0;
+                    li1 = [];
+                    var li2 = [];
+                    var li3 = [];
+                    each_room_cooling_load = [];
+                    each_room_load = [];
+                    sys1 = [];
+                    sys2 = [];
+                    sys3 = [];
+                    sys4 = [];
+                    db1obj = [];
+                    dbobj = [];
+                    each_room_cooling_load = [];
+                    sum_of_all_true_loads = 0;
+                    each_room_load = [];
                     select_product_list = [];
-                  for (var i = 0; i < temp.length; i++) {
-                    r = [];
-                    for (var j = 0; j < temp[i].length; j++) {
-                      r.push(JSON.parse(temp[i][j]));
-                    }
-                    select_product_list.push(r);
-                  }
-
-                  var sum = 0;
-                  for (var i = 0; i < each_room_load.length; i++) {
-                    sum += each_room_load[i];
-                  }
-                  let responseFinal = step5.start1(
-                    select_product_list,
-                    rooms.length,
-                    rocc,
-                    each_room_load,
-                    efficiency_profile,
-                    sum,
-                    req.body.rooms
-                  );
-
-                  resolve({
-                    EnergyWise: responseFinal.energyWise,
-                    PriceWise: responseFinal.priceWise,
+                    selected_product_list = [];
+                    selected_product_list1 = [];
+                    installed_rooms = [];
+                    installed_rooms1 = [];
+                    fs = [];
+                    fg1 = [];
                   });
+                })
 
-                  rocc = [];
-                  sys1 = [];
-                  sys2 = [];
-                  sys3 = [];
-                  sys4 = [];
-                  efficiency_profile = [];
-                  totrooms1 = 0;
-                  rooms = [];
-                  load_rating_factor = 1.15;
-                  sum_of_all_true_loads = 0;
-                  dbobj = [];
-                  db1obj = {};
-                  b1 = 0;
-                  var li1count = 0;
-                  li1 = [];
-                  var li2 = [];
-                  var li3 = [];
-                  each_room_cooling_load = [];
-                  each_room_load = [];
-                  sys1 = [];
-                  sys2 = [];
-                  sys3 = [];
-                  sys4 = [];
-                  db1obj = [];
-                  dbobj = [];
-                  each_room_cooling_load = [];
-                  sum_of_all_true_loads = 0;
-                  each_room_load = [];
-                  select_product_list = [];
-                  selected_product_list = [];
-                  selected_product_list1 = [];
-                  installed_rooms = [];
-                  installed_rooms1 = [];
-                  fs = [];
-                  fg1 = [];
-                });
               });
             });
           });

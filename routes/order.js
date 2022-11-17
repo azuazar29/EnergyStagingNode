@@ -2916,9 +2916,9 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
 
     let status = await getOrderIDForStatus(req.params.id)
 
-    // if (status == "") {
-    //     status = '2'
-    // }
+    if (status == "") {
+        status = '2'
+    }
 
     if (status != "" && status != "4") {
         //console.log("orderID", orderID)
@@ -2986,7 +2986,7 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
         res.json({
             success: false,
             message: "This user doesn't has any pending order to proceed.",
-            status: "2"
+            status: status
         })
     }
 

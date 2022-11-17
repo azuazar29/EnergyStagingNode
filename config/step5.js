@@ -1,5 +1,8 @@
 const hs = require("./hourly_true_load");
 const filePath = require("./filePath");
+var sql = require("../database");
+
+var request = new sql.Request();
 function start1(
   input1,
   roomslen,
@@ -7,7 +10,8 @@ function start1(
   true_load,
   eff,
   total_true_load,
-  roomsArray
+  roomsArray,
+  configvalues
 ) {
   ////////console.log("Sum Fona;", total_true_load)
 
@@ -452,7 +456,11 @@ function start1(
     input1[i].yearly_operating_power = input1[i].monthy_operating_power * 12;
   }
 
-  var electricity_tariff = 0.29; //1.25
+  let electricity_tariff = Number(configvalues.PowerTariff)
+
+  console.log('Promise electricity', electricity_tariff)
+
+  // var electricity_tariff = 0.29; //1.25
   for (var i = 0; i < input1.length; i++) {
     var week =
       input1[i].weekdays.reduce((a, b) => a + b, 0) / 1000 +
@@ -742,6 +750,7 @@ function start1(
   let priceWise = priceTemp.sort((a, b) => {
     return Number(a.display_price) - Number(b.display_price);
   });
+  // console.log('promise', priceWise)
 
   return { energyWise: energyWise, priceWise: priceWise };
 }
