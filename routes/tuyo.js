@@ -6,6 +6,9 @@ var request = new sql.Request();
 
 const moment = require("moment")
 const middleware = require('../middleware/token-auth')
+const middleware_new = require('../middleware/token-auth_new')
+const secret = "05231b50-fd3d-11e9-bac2-47f7251a736c"
+const jwt = require('jsonwebtoken')
 
 
 
@@ -1244,6 +1247,75 @@ router.post('/updateBaselineValue/:baseValue/:orderID', function (req, res) {
 
         if (!err) {
             res.json({
+                success: true
+            })
+        } else {
+            console.log("err", err)
+        }
+
+    })
+
+
+
+})
+
+router.post('/updateConfigurationValue', middleware_new.authenticate, function (req, res) {
+
+    let query = `UPDATE [dbo].[configurationValues]
+    SET [CoefficientValue] = '${req.body.CoefficientValue}'
+       ,[PowerTariff] = '${req.body.PowerTariff}'
+       ,[LoadRatingFactor] = '${req.body.LoadRatingFactor}'
+       ,[MinLoadFactor] = '${req.body.MinLoadFactor}'
+       ,[MaxLoadFactor] = '${req.body.MaxLoadFactor}'
+       ,[SystemCoolingLimit] = '${req.body.SystemCoolingLimit}'
+ `
+
+    request.query(query, function (err, recordset) {
+
+        if (!err) {
+            res.json({
+                success: true
+            })
+        } else {
+            console.log("err", err)
+        }
+
+    })
+
+
+
+})
+
+router.get('/configuration_value', middleware_new.authenticate, function (req, res) {
+
+    let query = `select * From configurationValues`
+
+    request.query(query, function (err, recordset) {
+
+        if (!err) {
+            res.json({
+                result: recordset.recordset[0],
+                success: true
+            })
+        } else {
+            console.log("err", err)
+        }
+
+    })
+
+
+
+})
+
+router.get('/token', function (req, res) {
+
+    let query = `select * From configurationValues`
+
+    request.query(query, function (err, recordset) {
+
+        if (!err) {
+            res.json({
+                result: jwt.sign({ user: 'john' }, secret),
                 success: true
             })
         } else {
