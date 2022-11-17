@@ -273,6 +273,54 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
                 })
 
 
+                let abLast = moment(new Date()).subtract('13', 'days').format('YYYY-MM-DD')
+                let bbLast = moment(new Date()).subtract('6', 'days').format('YYYY-MM-DD')
+
+                console.log('bb', bb)
+                console.log('ab', ab)
+
+                let finalLast = []
+                for (var m = moment(abLast); m.diff(bbLast, 'days') <= 0; m.add(1, 'days')) {
+
+                    // console.log("mmm", m.day())
+                    let isAvailable = false
+                    result.forEach(element => {
+
+
+                        // console.log("elemen", element)
+
+                        if (moment(element.updatedOn).format('YYYY-MM-DD') == m.format('YYYY-MM-DD')) {
+                            finalLast.push({
+                                day: m.format('dddd'),
+                                energyConsumed: element.EnergyConsumed.toString(),
+                                color: ''
+                            })
+
+
+                            isAvailable = true
+
+                        }
+
+                    })
+                    if (!isAvailable) {
+                        finalLast.push({
+                            day: m.format('dddd'),
+                            energyConsumed: "0",
+                            color: ''
+                        })
+                    }
+                }
+
+
+                let totalLast = 0
+                finalLast.forEach(element => {
+
+                    totalLast = totalLast + Number(element.energyConsumed)
+
+                })
+
+
+
 
                 let startDate1 = moment(new Date()).startOf('month').toDate()
                 let endDate1 = moment(new Date()).endOf('month').toDate()
@@ -572,6 +620,11 @@ router.post('/getEnergyConsumption', middleware.authenticate, async function (re
 
                     ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly)))).toFixed(2),
                     WeeklyResult: final,
+
+                    LastWeekResult: finalLast,
+                    TotalEnergySpendLastWeek: totalLast.toFixed(2),
+                    TotalEnergySpendLastWeek: ((Number(totalLast)) * electricity_tariff).toFixed(2),
+
                     TotalEnergySpendWeekle: total.toFixed(2),
                     TotalMoneySpendWeekly: ((Number(total)) * electricity_tariff).toFixed(2),
                     ThresholdWeekly: ((Number(factor) + (Number(weeklyMin) + Number(factor)))).toFixed(2),
