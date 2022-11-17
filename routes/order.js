@@ -2512,11 +2512,18 @@ function getOrderIDForStatus(id) {
 
 
 
-                        if (recordset1.recordset[0].installationStatus == 2 || recordset.recordset[0].OrderStatus == "CO") {
-                            resolve("4")
+                        if (recordset1.recordset[0].installationStatus == 2) {
+                            if (recordset.recordset[0].OrderStatus == "CO") {
+                                resolve("5")
+                            } else {
+                                resolve("4")
+
+                            }
                         } else {
                             resolve("3")
                         }
+
+
 
 
                     })
@@ -2920,68 +2927,78 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
         status = '2'
     }
 
-    if (status != "" && status != "4") {
+    if (status != "") {
         //console.log("orderID", orderID)
 
-        let query = `Select o.OrderNo, sm.*, p.propertySize, p.totalRooms, c.product_Id as productDetails, c.total as totalAmount, c.subcription_Type, c.isSubscription  From SubscriptionManagement as sm
-        inner join Cart as c on c.orderID = ${orderID}
-        inner join OrderList as o on o.Id = ${orderID}
-        LEFT JOIN UserConfiguration p ON (
-               p.userID = ${req.params.id}
-           AND NOT EXISTS (
-             SELECT 1 FROM UserConfiguration p1
-             WHERE p1.userID = ${req.params.id}
-             AND p1.id > p.id
-           )
-        )
-        where sm.userID = ${req.params.id} and sm.orderID  = ${orderID}
-        
-        `
-        //console.log("order", query)
+        if (status == "5") {
+            res.json({
+                success: false,
+                message: "No subscription details",
+                status: '4'
+            })
+        } else {
+            let query = `Select o.OrderNo, sm.*, p.propertySize, p.totalRooms, c.product_Id as productDetails, c.total as totalAmount, c.subcription_Type, c.isSubscription  From SubscriptionManagement as sm
+            inner join Cart as c on c.orderID = ${orderID}
+            inner join OrderList as o on o.Id = ${orderID}
+            LEFT JOIN UserConfiguration p ON (
+                   p.userID = ${req.params.id}
+               AND NOT EXISTS (
+                 SELECT 1 FROM UserConfiguration p1
+                 WHERE p1.userID = ${req.params.id}
+                 AND p1.id > p.id
+               )
+            )
+            where sm.userID = ${req.params.id} and sm.orderID  = ${orderID}
+            
+            `
+            //console.log("order", query)
 
-        request.query(query, function (err, recordset) {
+            request.query(query, function (err, recordset) {
 
-            if (!err) {
+                if (!err) {
 
 
-                if (recordset.recordset[0].serviceDay && recordset.recordset[0].serviceDay != 'undefined') {
-                    recordset.recordset[0].serviceDay = JSON.parse(recordset.recordset[0].serviceDay)
-                }
+                    if (recordset.recordset[0].serviceDay && recordset.recordset[0].serviceDay != 'undefined') {
+                        recordset.recordset[0].serviceDay = JSON.parse(recordset.recordset[0].serviceDay)
+                    }
 
-                try {
-                    recordset.recordset[0].productDetails = JSON.parse(recordset.recordset[0].productDetails)
-                    recordset.recordset[0].propertySize = Number(recordset.recordset[0].propertySize).toFixed(2)
+                    try {
+                        recordset.recordset[0].productDetails = JSON.parse(recordset.recordset[0].productDetails)
+                        recordset.recordset[0].propertySize = Number(recordset.recordset[0].propertySize).toFixed(2)
 
-                    recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
+                        recordset.recordset[0].visitDay = JSON.parse(recordset.recordset[0].visitDay)
 
-                    recordset.recordset[0].InstallationDay = JSON.parse(recordset.recordset[0].InstallationDay)
+                        recordset.recordset[0].InstallationDay = JSON.parse(recordset.recordset[0].InstallationDay)
 
+                        res.json({
+                            success: true,
+                            response: recordset.recordset[0],
+                            message: "SubscriotionManagement details",
+                            status: status
+                        })
+                    } catch {
+                        res.json({
+                            success: true,
+                            response: recordset.recordset[0],
+                            message: "SubscriotionManagement details",
+                            status: status
+                        })
+                    }
+
+
+                } else {
                     res.json({
-                        success: true,
-                        response: recordset.recordset[0],
-                        message: "SubscriotionManagement details",
+                        success: false,
+                        message: "No subscription details",
                         status: status
                     })
-                } catch {
-                    res.json({
-                        success: true,
-                        response: recordset.recordset[0],
-                        message: "SubscriotionManagement details",
-                        status: status
-                    })
                 }
 
 
-            } else {
-                res.json({
-                    success: false,
-                    message: "No subscription details",
-                    status: status
-                })
-            }
+            })
+        }
 
 
-        })
     } else {
         res.json({
             success: false,
