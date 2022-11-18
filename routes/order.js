@@ -2925,10 +2925,9 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
     //console.log("orderID", orderID)
 
     let status = await getOrderIDForStatus(req.params.id)
+    console.log("status", status)
 
-    if (status == "") {
-        status = '2'
-    }
+
 
     if (status != "") {
         //console.log("orderID", orderID)
@@ -3006,7 +3005,7 @@ router.get('/subscriptionManagementDetails/:id', async function (req, res) {
         res.json({
             success: false,
             message: "This user doesn't has any pending order to proceed.",
-            status: status
+            status: status ? status : "2"
         })
     }
 
@@ -3134,6 +3133,8 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
     } else if (status == 'CA') {
 
 
+
+        request.query(`delete SubscriptionManagement where userID = ${req.params.userID} and orderID = ${req.params.orderID}`)
 
         request.query(`update OrderList set OrderStatus = '${status}', deviceID = '' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, response) {
             if (!err) {
