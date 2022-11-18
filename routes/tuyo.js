@@ -1167,7 +1167,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
 
                     TotalEnergySpendMonthly: Number(Number(totalMonthly).toFixed(2) * cfValue).toFixed(2),
                     TotalEnergySpendLastMonth: Number(Number(totalMonthlyLastMonth).toFixed(2) * cfValue).toFixed(2),
-                    TotalMoneySpendLastMonth: ((Number(totalMonthlyLastMonth) / cfValue) * electricity_tariff).toFixed(2),
+                    TotalMoneySpendLastMonth: ((Number(totalMonthlyLastMonth)) * electricity_tariff).toFixed(2),
 
 
                     TotalEnergySpendYearly: Number((Number(totalYear).toFixed(2)) * cfValue).toFixed(2),
@@ -1175,22 +1175,22 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     CO2SavedMonthly: Number((Number(baselineValue) - Number(totalMonthlyLastMonth).toFixed(2)) * cfValue).toFixed(2),
                     CO2SavedYearly: Number((Number(baselineValue) * 12 - Number(totalYear).toFixed(2)) * cfValue).toFixed(2),
 
-                    TotalMoneySpendMonthly: ((Number(totalMonthly) / cfValue) * electricity_tariff).toFixed(2),
+                    TotalMoneySpendMonthly: ((Number(totalMonthly)) * electricity_tariff).toFixed(2),
                     ThresholdMonthly: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly)))).toFixed(2),
 
                     WeeklyResult: final,
-                    TotalEnergySpendWeekle: Number(total).toFixed(2),
-                    TotalMoneySpendWeekly: ((Number(total) / cfValue) * electricity_tariff).toFixed(2),
+                    TotalEnergySpendWeekle: Number(total * cfValue).toFixed(2),
+                    TotalMoneySpendWeekly: ((Number(total)) * electricity_tariff).toFixed(2),
                     ThresholdWeekly: ((Number(factor) + (Number(weeklyMin) + Number(factor)))).toFixed(2),
 
                     TrendResult: temp.reverse(),
-                    TotalEnergySpendTrend: Number(totalTrend).toFixed(2),
-                    TotalMoneySpendTrend: ((Number(totalTrend) / cfValue) * electricity_tariff).toFixed(2),
+                    TotalEnergySpendTrend: Number(totalTrend * cfValue).toFixed(2),
+                    TotalMoneySpendTrend: ((Number(totalTrend)) * electricity_tariff).toFixed(2),
                     ThresholdTrend: ((Number(factorMonthly) + (Number(monthlyMin) + Number(factorMonthly)))).toFixed(2),
-                    TotalEnergySpendToday: todaysenergy.toString(),
-                    TotalMoneySpendToday: ((Number(todaysenergy) / cfValue) * electricity_tariff).toFixed(2),
-                    TotalMoneySpendmax: ((Number(maxdayenergy) / cfValue) * electricity_tariff).toFixed(2),
-                    TotalEnergySpendmax: Number(maxdayenergy).toFixed(2).toString(),
+                    TotalEnergySpendToday: Number(todaysenergy * cfValue).toFixed(2).toString(),
+                    TotalMoneySpendToday: ((Number(todaysenergy)) * electricity_tariff).toFixed(2),
+                    TotalMoneySpendmax: ((Number(maxdayenergy)) * electricity_tariff).toFixed(2),
+                    TotalEnergySpendmax: Number(maxdayenergy * cfValue).toFixed(2).toString(),
                     installationDate: deviceID.installationDate,
                     status: status
 
