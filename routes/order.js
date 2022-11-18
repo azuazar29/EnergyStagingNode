@@ -2490,7 +2490,7 @@ function getOrderIDForStatus(id) {
 
     return new Promise((resolve, reject) => {
         // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
-        request.query(`select Id,OrderStatus from orderList where UserId = '${id}' OrderStatus <> 'CA'`, function (err, recordset) {
+        request.query(`select Id,OrderStatus from orderList where UserId = '${id}' and OrderStatus <> 'CA'`, function (err, recordset) {
 
             console.log("err", err)
             if (recordset.recordset.length) {
@@ -2509,19 +2509,23 @@ function getOrderIDForStatus(id) {
                         console.log('err', err)
 
 
+                        if (recordset1.recordset.length) {
 
+                            if (recordset1.recordset[0].installationStatus == 2) {
+                                if (recordset.recordset[0].OrderStatus == "CO") {
+                                    resolve("5")
+                                } else {
+                                    resolve("4")
 
-
-                        if (recordset1.recordset[0].installationStatus == 2) {
-                            if (recordset.recordset[0].OrderStatus == "CO") {
-                                resolve("5")
+                                }
                             } else {
-                                resolve("4")
-
+                                resolve("3")
                             }
                         } else {
-                            resolve("3")
+                            resolve('')
                         }
+
+
 
 
 

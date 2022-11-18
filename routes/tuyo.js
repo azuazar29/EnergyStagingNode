@@ -27,7 +27,7 @@ function getOrderID(id) {
 
     return new Promise((resolve, reject) => {
         // console.log("rqyert", `select Id from orderList where UserId = '${id}' and OrderStatus = 'PE'`)
-        request.query(`select Id,OrderStatus from orderList where UserId = '${id}' OrderStatus <> 'CA' `, function (err, recordset) {
+        request.query(`select Id,OrderStatus from orderList where UserId = '${id}' and OrderStatus <> 'CA' `, function (err, recordset) {
 
             console.log("err", err)
             if (recordset.recordset.length) {
