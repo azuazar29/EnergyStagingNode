@@ -2788,6 +2788,8 @@ router.post('/updateServiceRequestByUser',
         validationResult(req).throw();
 
         try {
+
+            req.body.notes = req.body.notes.replace(/'/g, "''");
             let orderID = await getOrderID(req.decoded.id)
 
             if (orderID != '') {
@@ -2814,7 +2816,7 @@ router.post('/updateServiceRequestByUser',
 
                                 })
                             } else {
-                                //console.log("err", err)
+                                console.log("err", err)
                                 res.json({
                                     success: false,
                                     message: "Error updating status"
@@ -2840,6 +2842,7 @@ router.post('/updateServiceRequestByUser',
 
         }
         catch (e) {
+            console.log("e", e)
             res.status(400);
             res.json({
                 success: false,

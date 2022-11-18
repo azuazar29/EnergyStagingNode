@@ -771,7 +771,7 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                 result.forEach((element, index) => {
 
                     element.updatedOn = moment(element.updatedOn).format('MM/DD/YYYY')
-                    element.EnergyConsumed = (Number(element.EnergyConsumed) * .408).toFixed(2)
+                    // element.EnergyConsumed = (Number(element.EnergyConsumed) * .408).toFixed(2)
 
 
                 })
@@ -1139,6 +1139,25 @@ router.post('/getEnergyConsumptionByCO2', middleware.authenticate, async functio
                     })
 
                 })
+
+
+
+                final.forEach(element => {
+                    element.energyConsumed = Number(element.energyConsumed * cfValue).toFixed(2)
+                })
+                finalResult1.forEach(element => {
+                    element.energyConsumed = Number(element.energyConsumed * cfValue).toFixed(2)
+                })
+                temp.forEach(element => {
+                    element.energyConsumed = Number(element.energyConsumed * cfValue).toFixed(2)
+                })
+
+                console.log("final", final[0])
+                console.log("finalresult1 ", finalResult1[0])
+                console.log("temp 0", temp[0])
+                console.log("totalMonthlyLastMonth", totalMonthlyLastMonth)
+                console.log("totalYear", totalYear)
+
 
                 res.status(200)
                 res.json({
