@@ -3134,7 +3134,7 @@ router.post('/updateOrderStatus/:userID/:orderID', function (req, res) {
 
 
 
-        request.query(`delete SubscriptionManagement where userID = ${req.params.userID} and orderID = ${req.params.orderID}`)
+        // request.query(`delete SubscriptionManagement where userID = ${req.params.userID} and orderID = ${req.params.orderID}`)
 
         request.query(`update OrderList set OrderStatus = '${status}', deviceID = '' where UserId = '${req.params.userID}' and Id = '${req.params.orderID}'`, function (err, response) {
             if (!err) {
